@@ -17,6 +17,9 @@
     "jest": true
   },
   "rules": {
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "linebreak-style": 0,
+    "import/no-dynamic-require": "off",
+    "arrow-body-style": "off"
   }
 }
