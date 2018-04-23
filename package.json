@@ -1,0 +1,28 @@
+{
+  "name": "habit-tracker-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:PeerProg/habit-tracker-server.git",
+  "author": "oreoluwade <oreoluwade@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "babel-watch server.js",
+    "test": "jest -u --coverage",
+    "lint": "eslint ./ || true"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-watch": "^2.0.7",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "jest": "^22.4.3",
+    "supertest": "^3.0.0"
+  }
+}
