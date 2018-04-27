@@ -10,8 +10,7 @@
     "test": "jest -u --coverage",
     "lint": "eslint ./ || true",
     "migratedb": "sequelize db:migrate",
-    "undo:migration": "sequelize db:migrate:undo:all",
-    "start": "nodemon ./server --exec babel-node"
+    "undo:migration": "sequelize db:migrate:undo:all"
   },
   "dependencies": {
     "babel-core": "^6.26.0",
@@ -31,7 +30,6 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
     "jest": "^22.4.3",
-    "nodemon": "^1.17.3",
     "supertest": "^3.0.0"
   }
 }
