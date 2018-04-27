@@ -15,11 +15,14 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
+
+  // Class methods
   User.associate = (models) => {
     User.hasMany(models.Habits, {
+      onDelete: 'CASCADE',
       foreignKey: 'userId',
-      as: 'todoItems',
     });
   };
+
   return User;
 };

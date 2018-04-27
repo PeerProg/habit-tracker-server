@@ -9,11 +9,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
   });
+
+  // Class methods
   Habits.associate = (models) => {
     Habits.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
     });
   };
+
   return Habits;
 };
