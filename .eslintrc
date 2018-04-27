@@ -20,6 +20,7 @@
     "comma-dangle": 0,
     "linebreak-style": 0,
     "import/no-dynamic-require": "off",
-    "arrow-body-style": "off"
+    "arrow-body-style": "off",
+    "consistent-return": 0
   }
 }
