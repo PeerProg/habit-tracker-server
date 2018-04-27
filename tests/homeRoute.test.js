@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../app';
 
-const server = request.agent(app);
+const server = request(app);
 
 describe('Index route', () => {
   it('should return a message upon hitting the home endpoint', (done) => {
