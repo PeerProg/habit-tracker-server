@@ -12,7 +12,7 @@ module.exports = {
     operatorsAliases: false
   },
   travis: {
-    use_env_variable: process.env.TRAVIS_DATABASE_URL,
+    url: process.env.TRAVIS_DATABASE_URL,
     dialect: 'postgres',
     logging: false
   },
