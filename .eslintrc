@@ -21,6 +21,7 @@
     "linebreak-style": 0,
     "import/no-dynamic-require": "off",
     "arrow-body-style": "off",
-    "consistent-return": 0
+    "consistent-return": 0,
+    "no-restricted-globals": 0
   }
 }
