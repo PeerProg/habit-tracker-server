@@ -14,7 +14,8 @@ module.exports = {
   travis: {
     url: process.env.TRAVIS_DATABASE_URL,
     dialect: 'postgres',
-    logging: false
+    logging: false,
+    operatorsAliases: false
   },
   production: {
     url: process.env.PROD_DATABASE_URL,
