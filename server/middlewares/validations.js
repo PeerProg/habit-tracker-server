@@ -5,8 +5,6 @@ export default {
     const schema = {
       email: Joi.string().email(),
       username: Joi.string(),
-      firstName: Joi.string(),
-      lastName: Joi.string(),
       password: Joi.string().regex(new RegExp('^[a-zA-Z0-9]{8,32}$'))
     };
 
@@ -17,6 +15,11 @@ export default {
         case 'email':
           res.status(400).json({
             error: 'You must provide a valid email address'
+          });
+          break;
+        case 'username':
+          res.status(400).json({
+            error: 'You must provide a valid username'
           });
           break;
         case 'password':
@@ -30,7 +33,7 @@ export default {
           });
           break;
         default:
-          res.status(500).json({ error: 'Invalid registration information' });
+          res.json({ error: 'Invalid registration information' });
       }
     } else {
       next();

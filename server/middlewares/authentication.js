@@ -10,10 +10,10 @@ export default {
     }
     jwt.verify(token, secretOrPrivateKey, (error, decoded) => {
       if (error) {
-        return res.status(500).json({ message: 'An error occured' });
+        return res.status(401).json({ message: error.message });
       }
       req.decoded = decoded;
       next();
     });
   }
-}
+};
