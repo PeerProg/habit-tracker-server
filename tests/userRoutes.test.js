@@ -177,6 +177,17 @@ describe('THE USER TEST SUITE', () => {
       done();
     });
 
+    it('should get the details of all users when valid token is supplied', (done) => {
+      server.get('/user/allusers')
+        .set({ Authorization: createdToken })
+        .end((err, res) => {
+          if (err) return err;
+          expect(res.status).toEqual(200);
+          expect(Array.isArray(res.body.users)).toBe(true);
+        });
+      done();
+    });
+
     it('should successfully update user details with valid token supplied', (done) => {
       const fieldToUpdate = {
         username: 'updatedUser'
