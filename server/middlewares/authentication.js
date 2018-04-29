@@ -10,7 +10,7 @@ export default {
     }
     jwt.verify(token, secretOrPrivateKey, (error, decoded) => {
       if (error) {
-        return res.status(401).json({ message: error.message });
+        return res.status(401).json({ message: 'Invalid token' });
       }
       req.decoded = decoded;
       next();

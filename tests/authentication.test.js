@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../app';
 import models from '../server/models';
 
-const server = request(app);
+const server = request.agent(app);
 
 describe('Authentication Test Suite', () => {
   let createdToken;

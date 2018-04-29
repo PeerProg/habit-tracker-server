@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../app';
 import models from '../server/models';
 
-const server = request(app);
+const server = request.agent(app);
 
 describe('THE USER TEST SUITE', () => {
   let createdToken;
@@ -228,13 +228,23 @@ describe('THE USER TEST SUITE', () => {
     it('should fail to delete user when token is invalid', (done) => {
       server.delete('/user/1')
         .set({ Authorization: 'invalid' })
-        .expect(401, done);
+        .end((err, res) => {
+          if (err) return err;
+          expect(res.status).toEqual(401);
+          expect(res.body.message).toEqual('Invalid token');
+          done();
+        });
     });
 
     it('should fail to delete user when id is invalid', (done) => {
       server.delete('/user/546')
         .set({ Authorization: createdToken })
-        .expect(404, done);
+        .end((err, res) => {
+          if (err) return err;
+          expect(res.status).toEqual(404);
+          expect(res.body.message).toEqual('No user with the given ID');
+          done();
+        });
     });
 
     it('should fail to delete for non-integer param', (done) => {
