@@ -42,7 +42,7 @@ describe('Authentication Test Suite', () => {
       });
   });
 
-  it('should return all users when valid token is supplied', (done) => {
+  it('should authenticate a user when valid token is supplied', (done) => {
     server.get('/user/allusers')
       .set({ Authorization: createdToken })
       .end((err, res) => {

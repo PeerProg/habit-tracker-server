@@ -5,9 +5,12 @@
   "repository": "git@github.com:PeerProg/habit-tracker-server.git",
   "author": "oreoluwade <oreoluwade@gmail.com>",
   "license": "MIT",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "scripts": {
     "dev": "babel-watch --watch server server.js",
-    "test": "jest -u --coverage",
+    "test": "jest -u --coverage --forceExit",
     "lint": "eslint ./ || true",
     "migratedb": "sequelize db:migrate",
     "undo:migration": "sequelize db:migrate:undo:all"
