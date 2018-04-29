@@ -4,7 +4,6 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { userRouter, homeRouter } from './server/routes';
 
-
 dotenv.config();
 
 const app = express();

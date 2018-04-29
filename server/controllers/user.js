@@ -35,7 +35,7 @@ export default {
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: 'An error occured' });
+      return res.json({ error: err.message });
     }
   },
 
@@ -53,8 +53,6 @@ export default {
         user: {
           username: user.username,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
         },
       });
     } catch (err) {
@@ -68,8 +66,6 @@ export default {
         .map((user) => {
           return {
             username: user.username,
-            firstName: user.firstName,
-            lastName: user.lastName,
             email: user.email
           };
         });
@@ -83,7 +79,7 @@ export default {
         message: 'No users created yet',
       });
     } catch (err) {
-      return res.status(500).json({ error: 'An error occured' });
+      return res.status(500).json({ error: err.message });
     }
   },
 
@@ -104,15 +100,13 @@ export default {
         updatedUser: {
           username: updatedUser.username,
           email: updatedUser.email,
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
         },
       });
     } catch (err) {
       if (err instanceof Sequelize.ValidationError) {
         return res.status(409).json({ error: 'User already exists' });
       }
-      return res.status(500).json({ error: 'An error occured' });
+      return res.status(500).json({ error: err.message });
     }
   },
 
@@ -161,11 +155,7 @@ export default {
         },
       });
     } catch (err) {
-      return res.status(500).json({ error: 'An error occured' });
+      return res.status(500).json({ error: err.message });
     }
-  },
-
-  logout(req, res) {
-    return res.status(200).json({ message: 'Logged out successfully!' });
   },
 };
