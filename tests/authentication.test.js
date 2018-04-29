@@ -31,7 +31,7 @@ describe('Authentication Test Suite', () => {
         expect(res.status).toEqual(401);
         done();
       });
-  });
+  }, 10000);
 
   it('should not authenticate a user with an invalid token', (done) => {
     server.get('/user/allusers')
@@ -40,7 +40,7 @@ describe('Authentication Test Suite', () => {
         expect(res.status).toEqual(401);
         done();
       });
-  });
+  }, 10000);
 
   it('should authenticate a user when valid token is supplied', (done) => {
     server.get('/user/allusers')
@@ -51,5 +51,5 @@ describe('Authentication Test Suite', () => {
         expect(res.body.totalNumberOfUsers).toEqual(1);
         done();
       });
-  });
+  }, 10000);
 });
