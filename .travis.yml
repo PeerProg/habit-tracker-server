@@ -1,5 +1,9 @@
 language: node_js
-node_js: '9'
+node_js:
+  - '9'
+
+yarn:
+  - '1.6.0'
 
 services:
   - postgresql
