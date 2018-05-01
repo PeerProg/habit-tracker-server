@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) => {
+const HabitsModel = (sequelize, DataTypes) => {
   const Habits = sequelize.define('Habits', {
     title: DataTypes.STRING,
     complete: {
@@ -12,7 +12,7 @@ export default (sequelize, DataTypes) => {
 
   // Class methods
   Habits.associate = (models) => {
-    Habits.belongsTo(models.User, {
+    Habits.belongsTo(models.Users, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
     });
@@ -20,3 +20,5 @@ export default (sequelize, DataTypes) => {
 
   return Habits;
 };
+
+export default HabitsModel;

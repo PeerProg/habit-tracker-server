@@ -1,12 +1,3 @@
-import express from 'express';
+export { default as homeRouter } from './home';
+export { default as userRouter } from './user';
 
-const router = express.Router();
-
-router.route('/')
-  .get((req, res) => {
-    res.status(200).json({
-      message: 'Welcome to the habit tracker application'
-    });
-  });
-
-export default router;

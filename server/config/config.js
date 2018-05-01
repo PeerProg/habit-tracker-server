@@ -11,6 +11,12 @@ module.exports = {
     dialect: 'postgres',
     operatorsAliases: false
   },
+  travis: {
+    url: process.env.TRAVIS_DATABASE_URL,
+    dialect: 'postgres',
+    logging: false,
+    operatorsAliases: false
+  },
   production: {
     url: process.env.PROD_DATABASE_URL,
     dialect: 'postgres',

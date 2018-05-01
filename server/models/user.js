@@ -1,5 +1,7 @@
-export default (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+import bcrypt from 'bcrypt';
+
+const UserModel = (sequelize, DataTypes) => {
+  const User = sequelize.define('Users', {
     email: {
       type: DataTypes.STRING,
       unique: true,
@@ -14,6 +16,12 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+  }, {
+    hooks: {
+      beforeCreate(user) {
+        user.hashPassword();
+      },
+    },
   });
 
   // Class methods
@@ -24,5 +32,17 @@ export default (sequelize, DataTypes) => {
     });
   };
 
+  // Instance methods
+  User.prototype.hashPassword = function hashPassword() {
+    this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(9));
+    return this.password;
+  };
+
+  User.prototype.validPassword = function validPassword(password) {
+    return bcrypt.compareSync(password, this.password);
+  };
+
   return User;
 };
+
+export default UserModel;

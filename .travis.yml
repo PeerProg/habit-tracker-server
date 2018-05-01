@@ -1,5 +1,16 @@
 language: node_js
-node_js: 'stable'
+
+node_js:
+  - '9'
+
+cache: yarn
+
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database hbtest;' -U postgres
+  - npm run migratedb
 
 after_success:
   - coveralls < coverage/lcov.info

@@ -7,10 +7,11 @@ describe('Index route', () => {
   it('should return a message upon hitting the home endpoint', (done) => {
     server.get('/')
       .expect(200)
-      .end((error, response) => {
-        const { message } = response.body;
-        expect(message).toEqual('Welcome to the habit tracker application');
+      .expect(/Welcome to the habit tracker application/)
+      .end((err, res) => {
+        if (err) return err;
+        expect(res.status).toEqual(200);
+        done();
       });
-    done();
   });
 });

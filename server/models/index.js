@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
+/* eslint-disable */
 import path from 'path';
 import Sequelize from 'sequelize';
 import dbConfig from '../config';
@@ -16,11 +17,10 @@ const sequelize = new Sequelize(config.url, config);
 fs
   .readdirSync(__dirname)
   .filter((file) => {
-    return (file.indexOf('.') !== 0) && (file !== basename);
+    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach((file) => {
-    if (file.slice(-3) !== '.js') return;
-    const model = sequelize.import(path.join(__dirname, file));
+    const model = sequelize['import'](path.join(__dirname, file));
     db[model.name] = model;
   });
 
