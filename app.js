@@ -14,7 +14,7 @@ app.use(morgan('dev'));
 app.use(cors());
 
 // Mount the routers on the app object
-app.use('/', homeRouter);
+app.use('/home', homeRouter);
 app.use('/user', userRouter);
 
 export default app;
