@@ -29,7 +29,9 @@ export default {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
     };
     const responseObject = { ...normalizedUser, token };
     return res.status(201).send(responseObject);
@@ -41,7 +43,8 @@ export default {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isActive: user.isActive
     };
     return res.send(normalizedUser);
   },
@@ -51,7 +54,8 @@ export default {
       .map((user) => {
         return {
           username: user.username,
-          email: user.email
+          email: user.email,
+          isActive: user.isActive
         };
       });
     return res.send(users);
@@ -65,6 +69,7 @@ export default {
       email: updatedUser.email,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
+      isActive: updatedUser.isActive
     };
     const message = 'Update successful';
 
@@ -74,7 +79,7 @@ export default {
 
   async deleteUser(req, res) {
     const user = await Users.findByPk(req.params.id);
-    if (user.id !== 1) {
+    if (user.isSuperAdmin || user.isAdmin) {
       await Users.destroy({ where: { id: req.params.id } });
       return res.status(200).json({ message: 'User Removed' });
     }
@@ -102,7 +107,9 @@ export default {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
     };
 
     const message = 'Login Successful! Token expires in one week.';
