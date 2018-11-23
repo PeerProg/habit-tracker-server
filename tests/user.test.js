@@ -14,13 +14,18 @@ const noUsernameObject = resourceCreator.withNoUsername();
 const noEmailObject = resourceCreator.withNoEmail();
 const emptyFieldsObject = resourceCreator.emptyFieldsUser();
 
+const signupRoute = '/api/v1/user/register';
+const loginRoute = '/api/v1/user/login';
+const singleRequestRoute = '/api/v1/user';
+const allUsersRoute = '/api/v1/user/all';
+
 describe('THE USER TEST SUITE', () => {
   let createdToken;
   let regularToken;
   beforeAll((done) => {
     models.sequelize.sync({ force: true })
       .then(() => {
-        request.post('/user/register')
+        request.post(signupRoute)
           .send(firstUser)
           .then(response => {
             createdToken = response.body.token;
@@ -29,9 +34,9 @@ describe('THE USER TEST SUITE', () => {
       });
   });
 
-  describe('CREATE USER: /user/register ', () => {
+  describe(`CREATE USER: ${signupRoute}`, () => {
     it('Should create a user when valid payload is provided', (done) => {
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(secondUser)
         .then(response => {
           expect(response.status).toEqual(201);
@@ -42,7 +47,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should fail creation when username supplied already exists', (done) => {
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(secondUser)
         .then(response => {
           expect(response.status).toEqual(409);
@@ -54,7 +59,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should fail creation when email supplied already exists', (done) => {
       secondUser.username = 'JohnDoe';
 
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(secondUser)
         .then(response => {
           expect(response.status).toEqual(409);
@@ -64,7 +69,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should fail creation when email address in payload is invalid', (done) => {
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(invalidEmailUser)
         .then(response => {
           expect(response.status).toEqual(400);
@@ -75,7 +80,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not allow a user be created with empty fields', (done) => {
       request
-        .post('/user/register')
+        .post(signupRoute)
         .send(emptyFieldsObject)
         .then(response => {
           expect(response.status).toEqual(403);
@@ -89,7 +94,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should fail creation when password fails to match rules', (done) => {
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(invalidPasswordUser)
         .then(response => {
           expect(response.status).toEqual(400);
@@ -99,7 +104,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('should fail creation when no username is supplied', (done) => {
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(noUsernameObject)
         .then(response => {
           expect(response.status).toEqual(403);
@@ -110,7 +115,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('should fail creation when no email is supplied', (done) => {
-      request.post('/user/register')
+      request.post(signupRoute)
         .send(noEmailObject)
         .then(response => {
           expect(response.status).toEqual(403);
@@ -121,13 +126,13 @@ describe('THE USER TEST SUITE', () => {
     });
   });
 
-  describe('LOGIN: /user/login', () => {
+  describe(`LOGIN: ${loginRoute}`, () => {
     it('Should fail login for nonexistent user', (done) => {
       const nonExistentUser = {
         identifier: 'JasonBourne',
         password: 'bourne5upremacy'
       };
-      request.post('/user/login')
+      request.post(loginRoute)
         .send(nonExistentUser)
         .then(response => {
           expect(response.status).toEqual(403);
@@ -143,7 +148,7 @@ describe('THE USER TEST SUITE', () => {
       };
 
       request
-        .post('/user/login')
+        .post(loginRoute)
         .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(403);
@@ -158,7 +163,7 @@ describe('THE USER TEST SUITE', () => {
         password: firstUser.password
       };
 
-      request.post('/user/login')
+      request.post(loginRoute)
         .send(requestObject)
         .then(response => {
           expect(response.status).toBe(200);
@@ -168,10 +173,10 @@ describe('THE USER TEST SUITE', () => {
     });
   });
 
-  describe('GET USER: /user/:id', () => {
+  describe(`GET USER: ${singleRequestRoute}/:id`, () => {
     it('Should get the details of a user when valid token is supplied', (done) => {
       request
-        .get('/user/1')
+        .get(`${singleRequestRoute}/1`)
         .set({ Authorization: createdToken })
         .then((response) => {
           expect(response.status).toEqual(200);
@@ -182,7 +187,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not get a user that does not exist', (done) => {
       request
-        .get('/user/546')
+        .get(`${singleRequestRoute}/546`)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(404);
@@ -193,7 +198,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not get a user when param is invalid', (done) => {
       request
-        .get('/user/getuser')
+        .get(`${singleRequestRoute}/getTheUser`)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(400);
@@ -203,9 +208,9 @@ describe('THE USER TEST SUITE', () => {
     });
   });
 
-  describe('GET ALL USERS: /user/all', () => {
+  describe(`GET ALL USERS: ${allUsersRoute}`, () => {
     it('Should get the details of all users when valid token is supplied', (done) => {
-      request.get('/user/all')
+      request.get(allUsersRoute)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(200);
@@ -216,11 +221,11 @@ describe('THE USER TEST SUITE', () => {
     });
   });
 
-  describe('UPDATE USER: /user/:id', () => {
+  describe(`UPDATE USER: ${singleRequestRoute}/:id`, () => {
     it('Should fail to update a user when invalid token is provided', (done) => {
       const requestObject = { email: 'solomon.monday@yahoo.com' };
 
-      request.put('/user/1')
+      request.put(`${singleRequestRoute}/1`)
         .set({ Authorization: 'invalid token' })
         .send(requestObject)
         .then(response => {
@@ -234,7 +239,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should fail update when no token is provided', (done) => {
       const requestObject = { email: 'david.paul@skynet.org' };
 
-      request.put('/user/1')
+      request.put(`${singleRequestRoute}/1`)
         .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(401);
@@ -247,7 +252,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should fail user update for invalid user param', (done) => {
       const requestObject = { email: 'martha.smith@gmail.org' };
 
-      request.put('/user/poly')
+      request.put(`${singleRequestRoute}/poly`)
         .set({ Authorization: createdToken })
         .send(requestObject)
         .then(response => {
@@ -260,7 +265,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should not allow update of another user\'s details', (done) => {
       const requestObject = { email: 'adenike_lily@gmail.com' };
 
-      request.put('/user/2')
+      request.put(`${singleRequestRoute}/2`)
         .set({ Authorization: createdToken })
         .send(requestObject)
         .then(response => {
@@ -272,7 +277,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not allow update of a nonexistent user', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
-      request.put('/user/187')
+      request.put(`${singleRequestRoute}/187`)
         .set({ Authorization: createdToken })
         .send(requestObject)
         .then(response => {
@@ -284,7 +289,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should successfully update user details when valid token is supplied', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
-      request.put('/user/1')
+      request.put(`${singleRequestRoute}/1`)
         .set({ Authorization: createdToken })
         .send(requestObject)
         .then(response => {
@@ -296,10 +301,10 @@ describe('THE USER TEST SUITE', () => {
     });
   });
 
-  describe('DELETE USER: /user/:id', () => {
+  describe(`DELETE USER: ${singleRequestRoute}/:id`, () => {
     it('Should fail to delete user when token is invalid', (done) => {
       request
-        .delete('/user/1')
+        .delete(`${singleRequestRoute}/1`)
         .set({ Authorization: 'invalid' })
         .then(response => {
           expect(response.status).toEqual(401);
@@ -309,7 +314,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should fail to delete a user that does not exist', (done) => {
-      request.delete('/user/546')
+      request.delete(`${singleRequestRoute}/546`)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(404);
@@ -319,7 +324,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should fail to delete for non-integer param', (done) => {
-      request.delete('/user/nonint')
+      request.delete(`${singleRequestRoute}/nonint`)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(400);
@@ -330,7 +335,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not allow the admin be deleted', (done) => {
       request
-        .delete('/user/1')
+        .delete(`${singleRequestRoute}/1`)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(403);
@@ -341,12 +346,12 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not authorize a delete action for a non-admin user', (done) => {
       request
-        .post('/user/register')
+        .post(signupRoute)
         .send(thirdUser)
         .then(result => {
           regularToken = result.body.token;
           request
-            .delete('/user/2')
+            .delete(`${singleRequestRoute}/2`)
             .set({ Authorization: regularToken })
             .then(response => {
               expect(response.status).toEqual(403);
@@ -358,7 +363,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should successfully delete for valid ID and admin token', (done) => {
       request
-        .delete('/user/2')
+        .delete(`${singleRequestRoute}/2`)
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(200);
