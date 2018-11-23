@@ -1,8 +1,21 @@
 import express from 'express';
 import userController from '../controllers';
-import authenticate, { validations } from '../middlewares';
+import authenticate, { validations, authorization } from '../middlewares';
 
 const router = express.Router();
+
+const { authenticateUser } = authenticate;
+const { authorizeAdmin, authorizeAccountOwner } = authorization;
+
+const {
+  checkRequiredUserFields,
+  checkEmptyUserFields,
+  checkIfUserExists,
+  checkIfIdentifierIsInUse,
+  validatePassword,
+  ensureParamIsInteger,
+  validateEmail,
+} = validations;
 
 const {
   getAllUsers,
@@ -13,22 +26,12 @@ const {
   login
 } = userController;
 
-const { verifyUser } = authenticate;
-
-const {
-  checkRequiredUserFields,
-  checkEmptyUserFields,
-  checkIfUserExists,
-  validatePassword,
-  validateEmail,
-} = validations;
-
 router.route('/register')
   .post(
     checkRequiredUserFields,
     checkEmptyUserFields,
     validateEmail,
-    checkIfUserExists,
+    checkIfIdentifierIsInUse,
     validatePassword,
     createUser
   );
@@ -37,12 +40,12 @@ router.route('/login')
   .post(login);
 
 router.route('/all')
-  .get(verifyUser, getAllUsers);
+  .get(authenticateUser, getAllUsers);
 
 router.route('/:id')
-  .all(verifyUser)
+  .all(authenticateUser, ensureParamIsInteger, checkIfUserExists)
   .get(getOneUser)
-  .put(checkIfUserExists, updateUserDetails)
-  .delete(deleteUser);
+  .put(authorizeAccountOwner, checkIfIdentifierIsInUse, updateUserDetails)
+  .delete(authorizeAdmin, deleteUser);
 
 export default router;

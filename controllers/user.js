@@ -19,27 +19,24 @@ export default {
     const user = await Users.create({ username, email, password });
     const token = jwtSignUser({ username: user.username, id: user.id });
     const normalizedUser = {
-      id: user.id,
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     };
     const responseObject = { ...normalizedUser, token };
-
     return res.status(201).send(responseObject);
   },
 
   async getOneUser(req, res) {
-    const id = parseInt(req.params.id, 10);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: 'ID should be a number' });
-    }
     const user = await Users.findByPk(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: `No user with id ${req.params.id}` });
-    }
-    return res.send({ username: user.username, email: user.email });
+    const normalizedUser = {
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
+    return res.send(normalizedUser);
   },
 
   async getAllUsers(req, res) {
@@ -54,50 +51,27 @@ export default {
   },
 
   async updateUserDetails(req, res) {
-    const id = parseInt(req.params.id, 10);
-
-    if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid param. ID should be a number' });
-    }
     const user = await Users.findByPk(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: `No user with id ${req.params.id}` });
-    }
-    if (id === req.decoded.id) {
-      const updatedUser = await user.update(req.body);
-      const normalizedUser = {
-        username: updatedUser.username,
-        email: updatedUser.email,
-        createdAt: updatedUser.createdAt,
-        updatedAt: updatedUser.updatedAt,
-      };
-      const message = 'Update successful';
+    const updatedUser = await user.update(req.body);
+    const normalizedUser = {
+      username: updatedUser.username,
+      email: updatedUser.email,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    };
+    const message = 'Update successful';
 
-      const responseObject = { ...normalizedUser, message };
-      return res.send(responseObject);
-    }
-    return res.status(401).send({ message: 'You cannot update another user\'s details' });
+    const responseObject = { ...normalizedUser, message };
+    return res.send(responseObject);
   },
 
   async deleteUser(req, res) {
-    const id = parseInt(req.params.id, 10);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid param. ID should be a number' });
-    }
     const user = await Users.findByPk(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: `No user with id ${req.params.id}` });
+    if (user.id !== 1) {
+      await Users.destroy({ where: { id: req.params.id } });
+      return res.status(200).json({ message: 'User Removed' });
     }
-    if (req.decoded.id === 1) {
-      if (user.id !== 1) {
-        const deletedUser = await Users.destroy({ where: { id } });
-        if (deletedUser === 1) {
-          return res.status(200).json({ message: 'User Removed' });
-        }
-      }
-      return res.status(403).json({ message: 'Admin cannot be deleted' });
-    }
-    return res.status(403).json({ message: 'Unauthorized' });
+    return res.status(403).json({ message: 'Admin cannot be deleted' });
   },
 
   async login(req, res) {
@@ -118,9 +92,10 @@ export default {
     }
 
     const normalizedUser = {
-      id: user.id,
       username: user.username,
       email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     };
 
     const message = 'Login Successful! Token expires in one week.';
