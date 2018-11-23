@@ -17,7 +17,14 @@ export default {
   async createUser(req, res) {
     const { username, email, password } = req.body;
     const user = await Users.create({ username, email, password });
-    const token = jwtSignUser({ username: user.username, id: user.id });
+    const token = jwtSignUser({
+      username: user.username,
+      id: user.id,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
+    });
+
     const normalizedUser = {
       username: user.username,
       email: user.email,
@@ -99,7 +106,13 @@ export default {
     };
 
     const message = 'Login Successful! Token expires in one week.';
-    const token = jwtSignUser({ username: user.username, id: user.id });
+    const token = jwtSignUser({
+      username: user.username,
+      id: user.id,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
+    });
 
     const responseObject = { ...normalizedUser, token, message };
     return res.send(responseObject);
