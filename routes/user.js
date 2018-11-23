@@ -5,8 +5,8 @@ import authenticate, { validations } from '../middlewares';
 const router = express.Router();
 
 const {
-  fetchAllUsers,
-  fetchUser,
+  getAllUsers,
+  getOneUser,
   updateUserDetails,
   deleteUser,
   createUser,
@@ -15,19 +15,34 @@ const {
 
 const { verifyUser } = authenticate;
 
+const {
+  checkRequiredUserFields,
+  checkEmptyUserFields,
+  checkIfUserExists,
+  validatePassword,
+  validateEmail,
+} = validations;
+
 router.route('/register')
-  .post(validations.register, createUser);
+  .post(
+    checkRequiredUserFields,
+    checkEmptyUserFields,
+    validateEmail,
+    checkIfUserExists,
+    validatePassword,
+    createUser
+  );
 
 router.route('/login')
   .post(login);
 
 router.route('/all')
-  .get(verifyUser, fetchAllUsers);
+  .get(verifyUser, getAllUsers);
 
 router.route('/:id')
   .all(verifyUser)
-  .get(fetchUser)
-  .put(updateUserDetails)
+  .get(getOneUser)
+  .put(checkIfUserExists, updateUserDetails)
   .delete(deleteUser);
 
 export default router;
