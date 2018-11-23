@@ -166,7 +166,7 @@ describe('THE USER TEST SUITE', () => {
           done();
         });
     });
-  })
+  });
 
   describe('GET USER: /user/:id', () => {
     it('Should get the details of a user when valid token is supplied', (done) => {
@@ -190,6 +190,17 @@ describe('THE USER TEST SUITE', () => {
           done();
         });
     });
+
+    it('Should not get a user when param is invalid', (done) => {
+      request
+        .get('/user/getuser')
+        .set({ Authorization: createdToken })
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body).toHaveProperty('error', 'ID should be a number');
+          done();
+        });
+    });
   });
 
   describe('GET ALL USERS: /user/all', () => {
@@ -206,19 +217,6 @@ describe('THE USER TEST SUITE', () => {
   });
 
   describe('UPDATE USER: /user/:id', () => {
-    it('should successfully update user details when valid token is supplied', (done) => {
-      const requestObject = { email: 'solomon.grundy@gmail.com' };
-      request.put('/user/1')
-        .set({ Authorization: createdToken })
-        .send(requestObject)
-        .then(response => {
-          expect(response.status).toEqual(200);
-          expect(response.body.email).toEqual(requestObject.email);
-          expect(response.body).toHaveProperty('message', 'Update successful');
-          done();
-        });
-    });
-
     it('Should fail to update a user when invalid token is provided', (done) => {
       const requestObject = { email: 'solomon.monday@yahoo.com' };
 
@@ -255,6 +253,44 @@ describe('THE USER TEST SUITE', () => {
         .then(response => {
           expect(response.body.error).toEqual('Invalid param. ID should be a number');
           expect(response.status).toEqual(400);
+          done();
+        });
+    });
+
+    it('Should not allow update of another user\'s details', (done) => {
+      const requestObject = { email: 'adenike_lily@gmail.com' };
+
+      request.put('/user/2')
+        .set({ Authorization: createdToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(401);
+          expect(response.body.message).toMatch('You cannot update');
+          done();
+        });
+    });
+
+    it('Should not allow update of a nonexistent user', (done) => {
+      const requestObject = { email: 'solomon.grundy@gmail.com' };
+      request.put('/user/187')
+        .set({ Authorization: createdToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(404);
+          expect(response.body).toHaveProperty('message', 'No user with id 187');
+          done();
+        });
+    });
+
+    it('Should successfully update user details when valid token is supplied', (done) => {
+      const requestObject = { email: 'solomon.grundy@gmail.com' };
+      request.put('/user/1')
+        .set({ Authorization: createdToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body.email).toEqual(requestObject.email);
+          expect(response.body).toHaveProperty('message', 'Update successful');
           done();
         });
     });
