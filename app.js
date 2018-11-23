@@ -13,8 +13,10 @@ app.use(express.urlencoded({ extended: 'false' }));
 app.use(morgan('dev'));
 app.use(cors());
 
+const baseRoute = '/api/v1';
+
 // Mount the routers on the app object
-app.use('/', homeRouter);
-app.use('/user', userRouter);
+app.use(`${baseRoute}/`, homeRouter);
+app.use(`${baseRoute}/user`, userRouter);
 
 export default app;
