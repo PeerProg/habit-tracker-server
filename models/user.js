@@ -18,15 +18,18 @@ const UserModel = (sequelize, DataTypes) => {
     },
     isActive: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true
+      defaultValue: true,
+      allowNull: false,
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
+      allowNull: false,
     },
     isSuperAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+      allowNull: false,
     }
   }, {
     hooks: {
