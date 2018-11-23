@@ -42,7 +42,7 @@ export default {
       }
       const user = await Users.findByPk(req.params.id);
       if (!user) {
-        return res.status(404).json({ message: 'No user with the given ID' });
+        return res.status(404).json({ message: `No user with id ${req.params.id}` });
       }
       return res.send({ username: user.username, email: user.email });
     } catch (err) {

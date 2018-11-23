@@ -12,8 +12,9 @@ const invalidEmailUser = resourceCreator.userWithInvalidEmail();
 const invalidPasswordUser = resourceCreator.userWithInvalidPassword();
 const noUsernameObject = resourceCreator.withNoUsername();
 const noEmailObject = resourceCreator.withNoEmail();
+const emptyFieldsObject = resourceCreator.emptyFieldsUser();
 
-describe.only('THE USER TEST SUITE', () => {
+describe('THE USER TEST SUITE', () => {
   let createdToken;
   let regularToken;
   beforeAll((done) => {
@@ -28,7 +29,7 @@ describe.only('THE USER TEST SUITE', () => {
       });
   });
 
-  describe('Creation of a user: /user/register ', () => {
+  describe('CREATE USER: /user/register ', () => {
     it('Should create a user when valid payload is provided', (done) => {
       request.post('/user/register')
         .send(secondUser)
@@ -72,6 +73,21 @@ describe.only('THE USER TEST SUITE', () => {
         });
     });
 
+    it('Should not allow a user be created with empty fields', (done) => {
+      request
+        .post('/user/register')
+        .send(emptyFieldsObject)
+        .then(response => {
+          expect(response.status).toEqual(403);
+          expect(response.body).toHaveProperty('error');
+          expect(Array.isArray(response.body.error)).toBeTruthy();
+          expect(response.body.error.length).toBe(2);
+          expect(response.body.error[0]).toEqual('username cannot be empty');
+          expect(response.body.error[1]).toEqual('email cannot be empty');
+          done();
+        });
+    });
+
     it('Should fail creation when password fails to match rules', (done) => {
       request.post('/user/register')
         .send(invalidPasswordUser)
@@ -103,7 +119,9 @@ describe.only('THE USER TEST SUITE', () => {
           done();
         });
     });
+  });
 
+  describe('LOGIN: /user/login', () => {
     it('Should fail login for nonexistent user', (done) => {
       const nonExistentUser = {
         identifier: 'JasonBourne',
@@ -148,7 +166,9 @@ describe.only('THE USER TEST SUITE', () => {
           done();
         });
     });
+  })
 
+  describe('GET USER: /user/:id', () => {
     it('Should get the details of a user when valid token is supplied', (done) => {
       request
         .get('/user/1')
@@ -160,6 +180,19 @@ describe.only('THE USER TEST SUITE', () => {
         });
     });
 
+    it('Should not get a user that does not exist', (done) => {
+      request
+        .get('/user/546')
+        .set({ Authorization: createdToken })
+        .then(response => {
+          expect(response.status).toEqual(404);
+          expect(response.body.message).toEqual('No user with id 546');
+          done();
+        });
+    });
+  });
+
+  describe('GET ALL USERS: /user/all', () => {
     it('Should get the details of all users when valid token is supplied', (done) => {
       request.get('/user/all')
         .set({ Authorization: createdToken })
@@ -170,7 +203,9 @@ describe.only('THE USER TEST SUITE', () => {
           done();
         });
     });
+  });
 
+  describe('UPDATE USER: /user/:id', () => {
     it('should successfully update user details when valid token is supplied', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
       request.put('/user/1')
@@ -223,7 +258,9 @@ describe.only('THE USER TEST SUITE', () => {
           done();
         });
     });
+  });
 
+  describe('DELETE USER: /user/:id', () => {
     it('Should fail to delete user when token is invalid', (done) => {
       request
         .delete('/user/1')

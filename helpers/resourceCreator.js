@@ -37,5 +37,13 @@ export default {
       username: faker.name.firstName(),
       password: 'No3ma1lprov1ded'
     };
+  },
+
+  emptyFieldsUser() {
+    return {
+      username: '',
+      email: '',
+      password: 'amalfitano'
+    };
   }
 };

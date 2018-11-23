@@ -1,16 +1,15 @@
-import request from 'supertest';
+import supertest from 'supertest';
 import app from '../app';
 
-const server = request.agent(app);
+const request = supertest.agent(app);
 
-describe('Index route', () => {
-  it('should return a message upon hitting the home endpoint', (done) => {
-    server.get('/')
+describe('THE HOME ROUTE', () => {
+  it('Should successfully access the home endpoint', (done) => {
+    request.get('/')
       .expect(200)
-      .expect(/Welcome to the habit tracker application/)
-      .end((err, res) => {
-        if (err) return err;
-        expect(res.status).toEqual(200);
+      .then(response => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveProperty('message', 'Welcome to the habit tracker application');
         done();
       });
   });
