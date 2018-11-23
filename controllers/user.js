@@ -1,4 +1,4 @@
-import Sequelize, { Op } from 'sequelize';
+import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
 import models from '../models';
 
