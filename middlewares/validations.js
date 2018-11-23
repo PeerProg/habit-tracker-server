@@ -38,7 +38,7 @@ export default {
     return next();
   },
 
-  async checkIfUserExists(req, res, next) {
+  async checkIfIdentifierIsInUse(req, res, next) {
     const { username, email } = req.body;
     const usernameExists = await Users.findOne({ where: { username } });
     const emailExists = await Users.findOne({ where: { email } });
@@ -79,4 +79,19 @@ export default {
 
     return next();
   },
+
+  async checkIfUserExists(req, res, next) {
+    const user = await Users.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: `No user with id ${req.params.id}` });
+    }
+    next();
+  },
+
+  ensureParamIsInteger(req, res, next) {
+    if (isNaN(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid param. ID should be a number' });
+    }
+    next();
+  }
 };
