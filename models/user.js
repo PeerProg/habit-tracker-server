@@ -16,6 +16,18 @@ const UserModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isSuperAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    }
   }, {
     hooks: {
       beforeCreate(user) {
