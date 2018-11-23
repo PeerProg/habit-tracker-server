@@ -10,10 +10,11 @@
   },
   "scripts": {
     "dev": "babel-watch --watch server server.js",
+    "test:dev": "NODE_ENV=test && jest -u --coverage || true",
     "test": "jest -u --coverage --forceExit",
     "lint": "eslint ./ || true",
-    "migratedb": "sequelize db:migrate",
-    "undo:migration": "sequelize db:migrate:undo:all"
+    "migratedb": "node_modules/.bin/sequelize db:migrate",
+    "undo:migration": "node_modules/.bin/sequelize db:migrate:undo:all"
   },
   "dependencies": {
     "babel-core": "^6.26.0",
