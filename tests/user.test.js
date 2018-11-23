@@ -197,7 +197,7 @@ describe('THE USER TEST SUITE', () => {
         .set({ Authorization: createdToken })
         .then(response => {
           expect(response.status).toEqual(400);
-          expect(response.body).toHaveProperty('error', 'ID should be a number');
+          expect(response.body).toHaveProperty('error', 'Invalid param. ID should be a number');
           done();
         });
     });
@@ -265,7 +265,7 @@ describe('THE USER TEST SUITE', () => {
         .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(401);
-          expect(response.body.message).toMatch('You cannot update');
+          expect(response.body.message).toMatch('Operation not permitted another user');
           done();
         });
     });
