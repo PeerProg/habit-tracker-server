@@ -17,50 +17,40 @@ export default {
   async createUser(req, res) {
     const { username, email, password } = req.body;
     try {
-      const usernameExists = await Users.findOne({ where: { username } });
-      const emailExists = await Users.findOne({ where: { email } });
-      if (usernameExists) {
-        return res.status(409).json({ conflict: 'Username already in use' });
-      } else if (emailExists) {
-        return res.status(409).json({ conflict: 'Email already in use' });
-      }
       const user = await Users.create({ username, email, password });
-      return res.status(201).json({
-        message: 'User creation Successful!',
-        token: jwtSignUser({ username: user.username }),
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        },
-      });
+      const token = jwtSignUser({ username: user.username, id: user.id });
+      const normalizedUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      };
+      const responseObject = { ...normalizedUser, token };
+
+      return res.status(201).send(responseObject);
     } catch (err) {
       return res.json({ error: err.message });
     }
   },
 
-  async fetchUser(req, res) {
+  async getOneUser(req, res) {
     try {
       const id = parseInt(req.params.id, 10);
       if (isNaN(id)) {
         return res.status(400).json({ error: 'ID should be a number' });
       }
-      const user = await Users.findById(req.params.id);
+      const user = await Users.findByPk(req.params.id);
       if (!user) {
         return res.status(404).json({ message: 'No user with the given ID' });
       }
-      return res.status(200).json({
-        user: {
-          username: user.username,
-          email: user.email,
-        },
-      });
+      return res.send({ username: user.username, email: user.email });
     } catch (err) {
       return res.status(500).json({ error: 'An error occured' });
     }
   },
 
-  async fetchAllUsers(req, res) {
+  async getAllUsers(req, res) {
     try {
       const users = await Users.findAll()
         .map((user) => {
@@ -69,15 +59,10 @@ export default {
             email: user.email
           };
         });
-      if (users[0]) {
-        return res.json({
-          totalNumberOfUsers: users.length,
-          users
-        });
+      if (users.length) {
+        return res.send(users);
       }
-      return res.status(404).json({
-        message: 'No users created yet',
-      });
+      return res.status(404).json({ message: 'No users created yet' });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -86,26 +71,29 @@ export default {
   async updateUserDetails(req, res) {
     try {
       const id = parseInt(req.params.id, 10);
-      if (isNaN(id)) {
-        return res.status(400).json({ error: 'ID should be a number' });
-      }
-      const user = await Users.findById(req.params.id);
-      if (!user) {
-        return res.status(404).json({ message: 'No user with the given ID' });
-      }
-      const updatedUser = await user.update(req.body);
 
-      return res.status(200).json({
-        message: 'Details updated!',
-        updatedUser: {
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid param. ID should be a number' });
+      }
+      const user = await Users.findByPk(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: `No user with id ${req.params.id}` });
+      }
+      if (id === req.decoded.id) {
+        const updatedUser = await user.update(req.body);
+        const normalizedUser = {
           username: updatedUser.username,
           email: updatedUser.email,
-        },
-      });
-    } catch (err) {
-      if (err instanceof Sequelize.ValidationError) {
-        return res.status(409).json({ error: 'User already exists' });
+          createdAt: updatedUser.createdAt,
+          updatedAt: updatedUser.updatedAt,
+        };
+        const message = 'Update successful';
+
+        const responseObject = { ...normalizedUser, message };
+        return res.send(responseObject);
       }
+      return res.status(401).send({ message: 'You cannot update another user\'s details' });
+    } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   },
@@ -114,15 +102,22 @@ export default {
     try {
       const id = parseInt(req.params.id, 10);
       if (isNaN(id)) {
-        return res.status(400).json({ error: 'ID should be a number' });
+        return res.status(400).json({ error: 'Invalid param. ID should be a number' });
       }
-      const user = await Users.destroy({
-        where: { id },
-      });
-      if (user === 1) {
-        return res.status(200).json({ message: 'User Removed' });
+      const user = await Users.findByPk(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: `No user with id ${req.params.id}` });
       }
-      return res.status(404).json({ message: 'No user with the given ID' });
+      if (req.decoded.id === 1) {
+        if (user.id !== 1) {
+          const deletedUser = await Users.destroy({ where: { id } });
+          if (deletedUser === 1) {
+            return res.status(200).json({ message: 'User Removed' });
+          }
+        }
+        return res.status(403).json({ message: 'Admin cannot be deleted' });
+      }
+      return res.status(403).json({ message: 'Unauthorized' });
     } catch (err) {
       return res.status(500).json({ error: 'An error occured' });
     }
@@ -145,15 +140,18 @@ export default {
       if (!user.validPassword(password)) {
         return res.status(403).json({ message: 'Invalid credentials' });
       }
-      return res.status(200).json({
-        message: 'Login Successful! Token expires in one week.',
-        token: jwtSignUser({ username: user.username }),
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        },
-      });
+
+      const normalizedUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      };
+
+      const message = 'Login Successful! Token expires in one week.';
+      const token = jwtSignUser({ username: user.username, id: user.id });
+
+      const responseObject = { ...normalizedUser, token, message };
+      return res.send(responseObject);
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
