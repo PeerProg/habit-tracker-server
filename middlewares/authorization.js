@@ -1,7 +1,15 @@
 export default {
   authorizeAdmin(req, res, next) {
-    if (req.decoded.id !== 1) {
+    const isAdminOrSuper = req.decoded.isAdmin || req.decoded.isSuperAdmin;
+    if (!isAdminOrSuper) {
       return res.status(403).json({ message: 'Unauthorized' });
+    }
+    next();
+  },
+
+  authorizeSuperAdmin(req, res, next) {
+    if (!req.decoded.isSuperAdmin) {
+      return res.status(403).json({ message: 'Only a superAdmin can perfom this operation' });
     }
     next();
   },
