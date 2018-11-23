@@ -21,7 +21,7 @@ router.route('/register')
 router.route('/login')
   .post(login);
 
-router.route('/allusers')
+router.route('/all')
   .get(verifyUser, fetchAllUsers);
 
 router.route('/:id')
