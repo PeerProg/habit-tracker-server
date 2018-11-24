@@ -10,7 +10,7 @@ services:
 
 before_script:
   - psql -c 'create database hbtest;' -U postgres
-  - npm run migratedb
+  - npm run db:migrate
 
 after_success:
   - coveralls < coverage/lcov.info
