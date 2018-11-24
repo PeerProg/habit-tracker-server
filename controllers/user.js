@@ -145,24 +145,28 @@ export default {
       res.json({ message: 'Account deactivated', isActive: deactivatedUser.isActive });
       return next();
     }
+    return res.send({ message: 'Account still active. Try again.' });
   },
 
   async activateUserAccount(req, res) {
-    if (!req.decoded) {
-      return res.redirect('/login');
-    }
-    const { body: { isActive }, decoded: { id } } = req;
-    const user = await Users.findByPk({ where: { id } });
+    // TODO: Find a way to ensure the owner of the account is the one reactivating
+    const { body: { isActive } } = req;
+    const user = await Users.findByPk(req.params.id);
     const reactivatedUser = await user.update({ isActive });
     if (reactivatedUser.isActive) {
-      res.send({ message: 'Account reactivated' });
+      jwtSignUser({
+        username: reactivatedUser.username,
+        id: reactivatedUser.id,
+        isActive: reactivatedUser.isActive,
+        isAdmin: reactivatedUser.isAdmin,
+        isSuperAdmin: reactivatedUser.isSuperAdmin
+      });
+      return res.send({ message: 'Account reactivated' });
     }
-    // Activated or not, redirect to '/login'
-    return res.redirect('/login');
+    return res.send({ message: 'Account still inactive. Try again.' });
   },
 
   logout(req, res) {
-    if (req.decoded) delete req.decoded;
     return res.redirect('/');
   },
 };

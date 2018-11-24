@@ -21,6 +21,7 @@ const loginRoute = '/api/v1/user/login';
 const singleRequestRoute = '/api/v1/user';
 const allUsersRoute = '/api/v1/user/all';
 const deactivateSubRoute = '/api/v1/user/deactivate';
+const activateSubRoute = '/api/v1/user/activate';
 
 describe('THE USER TEST SUITE', () => {
   let superAdminToken;
@@ -155,6 +156,18 @@ describe('THE USER TEST SUITE', () => {
   });
 
   describe(`DEACTIVATE USER ${deactivateSubRoute}/:id`, () => {
+    it('Should not deactivate user if isActive status does not change', (done) => {
+      request
+        .put(`${deactivateSubRoute}/3`)
+        .set({ Authorization: thirdUserToken })
+        .send({ isActive: true })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account still active. Try again.');
+          done();
+        });
+    });
+
     it('Allows the successful deactivation of a user', (done) => {
       request
         .put(`${deactivateSubRoute}/3`)
@@ -266,21 +279,6 @@ describe('THE USER TEST SUITE', () => {
           done();
         });
     });
-
-    // it('Should prevent a deactivated user from getting', (done) => {
-    //   request
-    //     .get(`${singleRequestRoute}/3`)
-    //     .set({ Authorization: thirdUserToken })
-    //     .then((response) => {
-    //       console.log('GET A USER WHEN YOU ARE DEACTIVATED');
-    //       // expect(response.status).toEqual(302);
-    //       // expect(response.headers.location).toEqual('/activate/3');
-    //       // expect(response.status).toEqual(200);
-    //       // expect(response.body.username).toEqual(superAdmin.username);
-    //       // expect(response.body).toHaveProperty('isSuperAdmin', true);
-    //       done();
-    //     });
-    // });
   });
 
   describe(`GET ALL USERS: ${allUsersRoute}`, () => {
@@ -384,6 +382,30 @@ describe('THE USER TEST SUITE', () => {
           expect(response.status).toEqual(200);
           expect(response.body).toHaveProperty('email', requestObject.email);
           expect(response.body).toHaveProperty('message', 'Update successful');
+          done();
+        });
+    });
+  });
+
+  describe(`ACTIVATE USER ${activateSubRoute}/:id`, () => {
+    it('Should not reactivate user if the active status does not change', (done) => {
+      request
+        .put(`${activateSubRoute}/3`)
+        .send({ isActive: false })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account still inactive. Try again.');
+          done();
+        });
+    });
+
+    it('Should successfuly activate a deactivated user', (done) => {
+      request
+        .put(`${activateSubRoute}/3`)
+        .send({ isActive: true })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account reactivated');
           done();
         });
     });
