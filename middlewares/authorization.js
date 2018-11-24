@@ -21,34 +21,18 @@ export default {
 
   authorizeAccountOwner(req, res, next) {
     if (req.decoded.id !== Number(req.params.id)) {
-      return res.status(401).send({ message: 'Operation not permitted another user\'s account' });
+      return res.status(401).send({ message: 'Operation not permitted on another user\'s account' });
     }
     next();
   },
 
   async userIsActive(req, res, next) {
-    // TODO: Update message to direct user to activate account
-    const { body: { identifier }, params: { id } } = req;
-    const userFromIdentifier = await Users.findOne({
-      where: {
-        [Op.or]: [
-          { username: identifier },
-          { email: identifier },
-        ],
-        isActive: true
-      },
-    });
+    const userFromPK = await Users.findByPk(req.params.id);
 
-    const userFromPK = await Users.findOne({
-      where: {
-        id,
-        isActive: true
-      }
-    });
-
-    if (userFromIdentifier || userFromPK) {
-      return next();
+    if (!userFromPK.isActive) {
+      return res.status(403).send({ message: 'Currently inactive. Activate to perform operation' });
     }
-    return res.status(403).send({ message: 'Currently inactive' });
+
+    return next();
   }
 };
