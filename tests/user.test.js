@@ -50,7 +50,7 @@ describe('THE USER TEST SUITE', () => {
       });
   });
 
-  // afterAll(() => models.sequelize.sync({ force: true }));
+  afterAll(() => models.sequelize.sync({ force: true }));
 
   describe(`CREATE USER: ${signupRoute}`, () => {
     it('Should create a user when valid payload is provided', (done) => {
