@@ -63,6 +63,7 @@ router.route('/activate/:id')
   .put(ensureParamIsInteger, checkIfUserExists, activateUserAccount);
 
 router.route('/:id')
+  .all(ensureParamIsInteger, checkIfUserExists)
   .put(
     userIsActive,
     authenticateUser,
@@ -70,8 +71,7 @@ router.route('/:id')
     checkIfIdentifierIsInUse,
     updateUserDetails
   )
-  .all(authenticateUser, ensureParamIsInteger, checkIfUserExists)
-  .get(getOneUser)
-  .delete(authorizeAdmin, deleteUser);
+  .get(authenticateUser, getOneUser)
+  .delete(authenticateUser, authorizeAdmin, deleteUser);
 
 export default router;
