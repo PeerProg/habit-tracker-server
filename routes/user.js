@@ -5,7 +5,7 @@ import authenticate, { validations, authorization } from '../middlewares';
 const router = express.Router();
 
 const { authenticateUser } = authenticate;
-const { authorizeAdmin, authorizeAccountOwner } = authorization;
+const { authorizeAdmin, authorizeAccountOwner, userIsActive } = authorization;
 
 const {
   checkRequiredUserFields,
@@ -23,7 +23,10 @@ const {
   updateUserDetails,
   deleteUser,
   createUser,
-  login
+  deactivateUserAccount,
+  activateUserAccount,
+  login,
+  logout,
 } = userController;
 
 router.route('/register')
@@ -39,13 +42,36 @@ router.route('/register')
 router.route('/login')
   .post(login);
 
+router.route('/logout')
+  .delete(logout);
+
 router.route('/all')
   .get(authenticateUser, getAllUsers);
 
+router.route('/deactivate/:id')
+  .put(
+    authenticate,
+    ensureParamIsInteger,
+    checkIfUserExists,
+    authorizeAccountOwner,
+    deactivateUserAccount,
+    logout
+  );
+
+// Ideally, this route will only be available if a deactivated user tries to login.
+router.route('/activate/:id')
+  .put(ensureParamIsInteger, checkIfUserExists, activateUserAccount);
+
 router.route('/:id')
+  .put(
+    userIsActive,
+    authenticateUser,
+    authorizeAccountOwner,
+    checkIfIdentifierIsInUse,
+    updateUserDetails
+  )
   .all(authenticateUser, ensureParamIsInteger, checkIfUserExists)
   .get(getOneUser)
-  .put(authorizeAccountOwner, checkIfIdentifierIsInUse, updateUserDetails)
   .delete(authorizeAdmin, deleteUser);
 
 export default router;
