@@ -1,4 +1,3 @@
-import { Op } from 'sequelize';
 import models from '../models';
 
 const { Users } = models;
@@ -8,13 +7,6 @@ export default {
     const isAdminOrSuper = req.decoded.isAdmin || req.decoded.isSuperAdmin;
     if (!isAdminOrSuper) {
       return res.status(403).json({ message: 'Unauthorized' });
-    }
-    next();
-  },
-
-  authorizeSuperAdmin(req, res, next) {
-    if (!req.decoded.isSuperAdmin) {
-      return res.status(403).json({ message: 'Only a superAdmin can perfom this operation' });
     }
     next();
   },

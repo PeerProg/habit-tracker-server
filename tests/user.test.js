@@ -363,6 +363,18 @@ describe('THE USER TEST SUITE', () => {
         });
     });
 
+    it('Should not allow an inactive user make an update', (done) => {
+      const requestObject = { email: 'inactiveuser@gmail.com' };
+      request.put(`${singleRequestRoute}/3`)
+        .set({ Authorization: thirdUserToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(403);
+          expect(response.body.message).toMatch('Activate to perform operation');
+          done();
+        });
+    });
+
     it('Should successfully update user details when valid token is supplied', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
       request.put(`${singleRequestRoute}/2`)
