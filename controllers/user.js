@@ -124,4 +124,31 @@ export default {
     const responseObject = { ...normalizedUser, token, message };
     return res.send(responseObject);
   },
+
+  async deactivateUserAccount(req, res, next) {
+    const { id } = req.params;
+    const user = await Users.findByPk({ where: { id } });
+    await user.update({ isActive: false });
+    res.send({ message: 'Account deactivated' });
+    return next();
+  },
+
+  async activateUserAccount(req, res) {
+    if (!req.decoded) {
+      return res.redirect('/login');
+    }
+    const { body: { isActive }, decoded: { id } } = req;
+    const user = await Users.findByPk({ where: { id } });
+    const reactivatedUser = await user.update({ isActive });
+    if (reactivatedUser.isActive) {
+      res.send({ message: 'Account reactivated' });
+    }
+    // Activated or not, redirect to '/login'
+    return res.redirect('/login');
+  },
+
+  logout(req, res) {
+    if (req.decoded) delete req.decoded;
+    return res.redirect('/');
+  },
 };
