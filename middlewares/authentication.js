@@ -13,6 +13,9 @@ export default {
         return res.status(401).json({ message: 'Invalid token' });
       }
       req.decoded = decoded;
+      if (!decoded.isActive) {
+        return res.redirect(`/activate/${decoded.id}`);
+      }
       next();
     });
   }
