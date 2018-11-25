@@ -15,14 +15,23 @@ function jwtSignUser(payload) {
 
 export default {
   async createUser(req, res) {
-    const { username, email, password } = req.body;
-    const user = await Users.create({ username, email, password });
-    const token = jwtSignUser({ username: user.username, id: user.id });
+    const user = await Users.create(req.body);
+    const token = jwtSignUser({
+      username: user.username,
+      id: user.id,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
+    });
+
     const normalizedUser = {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
     };
     const responseObject = { ...normalizedUser, token };
     return res.status(201).send(responseObject);
@@ -34,7 +43,10 @@ export default {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+      isSuperAdmin: user.isSuperAdmin,
+      isAdmin: user.isAdmin
     };
     return res.send(normalizedUser);
   },
@@ -44,7 +56,8 @@ export default {
       .map((user) => {
         return {
           username: user.username,
-          email: user.email
+          email: user.email,
+          isActive: user.isActive
         };
       });
     return res.send(users);
@@ -58,6 +71,7 @@ export default {
       email: updatedUser.email,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
+      isActive: updatedUser.isActive
     };
     const message = 'Update successful';
 
@@ -67,11 +81,11 @@ export default {
 
   async deleteUser(req, res) {
     const user = await Users.findByPk(req.params.id);
-    if (user.id !== 1) {
-      await Users.destroy({ where: { id: req.params.id } });
-      return res.status(200).json({ message: 'User Removed' });
+    if (user.isSuperAdmin || user.isAdmin) {
+      return res.status(403).json({ message: 'Admin cannot be deleted' });
     }
-    return res.status(403).json({ message: 'Admin cannot be deleted' });
+    await Users.destroy({ where: { id: req.params.id } });
+    return res.status(200).json({ message: 'User Removed' });
   },
 
   async login(req, res) {
@@ -90,18 +104,69 @@ export default {
     if (!user.validPassword(password)) {
       return res.status(403).json({ message: 'Invalid credentials' });
     }
+    if (!user.isActive) {
+      return res.redirect(`/activate/${user.id}`);
+    }
 
     const normalizedUser = {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
     };
 
     const message = 'Login Successful! Token expires in one week.';
-    const token = jwtSignUser({ username: user.username, id: user.id });
+    const token = jwtSignUser({
+      username: user.username,
+      id: user.id,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin
+    });
 
     const responseObject = { ...normalizedUser, token, message };
     return res.send(responseObject);
+  },
+
+  async deactivateUserAccount(req, res, next) {
+    const { params: { id }, body: { isActive } } = req;
+    const user = await Users.findByPk(id);
+    const deactivatedUser = await user.update({ isActive });
+    if (!deactivatedUser.isActive) {
+      jwtSignUser({
+        username: deactivatedUser.username,
+        id: deactivatedUser.id,
+        isActive: deactivatedUser.isActive,
+        isAdmin: deactivatedUser.isAdmin,
+        isSuperAdmin: deactivatedUser.isSuperAdmin
+      });
+      res.json({ message: 'Account deactivated', isActive: deactivatedUser.isActive });
+      return next();
+    }
+    return res.send({ message: 'Account still active. Try again.' });
+  },
+
+  async activateUserAccount(req, res) {
+    // TODO: Find a way to ensure the owner of the account is the one reactivating
+    const { body: { isActive } } = req;
+    const user = await Users.findByPk(req.params.id);
+    const reactivatedUser = await user.update({ isActive });
+    if (reactivatedUser.isActive) {
+      jwtSignUser({
+        username: reactivatedUser.username,
+        id: reactivatedUser.id,
+        isActive: reactivatedUser.isActive,
+        isAdmin: reactivatedUser.isAdmin,
+        isSuperAdmin: reactivatedUser.isSuperAdmin
+      });
+      return res.send({ message: 'Account reactivated' });
+    }
+    return res.send({ message: 'Account still inactive. Try again.' });
+  },
+
+  logout(req, res) {
+    return res.redirect('/');
   },
 };

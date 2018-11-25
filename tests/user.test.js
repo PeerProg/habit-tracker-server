@@ -5,50 +5,75 @@ import { resourceCreator } from '../helpers';
 
 const request = supertest.agent(app);
 
-const firstUser = resourceCreator.createNewUser();
-const secondUser = resourceCreator.createNewUser();
-const thirdUser = resourceCreator.createNewUser();
+const superAdmin = resourceCreator.createSuperAdmin();
+const adminUser = resourceCreator.createAdminUser();
+const firstRegularUser = resourceCreator.createRegularUser();
+const secondRegularUser = resourceCreator.createRegularUser();
+const thirdRegularUser = resourceCreator.createRegularUser();
 const invalidEmailUser = resourceCreator.userWithInvalidEmail();
 const invalidPasswordUser = resourceCreator.userWithInvalidPassword();
-const noUsernameObject = resourceCreator.withNoUsername();
-const noEmailObject = resourceCreator.withNoEmail();
-const emptyFieldsObject = resourceCreator.emptyFieldsUser();
+const noUsernameUser = resourceCreator.withNoUsername();
+const noEmailUser = resourceCreator.withNoEmail();
+const emptyFieldsUser = resourceCreator.emptyFieldsUser();
 
 const signupRoute = '/api/v1/user/register';
 const loginRoute = '/api/v1/user/login';
 const singleRequestRoute = '/api/v1/user';
 const allUsersRoute = '/api/v1/user/all';
+const deactivateSubRoute = '/api/v1/user/deactivate';
+const activateSubRoute = '/api/v1/user/activate';
 
 describe('THE USER TEST SUITE', () => {
-  let createdToken;
+  let superAdminToken;
+  let adminToken;
   let regularToken;
+  let thirdUserToken;
   beforeAll((done) => {
     models.sequelize.sync({ force: true })
       .then(() => {
         request.post(signupRoute)
-          .send(firstUser)
+          .send(superAdmin)
           .then(response => {
-            createdToken = response.body.token;
-            done();
+            superAdminToken = response.body.token;
+            request.post(signupRoute)
+              .send(adminUser)
+              .then(res => {
+                adminToken = res.body.token;
+                request.post(signupRoute)
+                  .send(thirdRegularUser)
+                  .then(result => {
+                    thirdUserToken = result.body.token;
+                    done();
+                  });
+              });
           });
       });
   });
 
+  afterAll(() => models.sequelize.sync({ force: true }));
+
   describe(`CREATE USER: ${signupRoute}`, () => {
     it('Should create a user when valid payload is provided', (done) => {
       request.post(signupRoute)
-        .send(secondUser)
+        .send(firstRegularUser)
         .then(response => {
           expect(response.status).toEqual(201);
-          expect(response.body).toHaveProperty('username', secondUser.username);
-          expect(response.body).toHaveProperty('email', secondUser.email);
+          expect(response.body).toHaveProperty('username', firstRegularUser.username);
+          expect(response.body).toHaveProperty('email', firstRegularUser.email);
+          expect(response.body).toHaveProperty('isActive', true);
           done();
         });
     });
 
-    it('Should fail creation when username supplied already exists', (done) => {
+    it('Should fail creation when the username supplied already exists', (done) => {
+      const requestObject = {
+        username: firstRegularUser.username,
+        email: 'unused@yahoo.co.uk',
+        password: 'unusedpassword',
+      };
+
       request.post(signupRoute)
-        .send(secondUser)
+        .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(409);
           expect(response.body).toHaveProperty('message', 'Username already in use');
@@ -57,10 +82,14 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should fail creation when email supplied already exists', (done) => {
-      secondUser.username = 'JohnDoe';
+      const requestObject = {
+        username: 'flamingo',
+        email: firstRegularUser.email,
+        password: 'unusedpassword',
+      };
 
       request.post(signupRoute)
-        .send(secondUser)
+        .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(409);
           expect(response.body).toHaveProperty('message', 'Email already in use');
@@ -81,7 +110,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should not allow a user be created with empty fields', (done) => {
       request
         .post(signupRoute)
-        .send(emptyFieldsObject)
+        .send(emptyFieldsUser)
         .then(response => {
           expect(response.status).toEqual(403);
           expect(response.body).toHaveProperty('error');
@@ -105,7 +134,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('should fail creation when no username is supplied', (done) => {
       request.post(signupRoute)
-        .send(noUsernameObject)
+        .send(noUsernameUser)
         .then(response => {
           expect(response.status).toEqual(403);
           expect(Array.isArray(response.body.error)).toBeTruthy();
@@ -116,7 +145,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('should fail creation when no email is supplied', (done) => {
       request.post(signupRoute)
-        .send(noEmailObject)
+        .send(noEmailUser)
         .then(response => {
           expect(response.status).toEqual(403);
           expect(Array.isArray(response.body.error)).toBeTruthy();
@@ -126,13 +155,41 @@ describe('THE USER TEST SUITE', () => {
     });
   });
 
+  describe(`DEACTIVATE USER ${deactivateSubRoute}/:id`, () => {
+    it('Should not deactivate user if isActive status does not change', (done) => {
+      request
+        .put(`${deactivateSubRoute}/3`)
+        .set({ Authorization: thirdUserToken })
+        .send({ isActive: true })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account still active. Try again.');
+          done();
+        });
+    });
+
+    it('Allows the successful deactivation of a user', (done) => {
+      request
+        .put(`${deactivateSubRoute}/3`)
+        .set({ Authorization: thirdUserToken })
+        .send({ isActive: false })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account deactivated');
+          expect(response.body).toHaveProperty('isActive', false);
+          done();
+        });
+    });
+  });
+
   describe(`LOGIN: ${loginRoute}`, () => {
     it('Should fail login for nonexistent user', (done) => {
       const nonExistentUser = {
-        identifier: 'JasonBourne',
+        identifier: 'jasonbourne',
         password: 'bourne5upremacy'
       };
-      request.post(loginRoute)
+      request
+        .post(loginRoute)
         .send(nonExistentUser)
         .then(response => {
           expect(response.status).toEqual(403);
@@ -143,7 +200,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should fail login when an incorrect password is supplied', (done) => {
       const requestObject = {
-        identifier: firstUser.username,
+        identifier: firstRegularUser.username,
         password: 'wrongPassword'
       };
 
@@ -159,8 +216,8 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should permit log in for a user with valid details', (done) => {
       const requestObject = {
-        identifier: firstUser.username,
-        password: firstUser.password
+        identifier: firstRegularUser.username,
+        password: firstRegularUser.password
       };
 
       request.post(loginRoute)
@@ -171,16 +228,32 @@ describe('THE USER TEST SUITE', () => {
           done();
         });
     });
+
+    it('Should redirect a deactivated user to the activate route', (done) => {
+      const requestObject = {
+        identifier: thirdRegularUser.username,
+        password: thirdRegularUser.password
+      };
+      request
+        .post(loginRoute)
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(302);
+          expect(response.headers.location).toEqual('/activate/3');
+          done();
+        });
+    });
   });
 
   describe(`GET USER: ${singleRequestRoute}/:id`, () => {
     it('Should get the details of a user when valid token is supplied', (done) => {
       request
         .get(`${singleRequestRoute}/1`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .then((response) => {
           expect(response.status).toEqual(200);
-          expect(response.body.username).toEqual(firstUser.username);
+          expect(response.body.username).toEqual(superAdmin.username);
+          expect(response.body).toHaveProperty('isSuperAdmin', true);
           done();
         });
     });
@@ -188,7 +261,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should not get a user that does not exist', (done) => {
       request
         .get(`${singleRequestRoute}/546`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(404);
           expect(response.body.message).toEqual('No user with id 546');
@@ -199,7 +272,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should not get a user when param is invalid', (done) => {
       request
         .get(`${singleRequestRoute}/getTheUser`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(400);
           expect(response.body).toHaveProperty('error', 'Invalid param. ID should be a number');
@@ -211,11 +284,11 @@ describe('THE USER TEST SUITE', () => {
   describe(`GET ALL USERS: ${allUsersRoute}`, () => {
     it('Should get the details of all users when valid token is supplied', (done) => {
       request.get(allUsersRoute)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(200);
           expect(Array.isArray(response.body)).toBeTruthy();
-          expect(response.body[0].username).toEqual(firstUser.username);
+          expect(response.body[0]).toHaveProperty('username', superAdmin.username);
           done();
         });
     });
@@ -225,7 +298,8 @@ describe('THE USER TEST SUITE', () => {
     it('Should fail to update a user when invalid token is provided', (done) => {
       const requestObject = { email: 'solomon.monday@yahoo.com' };
 
-      request.put(`${singleRequestRoute}/1`)
+      request
+        .put(`${singleRequestRoute}/4`)
         .set({ Authorization: 'invalid token' })
         .send(requestObject)
         .then(response => {
@@ -249,11 +323,11 @@ describe('THE USER TEST SUITE', () => {
         });
     });
 
-    it('Should fail user update for invalid user param', (done) => {
+    it('Should fail user update for invalid url param', (done) => {
       const requestObject = { email: 'martha.smith@gmail.org' };
 
       request.put(`${singleRequestRoute}/poly`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .send(requestObject)
         .then(response => {
           expect(response.body.error).toEqual('Invalid param. ID should be a number');
@@ -266,11 +340,11 @@ describe('THE USER TEST SUITE', () => {
       const requestObject = { email: 'adenike_lily@gmail.com' };
 
       request.put(`${singleRequestRoute}/2`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(401);
-          expect(response.body.message).toMatch('Operation not permitted another user');
+          expect(response.body.message).toMatch('Operation not permitted on another user');
           done();
         });
     });
@@ -278,7 +352,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should not allow update of a nonexistent user', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
       request.put(`${singleRequestRoute}/187`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(404);
@@ -287,15 +361,51 @@ describe('THE USER TEST SUITE', () => {
         });
     });
 
+    it('Should not allow an inactive user make an update', (done) => {
+      const requestObject = { email: 'inactiveuser@gmail.com' };
+      request.put(`${singleRequestRoute}/3`)
+        .set({ Authorization: thirdUserToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(403);
+          expect(response.body.message).toMatch('Activate to perform operation');
+          done();
+        });
+    });
+
     it('Should successfully update user details when valid token is supplied', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
-      request.put(`${singleRequestRoute}/1`)
-        .set({ Authorization: createdToken })
+      request.put(`${singleRequestRoute}/2`)
+        .set({ Authorization: adminToken })
         .send(requestObject)
         .then(response => {
           expect(response.status).toEqual(200);
-          expect(response.body.email).toEqual(requestObject.email);
+          expect(response.body).toHaveProperty('email', requestObject.email);
           expect(response.body).toHaveProperty('message', 'Update successful');
+          done();
+        });
+    });
+  });
+
+  describe(`ACTIVATE USER ${activateSubRoute}/:id`, () => {
+    it('Should not reactivate user if the active status does not change', (done) => {
+      request
+        .put(`${activateSubRoute}/3`)
+        .send({ isActive: false })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account still inactive. Try again.');
+          done();
+        });
+    });
+
+    it('Should successfuly activate a deactivated user', (done) => {
+      request
+        .put(`${activateSubRoute}/3`)
+        .send({ isActive: true })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('message', 'Account reactivated');
           done();
         });
     });
@@ -304,8 +414,8 @@ describe('THE USER TEST SUITE', () => {
   describe(`DELETE USER: ${singleRequestRoute}/:id`, () => {
     it('Should fail to delete user when token is invalid', (done) => {
       request
-        .delete(`${singleRequestRoute}/1`)
-        .set({ Authorization: 'invalid' })
+        .delete(`${singleRequestRoute}/4`)
+        .set({ Authorization: 'invalidToken' })
         .then(response => {
           expect(response.status).toEqual(401);
           expect(response.body.message).toEqual('Invalid token');
@@ -315,7 +425,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should fail to delete a user that does not exist', (done) => {
       request.delete(`${singleRequestRoute}/546`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(404);
           expect(response.body.message).toEqual('No user with id 546');
@@ -325,7 +435,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should fail to delete for non-integer param', (done) => {
       request.delete(`${singleRequestRoute}/nonint`)
-        .set({ Authorization: createdToken })
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(400);
           expect(response.body.error).toEqual('Invalid param. ID should be a number');
@@ -335,11 +445,11 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should not allow the admin be deleted', (done) => {
       request
-        .delete(`${singleRequestRoute}/1`)
-        .set({ Authorization: createdToken })
+        .delete(`${singleRequestRoute}/2`)
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(403);
-          expect(response.body.message).toEqual('Admin cannot be deleted');
+          expect(response.body).toHaveProperty('message', 'Admin cannot be deleted');
           done();
         });
     });
@@ -347,7 +457,7 @@ describe('THE USER TEST SUITE', () => {
     it('Should not authorize a delete action for a non-admin user', (done) => {
       request
         .post(signupRoute)
-        .send(thirdUser)
+        .send(secondRegularUser)
         .then(result => {
           regularToken = result.body.token;
           request
@@ -363,8 +473,8 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should successfully delete for valid ID and admin token', (done) => {
       request
-        .delete(`${singleRequestRoute}/2`)
-        .set({ Authorization: createdToken })
+        .delete(`${singleRequestRoute}/4`)
+        .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(200);
           expect(response.body.message).toEqual('User Removed');

@@ -1,25 +1,61 @@
 import faker from 'faker';
 
 export default {
-  createNewUser() {
+  createSuperAdmin() {
+    const firstName = faker.name.firstName().toLowerCase();
+    const lastName = faker.name.lastName().toLowerCase();
+    const joinedNames = `${firstName}${lastName}`;
+    const username = joinedNames.substring(2);
     return {
-      username: faker.name.firstName(),
+      username,
       email: faker.internet.email(),
-      password: 'foLLowTherules'
+      password: 'superadmin',
+      isSuperAdmin: true
+    };
+  },
+  createAdminUser() {
+    const firstName = faker.name.firstName().toLowerCase();
+    const lastName = faker.name.lastName().toLowerCase();
+    const joinedNames = `${firstName}${lastName}`;
+    const username = joinedNames.substring(2);
+    return {
+      username,
+      email: faker.internet.email(),
+      password: 'adminpassword',
+      isAdmin: true
+    };
+  },
+  createRegularUser() {
+    const firstName = faker.name.firstName().toLowerCase();
+    const lastName = faker.name.lastName().toLowerCase();
+    const joinedNames = `${firstName}${lastName}`;
+    const username = joinedNames.substring(2);
+    return {
+      username,
+      email: faker.internet.email(),
+      password: 'regularpassword'
     };
   },
 
   userWithInvalidEmail() {
+    const firstName = faker.name.firstName().toLowerCase();
+    const lastName = faker.name.lastName().toLowerCase();
+    const joinedNames = `${firstName}${lastName}`;
+    const username = joinedNames.substring(2);
     return {
-      username: faker.name.firstName(),
+      username,
       email: faker.lorem.word(),
       password: 'Re7unthis'
     };
   },
 
   userWithInvalidPassword() {
+    const firstName = faker.name.firstName().toLowerCase();
+    const lastName = faker.name.lastName().toLowerCase();
+    const joinedNames = `${firstName}${lastName}`;
+    const username = joinedNames.substring(2);
     return {
-      username: faker.name.lastName(),
+      username,
       email: faker.internet.email(),
       password: faker.address.latitude(),
     };
@@ -33,8 +69,12 @@ export default {
   },
 
   withNoEmail() {
+    const firstName = faker.name.firstName().toLowerCase();
+    const lastName = faker.name.lastName().toLowerCase();
+    const joinedNames = `${firstName}${lastName}`;
+    const username = joinedNames.substring(2);
     return {
-      username: faker.name.firstName(),
+      username,
       password: 'No3ma1lprov1ded'
     };
   },
