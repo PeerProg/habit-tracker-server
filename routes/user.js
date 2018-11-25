@@ -55,7 +55,6 @@ router.route('/deactivate/:id')
     checkIfUserExists,
     authorizeAccountOwner,
     deactivateUserAccount,
-    logout
   );
 
 // Ideally, this route will only be available if a deactivated user tries to login.

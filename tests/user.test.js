@@ -477,8 +477,12 @@ describe('THE USER TEST SUITE', () => {
         .set({ Authorization: superAdminToken })
         .then(response => {
           expect(response.status).toEqual(200);
-          expect(response.body.message).toEqual('User Removed');
-          done();
+          expect(response.body.message).toEqual('User Removed')
+          request
+            .delete('/api/v1/user/logout')
+            .then(() => {
+              done();
+            });
         });
     });
   });
