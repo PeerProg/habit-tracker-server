@@ -478,7 +478,11 @@ describe('THE USER TEST SUITE', () => {
         .then(response => {
           expect(response.status).toEqual(200);
           expect(response.body.message).toEqual('User Removed');
-          done();
+          request
+            .delete('/api/v1/user/logout')
+            .then(() => {
+              done();
+            });
         });
     });
   });
