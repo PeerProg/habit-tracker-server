@@ -1,19 +1,20 @@
 language: node_js
-
 node_js:
-  - '9'
-
+- '9'
 cache: yarn
-
 services:
-  - postgresql
-
+- postgresql
 before_script:
-  - psql -c 'create database hbtest;' -U postgres
-  - npm run db:migrate
-
-before_deploy:
-  - npm run build
-
+- psql -c 'create database hbtest;' -U postgres
+- npm run db:migrate
 after_success:
-  - coveralls < coverage/lcov.info
+- coveralls < coverage/lcov.info
+before_deploy:
+- npm run build
+deploy:
+  provider: heroku
+  api_key:
+    secure: ZlLAUcWtnASbyVEqx9+cfhtYDa0nzlc+meT4KakDwOGVF0rAM3Hs/53QQEonkgO+yYPEX8PN9YrgwEckCsajkz6eEKmI3pMo/cbet9JLdCo6r+Pg93Cof1lyT853JaegWERtC7QjvxZumvYEQJMhrws7dlUbT+cewNJ1mdJDvDdOUi9dzQh9dv88GSedcm4MDd4TVsUHGcen2eC2m0x75oeAtV3xm5gVbcwMZs8HfhgfuCsJ3b6e2aOxwzqQAMBTRkeVdXqchy5g5CBUl0TX6fCOuXuk0ajkMM6npoaXRWQA6sJTW3Mpd84PdshNX7LpDe0YIrMiO/mciARDxeOfmLCGFxqsUgzTqAPrtzVI3ka5GtGpf+2Y7IM1zHmok8kvVh2FTvovK1LBHS93qMGHm5CrOLag7wXThiBsgrlPWawO9VumLPw02iGAzwernzuQuWwLNP83bL1ZSC+JlFxfKgaCrnIqi5AM1ND0g3ouWFmnUN+UyPTBN3aj34yGsJVvOau6pKqGtM0SJva/V9ASMxm/VWL2mlahpTJs5Pp8QFMcbXtOL2t1T0AHoc9aBvGRVPoPey87vFZkH+mE4ENE1/1FkUL8tzyppwPIh5D9nbrgBkJs44lHgPbT+u6XF6Q9jwVXUbfOOjL4jcm0NQhZoeqPcSsZirH4vfi+4Yi8T7g=
+  app: habit-tracker-server
+  on:
+    repo: PeerProg/habit-tracker-server
