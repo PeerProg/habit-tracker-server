@@ -12,5 +12,8 @@ before_script:
   - psql -c 'create database hbtest;' -U postgres
   - npm run db:migrate
 
+before_deploy:
+  - npm run build
+
 after_success:
   - coveralls < coverage/lcov.info
