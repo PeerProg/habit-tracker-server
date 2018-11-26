@@ -8,7 +8,7 @@ import dbConfig from '../config';
 dotenv.config();
 
 const basename = path.basename(module.filename);
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV;
 const config = dbConfig[env];
 const db = {};
 
@@ -25,9 +25,8 @@ fs
   });
 
 Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+  // If we end up having a model not associated with any other model, we revisit
+  db[modelName].associate(db);
 });
 
 db.sequelize = sequelize;
