@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { userRouter, homeRouter } from './routes';
-import { routesErrorHandler, miscErrorHandler } from './middlewares';
+import { routesErrorHandler, allPurposeErrorHandler } from './middlewares';
 
 dotenv.config();
 
@@ -24,6 +24,6 @@ app.use(`${baseRoute}/user`, userRouter);
 app.use(routesErrorHandler);
 
 // miscellanous error handler
-app.use(miscErrorHandler);
+app.use(allPurposeErrorHandler);
 
 export default app;
