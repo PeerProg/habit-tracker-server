@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import models from '../models';
 
-const { Users, Habits } = models;
+const { Habits } = models;
 
 export default {
   async getAllHabits(req, res) {
@@ -76,5 +76,28 @@ export default {
     };
 
     return res.send(responseObject);
+  },
+
+  async deleteOneUserHabit(req, res) {
+    const { params: { habitID }, decoded: { id: userId } } = req;
+
+    const queryParam = {
+      [Op.and]: [
+        {
+          userId,
+          id: habitID
+        }
+      ]
+    };
+
+    const singleUserHabit = await Habits.findOne({ where: queryParam });
+
+    if (!singleUserHabit) {
+      return res.status(404).send({ message: `No habit with id ${habitID}` });
+    }
+
+    await Habits.destroy({ where: queryParam });
+
+    return res.send({ message: 'Habit deleted' });
   }
 };
