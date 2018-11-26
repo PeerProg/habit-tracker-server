@@ -26,5 +26,13 @@ export default {
     }
 
     return next();
+  },
+
+  async authorizeHabitOwner(req, res, next) {
+    const { params: { id }, decoded: { id: userId } } = req;
+
+    const isHabitsOwner = Number(id) === userId;
+    if (isHabitsOwner) return next();
+    return res.status(401).json({ message: 'Not authorized' });
   }
 };

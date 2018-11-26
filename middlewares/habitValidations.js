@@ -6,6 +6,8 @@ import { isEmpty } from '../helpers';
 const { Users, Habits } = models;
 
 const expectedFields = ['name', 'milestones'];
+const expectedParams = ['id', 'habitID'];
+const isPositiveInteger = (val) => Number.isInteger(Number(val)) && Number(val) > 0;
 
 export default {
   async ensureNameAndMilestonesSupplied(req, res, next) {
@@ -18,7 +20,7 @@ export default {
     });
 
     if (requiredFieldsArray.length) {
-      return res.status(403).json({ error: requiredFieldsArray });
+      return res.status(403).json({ errors: requiredFieldsArray });
     }
     return next();
   },
@@ -34,7 +36,7 @@ export default {
     });
 
     if (nullFieldsArray.length) {
-      return res.status(403).json({ error: nullFieldsArray });
+      return res.status(403).json({ errors: nullFieldsArray });
     }
     return next();
   },
@@ -57,4 +59,19 @@ export default {
     }
     return next();
   },
+
+  async ensurePositiveIntegerParams(req, res, next) {
+    const nonNumberErrorArray = [];
+
+    expectedParams.forEach(param => {
+      if (!isPositiveInteger(req.params[param])) {
+        nonNumberErrorArray.push(`${param} must be a positive integer`);
+      }
+    });
+
+    if (nonNumberErrorArray.length) {
+      return res.status(403).json({ errors: nonNumberErrorArray });
+    }
+    return next();
+  }
 };
