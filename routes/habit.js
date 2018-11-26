@@ -5,7 +5,7 @@ import { authentication, habitValidations, authorization } from '../middlewares'
 const router = express.Router();
 
 const { authenticateUser } = authentication;
-const { authorizeHabitOwner } = authorization;
+const { authorizeHabitOwnerOrAdmin, authorizeHabitOwner } = authorization;
 const {
   ensureNameAndMilestonesSupplied,
   ensureNonNullFields,
@@ -13,16 +13,12 @@ const {
   ensurePositiveIntegerParams
 } = habitValidations;
 const {
-  getAllHabits,
   createNewHabit,
   getUserHabits,
   getOneUserHabit,
   deleteOneUserHabit,
   editOneUserHabit
 } = habitController;
-
-router.route('/all')
-  .get(authenticateUser, getAllHabits);
 
 router.route('/create')
   .post(
@@ -35,7 +31,7 @@ router.route('/create')
 
 router.route('/user/:id/all-habits')
   .all(authenticateUser)
-  .get(authorizeHabitOwner, getUserHabits);
+  .get(authorizeHabitOwnerOrAdmin, getUserHabits);
 
 router.route('/user/:id/:habitID')
   .all(authenticateUser, ensurePositiveIntegerParams, authorizeHabitOwner)
