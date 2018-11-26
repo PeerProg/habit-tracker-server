@@ -5,20 +5,6 @@ import { toSentenceCase } from '../helpers';
 const { Habits } = models;
 
 export default {
-  async getAllHabits(req, res) {
-    const habits = await Habits.findAll();
-    if (!habits.length) return res.status(404).json({ message: 'No habits created yet' });
-    const responseArray = habits.map(habit => ({
-      name: habit.name,
-      milestones: habit.milestones,
-      userId: habit.userId,
-      createdAt: habit.createdAt,
-      updatedAt: habit.updatedAt
-    }));
-
-    return res.send(responseArray);
-  },
-
   async createNewHabit(req, res) {
     const { body: { name, milestones }, decoded: { id: userId } } = req;
     const normalizedName = toSentenceCase(name);
@@ -106,6 +92,8 @@ export default {
   },
 
   async editOneUserHabit(req, res) {
+    // Ensure to always prepopulate with data from DB so it is available in req.body
+    // When updating, we are always replacing because of the minimalist structure of the models
     const { params: { habitID }, decoded: { id: userId } } = req;
 
     const queryParam = {
@@ -123,13 +111,9 @@ export default {
       return res.status(404).send({ message: `No habit with id ${habitID}` });
     }
 
-    const replacementMilestones = [...singleUserHabit.milestones];
-
-    (req.body.milestones || []).forEach(item => {
-      if (!replacementMilestones.includes(toSentenceCase(item))) {
-        replacementMilestones.concat([toSentenceCase(item)]);
-      }
-    });
+    const incomingMilestones = req.body.milestones;
+    const newMilestones = incomingMilestones.map(mstone => toSentenceCase(mstone));
+    const replacementMilestones = [...new Set(newMilestones)];
 
     const editedHabit = await singleUserHabit.update({
       name: toSentenceCase(req.body.name) || singleUserHabit.name,
@@ -142,5 +126,5 @@ export default {
       createdAt: editedHabit.createdAt,
       updatedAt: editedHabit.updatedAt
     });
-  }
+  },
 };
