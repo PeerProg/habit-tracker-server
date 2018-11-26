@@ -2,7 +2,9 @@ const HabitsModel = (sequelize, DataTypes) => {
   const Habits = sequelize.define('Habits', {
     name: {
       type: DataTypes.STRING,
-      unique: true
+      get() {
+        return this.getDataValue('name');
+      }
     },
     milestones: {
       type: DataTypes.ARRAY(DataTypes.TEXT),
@@ -11,8 +13,8 @@ const HabitsModel = (sequelize, DataTypes) => {
         return this.getDataValue('milestones');
       },
       set(val) {
-        const existingMilestones = this.getDataValue('milestones');
-        const newMilestones = existingMilestones.concat([val]);
+        const existingMilestones = this.getDataValue('milestones') || [];
+        const newMilestones = existingMilestones.concat(val);
         this.setDataValue('milestones', newMilestones);
       }
     },
