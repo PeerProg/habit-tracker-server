@@ -1,6 +1,6 @@
 import express from 'express';
 import { habitController } from '../controllers';
-import { authentication, habitValidations, authorization } from '../middlewares';
+import { authentication, habitValidations, authorization, validations } from '../middlewares';
 
 const router = express.Router();
 
@@ -12,6 +12,7 @@ const {
   ensureNoSimilarlyNamedHabit,
   ensurePositiveIntegerParams
 } = habitValidations;
+const { ensureParamIsInteger } = validations;
 const {
   createNewHabit,
   getUserHabits,
@@ -30,7 +31,7 @@ router.route('/create')
   );
 
 router.route('/user/:id/all-habits')
-  .all(authenticateUser)
+  .all(ensureParamIsInteger, authenticateUser)
   .get(authorizeHabitOwnerOrAdmin, getUserHabits);
 
 router.route('/user/:id/:habitID')

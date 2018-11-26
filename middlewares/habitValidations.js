@@ -2,8 +2,7 @@ import { Op } from 'sequelize';
 import models from '../models';
 import { isEmpty, toSentenceCase } from '../helpers';
 
-
-const { Users, Habits } = models;
+const { Habits } = models;
 
 const expectedFields = ['name', 'milestones'];
 const expectedParams = ['id', 'habitID'];

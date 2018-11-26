@@ -50,8 +50,8 @@ router.route('/all')
 
 router.route('/deactivate/:id')
   .put(
-    authenticateUser,
     ensureParamIsInteger,
+    authenticateUser,
     checkIfUserExists,
     authorizeAccountOwner,
     deactivateUserAccount,
