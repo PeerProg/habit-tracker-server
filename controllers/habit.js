@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import models from '../models';
+import { toSentenceCase } from '../helpers';
 
 const { Habits } = models;
 
@@ -20,9 +21,12 @@ export default {
 
   async createNewHabit(req, res) {
     const { body: { name, milestones }, decoded: { id: userId } } = req;
+    const normalizedName = toSentenceCase(name);
+    const normalizedMilestones = milestones.map(milestone => toSentenceCase(milestone));
+
     const newHabit = await Habits.create({
-      name,
-      milestones,
+      name: normalizedName,
+      milestones: normalizedMilestones,
       userId
     });
     return res.send(newHabit);
@@ -99,5 +103,44 @@ export default {
     await Habits.destroy({ where: queryParam });
 
     return res.send({ message: 'Habit deleted' });
+  },
+
+  async editOneUserHabit(req, res) {
+    const { params: { habitID }, decoded: { id: userId } } = req;
+
+    const queryParam = {
+      [Op.and]: [
+        {
+          userId,
+          id: habitID
+        }
+      ]
+    };
+
+    const singleUserHabit = await Habits.findOne({ where: queryParam });
+
+    if (!singleUserHabit) {
+      return res.status(404).send({ message: `No habit with id ${habitID}` });
+    }
+
+    const replacementMilestones = [...singleUserHabit.milestones];
+
+    (req.body.milestones || []).forEach(item => {
+      if (!replacementMilestones.includes(toSentenceCase(item))) {
+        replacementMilestones.concat([toSentenceCase(item)]);
+      }
+    });
+
+    const editedHabit = await singleUserHabit.update({
+      name: toSentenceCase(req.body.name) || singleUserHabit.name,
+      milestones: replacementMilestones
+    });
+
+    return res.send({
+      name: editedHabit.name,
+      milestones: editedHabit.milestones,
+      createdAt: editedHabit.createdAt,
+      updatedAt: editedHabit.updatedAt
+    });
   }
 };

@@ -17,7 +17,8 @@ const {
   createNewHabit,
   getUserHabits,
   getOneUserHabit,
-  deleteOneUserHabit
+  deleteOneUserHabit,
+  editOneUserHabit
 } = habitController;
 
 router.route('/all')
@@ -39,7 +40,7 @@ router.route('/user/:id/all-habits')
 router.route('/user/:id/:habitID')
   .all(authenticateUser, ensurePositiveIntegerParams, authorizeHabitOwner)
   .get(getOneUserHabit)
+  .put(ensureNonNullFields, ensureNoSimilarlyNamedHabit, editOneUserHabit)
   .delete(deleteOneUserHabit);
-
 
 export default router;

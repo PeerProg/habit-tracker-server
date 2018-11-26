@@ -9,7 +9,7 @@ export const isEmpty = (value) => {
 };
 
 export const toSentenceCase = (value) => {
-  const firstChar = value.slice(0, 1).toUpperCase();
-  const otherChars = value.slice(1).toLowerCase();
+  const firstChar = value.slice(0, 1).toUpperCase().trim();
+  const otherChars = value.slice(1).toLowerCase().trim();
   return `${firstChar}${otherChars}`;
 };

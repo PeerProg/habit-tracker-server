@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 import models from '../models';
-import { isEmpty } from '../helpers';
+import { isEmpty, toSentenceCase } from '../helpers';
 
 
 const { Users, Habits } = models;
@@ -29,9 +29,11 @@ export default {
     const nullFieldsArray = [];
 
     expectedFields.forEach(field => {
-      const fieldValue = req.body[field];
-      if (isEmpty(fieldValue)) {
-        nullFieldsArray.push(`${field} should not be empty`);
+      if (Object.keys(req.body).includes(field)) {
+        const fieldValue = req.body[field];
+        if (isEmpty(fieldValue)) {
+          nullFieldsArray.push(`${field} should not be empty`);
+        }
       }
     });
 
@@ -42,20 +44,26 @@ export default {
   },
 
   async ensureNoSimilarlyNamedHabit(req, res, next) {
-    const { decoded: { id: userId }, body: { name } } = req;
-    const habit = await Habits.findOne({
-      where: {
-        [Op.and]: [
-          {
-            userId,
-            name
-          }
-        ]
+    const { decoded: { id: userId } } = req;
+    if (Object.keys(req.body).includes('name')) {
+      const habit = await Habits.findOne({
+        where: {
+          [Op.and]: [
+            {
+              userId,
+              name: toSentenceCase(req.body.name)
+            }
+          ]
+        }
+      });
+
+      if (habit) {
+        const alreadyExists = await habit.get('name') === toSentenceCase(req.body.name);
+        if (alreadyExists) {
+          return res.status(409).json({ message: 'You already have an habit with that name' });
+        }
       }
-    });
-    const alreadyExists = habit.get('name').toLowerCase().trim() === name.toLowerCase().trim();
-    if (alreadyExists) {
-      return res.status(409).json({ message: 'You already have an habit with that name' });
+      return next();
     }
     return next();
   },
