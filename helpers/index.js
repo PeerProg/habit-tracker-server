@@ -1,2 +1,2 @@
 export { default as resourceCreator } from './resourceCreator';
-export { isEmpty } from './helperFunctions';
+export { isEmpty, toSentenceCase } from './helperFunctions';
