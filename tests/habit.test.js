@@ -5,8 +5,6 @@ import { resourceCreator, toSentenceCase } from '../helpers';
 
 const request = supertest.agent(app);
 
-const { Users, Habits } = models;
-
 const superAdmin = resourceCreator.createSuperAdmin();
 const adminUser = resourceCreator.createAdminUser();
 const regularUserOne = resourceCreator.createRegularUser();
