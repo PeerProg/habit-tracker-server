@@ -1,6 +1,6 @@
 import express from 'express';
 import { habitController } from '../controllers';
-import { authentication, habitValidations, authorization, validations } from '../middlewares';
+import { authentication, habitValidations, authorization, userValidations } from '../middlewares';
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ const {
   ensureNoSimilarlyNamedHabit,
   ensurePositiveIntegerParams
 } = habitValidations;
-const { ensureParamIsInteger } = validations;
+const { ensureParamIsInteger } = userValidations;
 const {
   createNewHabit,
   getUserHabits,
