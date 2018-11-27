@@ -1,6 +1,6 @@
 import express from 'express';
 import userController from '../controllers';
-import { validations, authorization, authentication } from '../middlewares';
+import { userValidations, authorization, authentication } from '../middlewares';
 
 const router = express.Router();
 
@@ -14,8 +14,8 @@ const {
   checkIfIdentifierIsInUse,
   validatePassword,
   ensureParamIsInteger,
-  validateEmail
-} = validations;
+  validateEmail,
+} = userValidations;
 
 const {
   getAllUsers,
