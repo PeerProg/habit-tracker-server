@@ -4,10 +4,6 @@ const HabitsModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    milestones: {
-      type: DataTypes.ARRAY(DataTypes.TEXT),
-      allowNull: false,
-    },
     userId: {
       type: DataTypes.INTEGER,
     },
@@ -17,6 +13,11 @@ const HabitsModel = (sequelize, DataTypes) => {
   Habits.associate = (models) => {
     Habits.belongsTo(models.Users, {
       foreignKey: 'userId',
+      onDelete: 'CASCADE',
+    });
+
+    Habits.hasMany(models.Milestone, {
+      foreignKey: 'habitId',
       onDelete: 'CASCADE',
     });
   };
