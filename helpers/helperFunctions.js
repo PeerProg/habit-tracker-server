@@ -7,3 +7,9 @@ export const isEmpty = (value) => {
     return Object.keys(value).every(key => isEmpty(value[key]));
   }
 };
+
+export const toSentenceCase = (value) => {
+  const firstChar = value.slice(0, 1).toUpperCase().trim();
+  const otherChars = value.slice(1).toLowerCase().trim();
+  return `${firstChar}${otherChars}`;
+};

@@ -1,10 +1,10 @@
 import express from 'express';
 import userController from '../controllers';
-import authenticate, { validations, authorization } from '../middlewares';
+import { validations, authorization, authentication } from '../middlewares';
 
 const router = express.Router();
 
-const { authenticateUser } = authenticate;
+const { authenticateUser } = authentication;
 const { authorizeAdmin, authorizeAccountOwner, userIsActive } = authorization;
 
 const {
@@ -50,8 +50,8 @@ router.route('/all')
 
 router.route('/deactivate/:id')
   .put(
-    authenticateUser,
     ensureParamIsInteger,
+    authenticateUser,
     checkIfUserExists,
     authorizeAccountOwner,
     deactivateUserAccount,

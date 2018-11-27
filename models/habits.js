@@ -1,9 +1,12 @@
 const HabitsModel = (sequelize, DataTypes) => {
   const Habits = sequelize.define('Habits', {
-    title: DataTypes.STRING,
-    complete: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    milestones: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: false,
     },
     userId: {
       type: DataTypes.INTEGER,
