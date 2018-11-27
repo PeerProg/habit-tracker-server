@@ -24,7 +24,4 @@ app.use(`${baseRoute}/habit`, habitRouter);
 // Unknown routes error handler.
 app.use(routesErrorHandler);
 
-// miscellanous error handler
-app.use(allPurposeErrorHandler);
-
 export default app;
