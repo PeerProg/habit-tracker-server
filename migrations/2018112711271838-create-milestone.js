@@ -6,6 +6,7 @@ module.exports = {
       id: {
         allowNull: false,
         autoIncrement: true,
+        primaryKey: true,
         type: Sequelize.INTEGER
       },
       title: {
@@ -17,7 +18,6 @@ module.exports = {
         allowNull: false,
       },
       habitId: {
-        primaryKey: true,
         type: Sequelize.INTEGER,
       },
       createdAt: {

@@ -7,6 +7,9 @@ module.exports = {
   },
 
   down(queryInterface, Sequelize) {
-    return queryInterface.removeColumn(tableName, 'milestones');
+    queryInterface.addColumn(tableName, 'milestones', {
+      type: Sequelize.ARRAY(Sequelize.TEXT),
+      allowNull: false,
+    });
   }
 };
