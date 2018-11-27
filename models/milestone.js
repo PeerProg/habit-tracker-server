@@ -11,8 +11,9 @@ const MilestoneModel = (sequelize, DataTypes) => {
     },
     habitId: {
       type: DataTypes.INTEGER,
-      primaryKey: true
     },
+  }, {
+    freezeTableName: true
   });
 
   // Class methods
