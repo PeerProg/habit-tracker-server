@@ -15,11 +15,11 @@ export default {
       milestones: normalizedMilestones,
       userId
     });
-    return res.send(newHabit);
+    return res.status(201).send(newHabit);
   },
 
   async getUserHabits(req, res) {
-    const { decoded: { id: userId } } = req;
+    const { params: { id: userId } } = req;
     const userHabits = await Habits.findAll({
       where: {
         userId,
@@ -27,7 +27,7 @@ export default {
     });
     const hasHabitsCreated = await userHabits.length;
     if (!hasHabitsCreated) {
-      return res.status(404).send({ message: 'You have no habits created for tracking yet' });
+      return res.status(404).send({ message: 'No habits created yet' });
     }
 
     const responseArray = (userHabits).map(habit => ({
@@ -116,7 +116,7 @@ export default {
     const replacementMilestones = [...new Set(newMilestones)];
 
     const editedHabit = await singleUserHabit.update({
-      name: toSentenceCase(req.body.name) || singleUserHabit.name,
+      name: (req.body.name && toSentenceCase(req.body.name)) || singleUserHabit.name,
       milestones: replacementMilestones
     });
 
