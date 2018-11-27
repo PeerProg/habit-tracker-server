@@ -29,18 +29,18 @@ export default {
   },
 
   async authorizeHabitOwnerOrAdmin(req, res, next) {
-    const { params: { id }, decoded: { id: userId, isAdmin, isSuperAdmin } } = req;
+    const { params: { userId }, decoded: { id, isAdmin, isSuperAdmin } } = req;
 
-    const isHabitsOwner = Number(id) === userId;
+    const isHabitsOwner = Number(userId) === id;
     const isAuthorized = isAdmin || isSuperAdmin;
     if (isHabitsOwner || isAuthorized) return next();
     return res.status(401).json({ message: 'Not authorized' });
   },
 
   async authorizeHabitOwner(req, res, next) {
-    const { params: { id }, decoded: { id: userId } } = req;
+    const { params: { userId }, decoded: { id } } = req;
 
-    const isHabitsOwner = Number(id) === userId;
+    const isHabitsOwner = Number(userId) === id;
     if (isHabitsOwner) return next();
     return res.status(401).json({ message: 'Not authorized' });
   }

@@ -1,70 +1,55 @@
 import { Op } from 'sequelize';
 import models from '../models';
-import { isEmpty, toSentenceCase } from '../helpers';
+import { isEmpty, toSentenceCase, isPositiveInteger } from '../helpers';
 
 const { Habits } = models;
 
-const expectedFields = ['name', 'milestones'];
-const expectedParams = ['id', 'habitID'];
-const isPositiveInteger = (val) => Number.isInteger(Number(val)) && Number(val) > 0;
+const expectedParams = ['userId', 'habitId'];
 
 export default {
-  async ensureNameAndMilestonesSupplied(req, res, next) {
-    const requiredFieldsArray = [];
+  ensureNameIsProvided(req, res, next) {
+    const error = 'name is required but was not supplied';
+    const nameIsInNotBody = !Object.keys(req.body).includes('name');
 
-    expectedFields.forEach(field => {
-      if (!Object.keys(req.body).includes(field)) {
-        requiredFieldsArray.push(`${field} is required but was not supplied`);
-      }
-    });
-
-    if (requiredFieldsArray.length) {
-      return res.status(403).json({ errors: requiredFieldsArray });
-    }
+    if (nameIsInNotBody) return res.status(403).json({ error });
     return next();
   },
 
-  async ensureNonNullFields(req, res, next) {
-    const nullFieldsArray = [];
+  ensureNameIsNotEmpty(req, res, next) {
+    const { name } = req.body;
+    const error = 'name should not be empty';
 
-    expectedFields.forEach(field => {
-      if (Object.keys(req.body).includes(field)) {
-        const fieldValue = req.body[field];
-        if (isEmpty(fieldValue)) {
-          nullFieldsArray.push(`${field} should not be empty`);
-        }
-      }
-    });
+    const nameIsInBody = Object.keys(req.body).includes('name');
 
-    if (nullFieldsArray.length) {
-      return res.status(403).json({ errors: nullFieldsArray });
-    }
+    if (nameIsInBody && isEmpty(name)) return res.status(403).json({ error });
     return next();
   },
 
   async ensureNoSimilarlyNamedHabit(req, res, next) {
-    const { decoded: { id: userId } } = req;
-    if (Object.keys(req.body).includes('name')) {
+    const { decoded: { id: userId }, body: { name } } = req;
+    const message = 'You already have an habit with that name';
+
+    if ('name' in req.body) {
       const habit = await Habits.findOne({
         where: {
           [Op.and]: [
             {
               userId,
-              name: toSentenceCase(req.body.name)
+              name: toSentenceCase(name)
             }
           ]
         }
       });
 
-      if (habit && habit.get('name') === toSentenceCase(req.body.name)) {
-        return res.status(409).json({ message: 'You already have an habit with that name' });
+      if (habit && habit.get('name') === toSentenceCase(name)) {
+        return res.status(409).json({ message });
       }
       return next();
     }
     return next();
   },
 
-  async ensurePositiveIntegerParams(req, res, next) {
+  ensurePositiveIntegerParams(req, res, next) {
     const nonNumberErrorArray = [];
 
     expectedParams.forEach(param => {
@@ -77,5 +62,12 @@ export default {
       return res.status(403).json({ errors: nonNumberErrorArray });
     }
     return next();
+  },
+
+  ensurePositiveUserIdParam(req, res, next) {
+    if (!isPositiveInteger(req.params.userId)) {
+      return res.status(400).json({ error: 'userId must be a positive integer' });
+    }
+    next();
   }
 };
