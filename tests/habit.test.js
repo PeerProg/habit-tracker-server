@@ -37,20 +37,17 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken })
         .send({});
       expect(response.status).toBe(403);
-      expect(Array.isArray(response.body.errors)).toBe(true);
-      expect(response.body.errors[0]).toEqual('name is required but was not supplied');
-      expect(response.body.errors[1]).toEqual('milestones is required but was not supplied');
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toEqual('name is required but was not supplied');
       done();
     });
 
     it('Should fail creation when any required field is empty', async (done) => {
       const response = await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
-        .send({ name: '', milestones: [] });
+        .send({ name: '' });
       expect(response.status).toBe(403);
-      expect(Array.isArray(response.body.errors)).toBe(true);
-      expect(response.body.errors[0]).toEqual('name should not be empty');
-      expect(response.body.errors[1]).toEqual('milestones should not be empty');
+      expect(response.body.error).toEqual('name should not be empty');
       done();
     });
 
@@ -72,13 +69,12 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: superAdminToken })
         .send(habitBodyObjectOne);
       expect(response.status).toBe(201);
-      expect(Array.isArray(response.body.milestones)).toBe(true);
       expect(response.body).toHaveProperty('name', toSentenceCase(habitBodyObjectOne.name));
       done();
     });
   });
 
-  describe('GET ALL USER HABITS: /api/v1/habit/user/:id/all-habits', () => {
+  describe('GET ALL USER HABITS: /api/v1/habit/user/:userId/all-habits', () => {
     it('Should return a message when user has no habits yet', async (done) => {
       const response = await request.get(`${baseHabitRoute}/user/2/all-habits`)
         .set({ Authorization: adminToken });
@@ -86,6 +82,15 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.body).toHaveProperty('message', 'No habits created yet');
       done();
     });
+
+    it('Should not get habits when userId param is invalid', async (done) => {
+      const response = await request.get(`${baseHabitRoute}/user/-3/all-habits`)
+        .set({ Authorization: regularUserOneToken });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toEqual('userId must be a positive integer');
+      done();
+    });
+
     it('Should allow a user get a list of his/her habits', async (done) => {
       await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
@@ -128,7 +133,7 @@ describe('THE HABITS TEST SUITE', () => {
     });
   });
 
-  describe(`GET SINGLE USER HABIT: ${baseHabitRoute}/user/:id/:habitID`, () => {
+  describe(`GET SINGLE USER HABIT: ${baseHabitRoute}/user/:userId/:habitId`, () => {
     it('Should not permit GET for a non-existent habit', async (done) => {
       const response = await request.get(`${baseHabitRoute}/user/3/156`)
         .set({ Authorization: regularUserOneToken });
@@ -145,7 +150,6 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken });
       expect(response.status).toBe(200);
       expect(response.body.name).toEqual(habitBodyObjectTwo.name);
-      expect(response.body.milestones[1]).toEqual(habitBodyObjectTwo.milestones[1]);
       done();
     });
 
@@ -158,11 +162,11 @@ describe('THE HABITS TEST SUITE', () => {
     });
   });
 
-  describe(`EDIT USER HABITS: ${baseHabitRoute}/user/:id/:habitID`, () => {
+  describe(`EDIT USER HABITS: ${baseHabitRoute}/user/:userId/:habitId`, () => {
     it('Should prevent unfettered access to editing a user\'s habits', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/3/3`)
         .set({ Authorization: superAdminToken })
-        .send({ name: 'Perform chores', milestones: ['Buy groceries', 'Go to bank'] });
+        .send({ name: 'Perform chores' });
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message', 'Not authorized');
       done();
@@ -171,7 +175,7 @@ describe('THE HABITS TEST SUITE', () => {
     it('Should not allow editing of a non-existent habit', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/3/15`)
         .set({ Authorization: regularUserOneToken })
-        .send({ name: 'Perform chores', milestones: ['Buy groceries', 'Go to bank'] });
+        .send({ name: 'Perform chores' });
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('message', 'No habit with id 15');
       done();
@@ -180,7 +184,7 @@ describe('THE HABITS TEST SUITE', () => {
     it('Should not allow editing when the user has similarly named habit', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/3/3`)
         .set({ Authorization: regularUserOneToken })
-        .send({ name: habitBodyObjectOne.name, milestones: ['Buy groceries', 'Go to bank'] });
+        .send({ name: habitBodyObjectOne.name });
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty('message', 'You already have an habit with that name');
       done();
@@ -192,34 +196,30 @@ describe('THE HABITS TEST SUITE', () => {
         .send({ milestones: ['Buy groceries', 'Go to bank'] });
       expect(response.status).toBe(403);
       expect(response.body.errors).toBeTruthy();
-      expect(response.body.errors[0]).toEqual('id must be a positive integer');
-      expect(response.body.errors[1]).toEqual('habitID must be a positive integer');
+      expect(response.body.errors[0]).toEqual('userId must be a positive integer');
+      expect(response.body.errors[1]).toEqual('habitId must be a positive integer');
       done();
     });
 
     it('Should allow habit update even if name is not supplied', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/3/3`)
         .set({ Authorization: regularUserOneToken })
-        .send({ milestones: ['Buy groceries', 'Go to bank'] });
-      expect(response.status).toBe(200);
-      expect(response.body.milestones[0]).toEqual('Buy groceries');
-      expect(response.body.milestones[1]).toEqual('Go to bank');
+        .send({ });
+      expect(response.status).toBe(302);
       done();
     });
 
     it('Should allow habit name update when name does not already exist', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/3/3`)
         .set({ Authorization: regularUserOneToken })
-        .send({ name: 'Stoop to conquer', milestones: ['Buy groceries', 'Go to bank'] });
+        .send({ name: 'Stoop to conquer' });
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('name', 'Stoop to conquer');
-      expect(response.body.milestones[0]).toEqual('Buy groceries');
-      expect(response.body.milestones[1]).toEqual('Go to bank');
       done();
     });
   });
 
-  describe(`DELETE USER HABITS: ${baseHabitRoute}/user/:id/:habitID`, () => {
+  describe(`DELETE USER HABITS: ${baseHabitRoute}/user/:userId/:habitId`, () => {
     it('Should prevent deletion of a habit that does not exist', async (done) => {
       const response = await request.delete(`${baseHabitRoute}/user/3/15`)
         .set({ Authorization: regularUserOneToken });
