@@ -73,7 +73,7 @@ export default {
 
   async habitExists(req, res, next) {
     const habit = await Habits.findOne({ where: { id: req.params.habitId } });
-    if (!habit) return res.status(404).send({ message: `No habit with id: ${req.params.habitId}` });
+    if (!habit) return res.status(404).send({ message: `No habit with id ${req.params.habitId}` });
     return next();
   }
 };

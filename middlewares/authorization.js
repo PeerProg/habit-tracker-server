@@ -38,9 +38,9 @@ export default {
   },
 
   async authorizeHabitOwner(req, res, next) {
-    const { params: { userId, habitId }, decoded: { id } } = req;
+    const { params: { userId }, decoded: { id } } = req;
 
-    const isHabitsOwner = Number(userId) === id || Number(habitId) === id;
+    const isHabitsOwner = Number(userId) === id;
     if (isHabitsOwner) return next();
     return res.status(401).json({ message: 'Not authorized' });
   }
