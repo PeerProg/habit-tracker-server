@@ -1,27 +1,24 @@
-const tableName = 'Users';
-/* eslint-disable no-unused-vars */
+const tableName = 'Milestone';
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(tableName, {
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username: {
-        type: Sequelize.STRING,
-        unique: true,
+      title: {
+        type: Sequelize.STRING(1234),
         allowNull: false,
       },
-      email: {
-        type: Sequelize.STRING,
-        unique: true,
+      completed: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      habitId: {
+        primaryKey: true,
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -33,6 +30,7 @@ module.exports = {
       }
     });
   },
+  // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable(tableName);
   }
