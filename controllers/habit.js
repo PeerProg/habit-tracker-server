@@ -103,7 +103,7 @@ export default {
       (toSentenceCase(req.body.name) === singleUserHabit.name);
 
     if (nameUnchanged) {
-      return res.sendStatus(302);
+      return res.sendStatus(304);
     }
 
     const editedHabit = await singleUserHabit.update({

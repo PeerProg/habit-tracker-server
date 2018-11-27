@@ -205,7 +205,7 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.put(`${baseHabitRoute}/user/3/3`)
         .set({ Authorization: regularUserOneToken })
         .send({ });
-      expect(response.status).toBe(302);
+      expect(response.status).toBe(304);
       done();
     });
 
