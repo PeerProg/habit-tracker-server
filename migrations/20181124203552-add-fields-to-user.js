@@ -2,7 +2,7 @@ const tableName = 'Users';
 
 module.exports = {
   up(queryInterface, Sequelize) {
-    return [
+    return Promise.all([
       queryInterface.addColumn(tableName, 'isActive', {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
@@ -20,14 +20,14 @@ module.exports = {
         defaultValue: false,
         allowNull: false,
       })
-    ];
+    ]);
   },
 
   down(queryInterface, Sequelize) {
-    return [
+    return Promise.all([
       queryInterface.removeColumn(tableName, 'isActive'),
       queryInterface.removeColumn(tableName, 'isAdmin'),
       queryInterface.removeColumn(tableName, 'isSuperAdmin')
-    ];
+    ]);
   }
 };
