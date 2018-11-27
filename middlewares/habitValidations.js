@@ -69,5 +69,11 @@ export default {
       return res.status(400).json({ error: 'userId must be a positive integer' });
     }
     next();
+  },
+
+  async habitExists(req, res, next) {
+    const habit = await Habits.findOne({ where: { id: req.params.habitId } });
+    if (!habit) return res.status(404).send({ message: `No habit with id: ${req.params.habitId}` });
+    return next();
   }
 };
