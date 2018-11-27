@@ -18,7 +18,7 @@ export default {
     const userHabits = await Habits.findAll({ where: { userId } });
     const hasHabitsCreated = await userHabits.length;
     if (!hasHabitsCreated) {
-      return res.status(404).send({ message: 'No habits created yet' });
+      return res.status(200).send({ message: 'No habits created yet' });
     }
 
     const responseArray = (userHabits).map(habit => ({
