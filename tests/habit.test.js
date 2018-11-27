@@ -78,7 +78,7 @@ describe('THE HABITS TEST SUITE', () => {
     it('Should return a message when user has no habits yet', async (done) => {
       const response = await request.get(`${baseHabitRoute}/user/2/all-habits`)
         .set({ Authorization: adminToken });
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('message', 'No habits created yet');
       done();
     });
