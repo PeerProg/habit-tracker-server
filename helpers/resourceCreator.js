@@ -1,4 +1,5 @@
 import faker from 'faker';
+import { toSentenceCase } from './helperFunctions';
 
 export default {
   createSuperAdmin() {
@@ -84,6 +85,34 @@ export default {
       username: '',
       email: '',
       password: 'amalfitano'
+    };
+  },
+
+  createProperHabit() {
+    const name = toSentenceCase('Travel more');
+    const milestones = [
+      'save money monthly',
+      'target PTO for mid-month',
+      'Research places, read travel blogs'
+    ].map(item => toSentenceCase(item));
+
+    return {
+      name,
+      milestones
+    };
+  },
+
+  createNewHabit() {
+    const name = toSentenceCase('Build an app a day');
+    const milestones = [
+      'Wake up early',
+      'Do not overthink things',
+      'Think of modest complexity'
+    ].map(item => toSentenceCase(item));
+
+    return {
+      name,
+      milestones
     };
   }
 };
