@@ -56,11 +56,8 @@ export default {
         }
       });
 
-      if (habit) {
-        const alreadyExists = await habit.get('name') === toSentenceCase(req.body.name);
-        if (alreadyExists) {
-          return res.status(409).json({ message: 'You already have an habit with that name' });
-        }
+      if (habit && habit.get('name') === toSentenceCase(req.body.name)) {
+        return res.status(409).json({ message: 'You already have an habit with that name' });
       }
       return next();
     }
