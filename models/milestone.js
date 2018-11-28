@@ -1,5 +1,15 @@
+import uuid from 'uuid/v4';
+
 const MilestoneModel = (sequelize, DataTypes) => {
   const Milestone = sequelize.define('Milestone', {
+    id: {
+      type: DataTypes.UUID,
+      primarykey: true,
+      unique: true,
+      allowNull: false,
+      defaultValue: uuid(),
+
+    },
     title: {
       type: DataTypes.STRING(1234),
       allowNull: false
@@ -10,7 +20,7 @@ const MilestoneModel = (sequelize, DataTypes) => {
       defaultValue: false
     },
     habitId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
     },
   }, {
     freezeTableName: true

@@ -1,11 +1,21 @@
+import uuid from 'uuid/v4';
+
 const HabitsModel = (sequelize, DataTypes) => {
   const Habits = sequelize.define('Habits', {
+    id: {
+      type: DataTypes.UUID,
+      primarykey: true,
+      unique: true,
+      allowNull: false,
+      defaultValue: uuid(),
+
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
     },
   });
 
