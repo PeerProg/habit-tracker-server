@@ -25,6 +25,7 @@ export default {
     });
 
     const normalizedUser = {
+      id: user.id,
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
@@ -67,6 +68,7 @@ export default {
     const user = await Users.findByPk(req.params.id);
     const updatedUser = await user.update(req.body);
     const normalizedUser = {
+      id: updatedUser.id,
       username: updatedUser.username,
       email: updatedUser.email,
       createdAt: updatedUser.createdAt,
@@ -109,6 +111,7 @@ export default {
     }
 
     const normalizedUser = {
+      id: user.id,
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,

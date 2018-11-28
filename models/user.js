@@ -1,14 +1,13 @@
 import bcrypt from 'bcrypt';
-import uuid from 'uuid/v4';
 
 const UserModel = (sequelize, DataTypes) => {
   const User = sequelize.define('Users', {
     id: {
       type: DataTypes.UUID,
-      primarykey: true,
+      primaryKey: true,
       unique: true,
       allowNull: false,
-      defaultValue: uuid(),
+      defaultValue: DataTypes.UUIDV4,
     },
     email: {
       type: DataTypes.STRING,

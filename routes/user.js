@@ -13,8 +13,8 @@ const {
   checkIfUserExists,
   checkIfIdentifierIsInUse,
   validatePassword,
-  ensureParamIsInteger,
   validateEmail,
+  ensureUserParamIsValid
 } = userValidations;
 
 const {
@@ -50,7 +50,7 @@ router.route('/all')
 
 router.route('/deactivate/:id')
   .put(
-    ensureParamIsInteger,
+    ensureUserParamIsValid,
     authenticateUser,
     checkIfUserExists,
     authorizeAccountOwner,
@@ -59,10 +59,10 @@ router.route('/deactivate/:id')
 
 // Ideally, this route will only be available if a deactivated user tries to login.
 router.route('/activate/:id')
-  .put(ensureParamIsInteger, checkIfUserExists, activateUserAccount);
+  .put(ensureUserParamIsValid, checkIfUserExists, activateUserAccount);
 
 router.route('/:id')
-  .all(ensureParamIsInteger, checkIfUserExists)
+  .all(ensureUserParamIsValid, checkIfUserExists)
   .put(
     userIsActive,
     authenticateUser,

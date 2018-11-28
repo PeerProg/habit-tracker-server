@@ -14,5 +14,8 @@ export const toSentenceCase = (value) => {
   return `${firstChar}${otherChars}`;
 };
 
-export const isPositiveInteger = (val) => Number.isInteger(Number(val)) && Number(val) > 0;
+export const uuidTester = (inputUUID) => {
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+  return uuidRegex.test(inputUUID);
+};
 

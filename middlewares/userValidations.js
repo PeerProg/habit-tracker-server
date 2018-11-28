@@ -1,5 +1,5 @@
 import models from '../models';
-import { isEmpty } from '../helpers';
+import { isEmpty, uuidTester } from '../helpers';
 
 const { Users } = models;
 
@@ -88,10 +88,8 @@ export default {
     next();
   },
 
-  ensureParamIsInteger(req, res, next) {
-    if (isNaN(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid param. ID should be a number' });
-    }
-    next();
+  ensureUserParamIsValid(req, res, next) {
+    if (uuidTester(req.params.id)) return next();
+    return res.status(400).json({ error: 'Invalid user id param' });
   }
 };
