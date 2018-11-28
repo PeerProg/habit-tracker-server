@@ -15,6 +15,7 @@ const {
   validatePassword,
   ensureParamIsInteger,
   validateEmail,
+  normalizeUsernameField
 } = validations;
 
 const {
@@ -36,11 +37,12 @@ router.route('/register')
     validateEmail,
     checkIfIdentifierIsInUse,
     validatePassword,
+    normalizeUsernameField,
     createUser
   );
 
 router.route('/login')
-  .post(login);
+  .post(normalizeUsernameField, login);
 
 router.route('/logout')
   .delete(logout);
@@ -68,6 +70,7 @@ router.route('/:id')
     authenticateUser,
     authorizeAccountOwner,
     checkIfIdentifierIsInUse,
+    normalizeUsernameField,
     updateUserDetails
   )
   .get(authenticateUser, getOneUser)
