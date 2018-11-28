@@ -29,6 +29,7 @@ export default {
     });
 
     const normalizedUser = {
+      id: user.id,
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
@@ -79,6 +80,7 @@ export default {
     });
 
     const normalizedUser = {
+      id: updatedUser.id,
       username: updatedUser.username,
       email: updatedUser.email,
       createdAt: updatedUser.createdAt,
@@ -121,6 +123,7 @@ export default {
     }
 
     const normalizedUser = {
+      id: user.id,
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
