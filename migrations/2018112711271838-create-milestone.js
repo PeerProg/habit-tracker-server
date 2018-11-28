@@ -5,9 +5,9 @@ module.exports = {
     return queryInterface.createTable(tableName, {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       title: {
         type: Sequelize.STRING(1234),
@@ -18,7 +18,7 @@ module.exports = {
         allowNull: false,
       },
       habitId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
       },
       createdAt: {
         allowNull: false,
