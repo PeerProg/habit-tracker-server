@@ -1,5 +1,5 @@
 import models from '../models';
-import { isEmpty } from '../helpers';
+import { isEmpty, toLowerCase } from '../helpers';
 
 const { Users } = models;
 
@@ -93,5 +93,18 @@ export default {
       return res.status(400).json({ error: 'Invalid param. ID should be a number' });
     }
     next();
+  },
+
+  normalizeUsernameField(req, res, next) {
+     if (req.route.path === '/login') {
+      const { identifier } = req.body;
+      req.body.identifier = toLowerCase(identifier);
+      return next();
+    } else {
+      const { username, email } = req.body;
+      req.body.username = toLowerCase(username);
+      req.body.email = toLowerCase(email);
+      return next();
+    }
   }
 };
