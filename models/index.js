@@ -25,8 +25,9 @@ fs
   });
 
 Object.keys(db).forEach((modelName) => {
-  // If we end up having a model not associated with any other model, we revisit
-  db[modelName].associate(db);
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
 
 db.sequelize = sequelize;
