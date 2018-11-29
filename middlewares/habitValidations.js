@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 import models from '../models';
-import { isEmpty, toSentenceCase, isPositiveInteger } from '../helpers';
+import { isEmpty, toSentenceCase, uuidTester } from '../helpers';
 
 const { Habits } = models;
 
@@ -49,24 +49,24 @@ export default {
     return next();
   },
 
-  ensurePositiveIntegerParams(req, res, next) {
-    const nonNumberErrorArray = [];
+  ensureValidParams(req, res, next) {
+    const invalidParamsArray = [];
 
     expectedParams.forEach(param => {
-      if (!isPositiveInteger(req.params[param])) {
-        nonNumberErrorArray.push(`${param} must be a positive integer`);
+      if (!uuidTester(req.params[param])) {
+        invalidParamsArray.push(`${param} is not a valid uuid`);
       }
     });
 
-    if (nonNumberErrorArray.length) {
-      return res.status(403).json({ errors: nonNumberErrorArray });
+    if (invalidParamsArray.length) {
+      return res.status(403).json({ errors: invalidParamsArray });
     }
     return next();
   },
 
-  ensurePositiveUserIdParam(req, res, next) {
-    if (!isPositiveInteger(req.params.userId)) {
-      return res.status(400).json({ error: 'userId must be a positive integer' });
+  ensureValidUserIdParam(req, res, next) {
+    if (!uuidTester(req.params.userId)) {
+      return res.status(400).json({ error: 'the userId supplied is not a valid uuid' });
     }
     next();
   },

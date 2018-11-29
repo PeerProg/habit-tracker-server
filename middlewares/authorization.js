@@ -12,7 +12,7 @@ export default {
   },
 
   authorizeAccountOwner(req, res, next) {
-    if (req.decoded.id !== Number(req.params.id)) {
+    if ((req.decoded.id).toString() !== (req.params.id).toString()) {
       return res.status(401).send({ message: 'Operation not permitted on another user\'s account' });
     }
     next();
@@ -31,7 +31,7 @@ export default {
   async authorizeHabitOwnerOrAdmin(req, res, next) {
     const { params: { userId }, decoded: { id, isAdmin, isSuperAdmin } } = req;
 
-    const isHabitsOwner = Number(userId) === id;
+    const isHabitsOwner = userId.toString() === id.toString();
     const isAuthorized = isAdmin || isSuperAdmin;
     if (isHabitsOwner || isAuthorized) return next();
     return res.status(401).json({ message: 'Not authorized' });
@@ -40,7 +40,7 @@ export default {
   async authorizeHabitOwner(req, res, next) {
     const { params: { userId }, decoded: { id } } = req;
 
-    const isHabitsOwner = Number(userId) === id;
+    const isHabitsOwner = userId.toString() === id.toString();
     if (isHabitsOwner) return next();
     return res.status(401).json({ message: 'Not authorized' });
   }

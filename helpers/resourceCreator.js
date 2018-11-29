@@ -1,4 +1,5 @@
 import faker from 'faker';
+import uuid from 'uuid/v4';
 import { toSentenceCase } from './helperFunctions';
 
 export default {
@@ -96,5 +97,22 @@ export default {
   createNewHabit() {
     const name = toSentenceCase('Build an app a day');
     return { name };
+  },
+
+  createHabit() {
+    const name = toSentenceCase('Run 365 miles every week');
+    return { name };
+  },
+
+  user404UUID() {
+    return uuid();
+  },
+
+  habit404UUID() {
+    return uuid();
+  },
+
+  milestone404UUID() {
+    return uuid();
   }
 };
