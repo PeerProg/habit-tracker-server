@@ -93,5 +93,5 @@ export default {
       return res.status(400).json({ error: 'Invalid param. ID should be a number' });
     }
     next();
-  }
+  },
 };

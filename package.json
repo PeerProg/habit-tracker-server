@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "babel-watch --watch ./ server.js",
-    "test:dev": "NODE_ENV=test && jest --verbose --i --coverage --forceExit",
+    "set-node-env": "set NODE_ENV=test",
+    "test:dev": "npm run set-node-env && jest --verbose --i --coverage --forceExit",
     "test": "jest --verbose --silent --i --coverage --forceExit",
     "lint": "eslint ./ || true",
     "db:migrate": "node_modules/.bin/sequelize db:migrate",

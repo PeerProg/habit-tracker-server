@@ -373,7 +373,7 @@ describe('THE USER TEST SUITE', () => {
         });
     });
 
-    it('Should successfully update user details when valid token is supplied', (done) => {
+    it('Should successfully update email when valid token is supplied', (done) => {
       const requestObject = { email: 'solomon.grundy@gmail.com' };
       request.put(`${singleRequestRoute}/2`)
         .set({ Authorization: adminToken })
@@ -381,6 +381,19 @@ describe('THE USER TEST SUITE', () => {
         .then(response => {
           expect(response.status).toEqual(200);
           expect(response.body).toHaveProperty('email', requestObject.email);
+          expect(response.body).toHaveProperty('message', 'Update successful');
+          done();
+        });
+    });
+
+    it('Should successfully update username when valid token is supplied', (done) => {
+      const requestObject = { username: 'bodunde' };
+      request.put(`${singleRequestRoute}/2`)
+        .set({ Authorization: adminToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveProperty('username', requestObject.username);
           expect(response.body).toHaveProperty('message', 'Update successful');
           done();
         });

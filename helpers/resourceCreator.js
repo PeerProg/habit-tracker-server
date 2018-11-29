@@ -9,7 +9,7 @@ export default {
     const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: 'superadmin',
       isSuperAdmin: true
     };
@@ -21,7 +21,7 @@ export default {
     const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: 'adminpassword',
       isAdmin: true
     };
@@ -33,7 +33,7 @@ export default {
     const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: 'regularpassword'
     };
   },
@@ -57,14 +57,14 @@ export default {
     const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: faker.address.latitude(),
     };
   },
 
   withNoUsername() {
     return {
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: 'validPa55word'
     };
   },

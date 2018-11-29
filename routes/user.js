@@ -14,7 +14,7 @@ const {
   checkIfIdentifierIsInUse,
   validatePassword,
   ensureParamIsInteger,
-  validateEmail,
+  validateEmail
 } = validations;
 
 const {
