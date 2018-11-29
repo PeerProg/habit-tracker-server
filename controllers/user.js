@@ -18,7 +18,7 @@ export default {
     let { username, email } = req.body;
     username = username && username.trim().toLowerCase();
     email = email && email.trim().toLowerCase();
-    const requestBody = { ...req.body, username, email }
+    const requestBody = { ...req.body, username, email };
     const user = await Users.create(requestBody);
     const token = jwtSignUser({
       username: user.username,
@@ -72,7 +72,7 @@ export default {
     let { username, email } = req.body;
     username = username && username.trim().toLowerCase();
     email = email && email.trim().toLowerCase();
-    
+
     const user = await Users.findByPk(req.params.id);
     const updatedUser = await user.update({
       username: username || user.username,

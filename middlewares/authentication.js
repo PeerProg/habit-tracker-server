@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const secretOrPrivateKey = process.env.SECRET || 'passkey';
+const secretOrPrivateKey = process.env.SECRET;
 
 export default {
   authenticateUser(req, res, next) {
