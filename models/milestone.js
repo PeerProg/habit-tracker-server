@@ -23,14 +23,6 @@ const MilestoneModel = (sequelize, DataTypes) => {
     freezeTableName: true
   });
 
-  // Class methods
-  Milestone.associate = (models) => {
-    Milestone.belongsTo(models.Habits, {
-      foreignKey: 'habitId',
-      onDelete: 'CASCADE',
-    });
-  };
-
   return Milestone;
 };
 
