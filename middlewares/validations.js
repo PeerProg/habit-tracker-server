@@ -1,5 +1,5 @@
 import models from '../models';
-import { isEmpty, toLowerCase } from '../helpers';
+import { isEmpty } from '../helpers';
 
 const { Users } = models;
 
