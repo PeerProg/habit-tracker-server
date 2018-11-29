@@ -4,7 +4,7 @@ import models from '../models';
 
 const { Users } = models;
 
-const secretOrPrivateKey = process.env.SECRET || 'passkey';
+const secretOrPrivateKey = process.env.SECRET;
 
 function jwtSignUser(payload) {
   const ONE_WEEK = 60 * 60 * 24 * 7;
@@ -15,7 +15,11 @@ function jwtSignUser(payload) {
 
 export default {
   async createUser(req, res) {
-    const user = await Users.create(req.body);
+    let { username, email } = req.body;
+    username = username && username.trim().toLowerCase();
+    email = email && email.trim().toLowerCase();
+    const requestBody = { ...req.body, username, email }
+    const user = await Users.create(requestBody);
     const token = jwtSignUser({
       username: user.username,
       id: user.id,
@@ -64,8 +68,16 @@ export default {
   },
 
   async updateUserDetails(req, res) {
+    let { username, email } = req.body;
+    username = username && username.trim().toLowerCase();
+    email = email && email.trim().toLowerCase();
+    
     const user = await Users.findByPk(req.params.id);
-    const updatedUser = await user.update(req.body);
+    const updatedUser = await user.update({
+      username: username || user.username,
+      email: email || user.email,
+    });
+
     const normalizedUser = {
       username: updatedUser.username,
       email: updatedUser.email,
