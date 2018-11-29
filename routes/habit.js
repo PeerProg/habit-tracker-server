@@ -10,8 +10,8 @@ const {
   ensureNameIsProvided,
   ensureNameIsNotEmpty,
   ensureNoSimilarlyNamedHabit,
-  ensurePositiveIntegerParams,
-  ensurePositiveUserIdParam
+  ensureValidParams,
+  ensureValidUserIdParam
 } = habitValidations;
 const {
   createNewHabit,
@@ -31,10 +31,10 @@ router.route('/create')
   );
 
 router.route('/user/:userId/all-habits')
-  .get(ensurePositiveUserIdParam, authenticateUser, authorizeHabitOwnerOrAdmin, getUserHabits);
+  .get(ensureValidUserIdParam, authenticateUser, authorizeHabitOwnerOrAdmin, getUserHabits);
 
 router.route('/user/:userId/:habitId')
-  .all(ensurePositiveIntegerParams, authenticateUser, authorizeHabitOwner)
+  .all(ensureValidParams, authenticateUser, authorizeHabitOwner)
   .get(getOneUserHabit)
   .put(ensureNameIsNotEmpty, ensureNoSimilarlyNamedHabit, editOneUserHabit)
   .delete(deleteOneUserHabit);

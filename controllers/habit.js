@@ -81,8 +81,6 @@ export default {
   },
 
   async editOneUserHabit(req, res) {
-    // Ensure to always prepopulate with data from DB so it is available in req.body
-    // When updating, we are always replacing because of the minimalist structure of the models
     const { params: { habitId }, decoded: { id: userId } } = req;
     const queryParam = {
       [Op.and]: [
