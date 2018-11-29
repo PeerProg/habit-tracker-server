@@ -53,7 +53,6 @@ describe('THE USER TEST SUITE', () => {
               });
           });
       });
-    // });
   });
 
   afterAll(() => models.sequelize.sync({ force: true }));

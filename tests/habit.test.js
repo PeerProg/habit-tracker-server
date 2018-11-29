@@ -64,9 +64,6 @@ describe('THE HABITS TEST SUITE', () => {
     });
 
     it('Should fail creation when user has similarly named habit', async (done) => {
-      // await request.post(`${baseHabitRoute}/create`)
-      //   .set({ Authorization: regularUserOneToken })
-      //   .send(habitBodyObjectOne);
       const response = await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
         .send(habitBodyObjectOne);
