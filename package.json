@@ -20,7 +20,7 @@
     "build-babel": "babel -d ./build ./ -s --ignore 'node_modules,build,coverage,.github'",
     "build": "npm run clean && npm run build-babel",
     "start": "npm run build && node ./build/server.js",
-    "precommit": "npm run lint || true",
+    "precommit": "npm run lint",
     "prepush": "npm run test:dev"
   },
   "dependencies": {
