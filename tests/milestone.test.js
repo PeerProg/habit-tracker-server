@@ -5,6 +5,8 @@ import { resourceCreator } from '../helpers';
 
 const request = supertest.agent(app);
 
+const habit404UUID = resourceCreator.habit404UUID();
+const milestone404UUID = resourceCreator.milestone404UUID();
 const regularUserObject = resourceCreator.createRegularUser();
 const newHabitObject = resourceCreator.createNewHabit();
 
@@ -29,12 +31,19 @@ describe('THE MILESTONE TEST SUITE', () => {
   afterAll(() => models.sequelize.sync({ force: true }));
 
   describe('CREATE MILESTONE', () => {
+    beforeAll(async () => {
+      const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habitId}/add`)
+        .set({ Authorization: regularUserToken })
+        .send({ title: 'Observe Daily siesta' });
+      milestoneId = milestoneResponse.body.id;
+    });
+
     it('Should not create a milestone if habit does not exist', async (done) => {
-      const milestoneResponse = await request.post(`${baseMilestoneRoute}/15/add`)
+      const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habit404UUID}/add`)
         .set({ Authorization: regularUserToken })
         .send({});
       expect(milestoneResponse.status).toBe(404);
-      expect(milestoneResponse.body).toHaveProperty('message', 'No habit with id 15');
+      expect(milestoneResponse.body).toHaveProperty('message', `No habit with id ${habit404UUID}`);
       done();
     });
 
@@ -79,8 +88,8 @@ describe('THE MILESTONE TEST SUITE', () => {
         .set({ Authorization: regularUserToken })
         .send();
       expect(Array.isArray(responseObject.body)).toBe(true);
-      expect(responseObject.body.length).toBe(1);
-      expect(responseObject.body[0].title).toEqual('Workout in the gym');
+      expect(responseObject.body.length).toBe(2);
+      expect(responseObject.body[1].title).toEqual('Workout in the gym');
       done();
     });
   });
@@ -95,10 +104,10 @@ describe('THE MILESTONE TEST SUITE', () => {
     });
 
     it('Should return a failure message if milestone does not exist', async (done) => {
-      const milestoneResponse = await request.get(`${baseMilestoneRoute}/${habitId}/get/3`)
+      const milestoneResponse = await request.get(`${baseMilestoneRoute}/${habitId}/get/${milestone404UUID}`)
         .set({ Authorization: regularUserToken })
         .send();
-      expect(milestoneResponse.body.message).toEqual('No milestone with id 3');
+      expect(milestoneResponse.body.message).toEqual(`No milestone with id ${milestone404UUID}`);
       done();
     });
   });
@@ -136,11 +145,11 @@ describe('THE MILESTONE TEST SUITE', () => {
 
   describe(`DELETE MILESTONE: ${baseMilestoneRoute}/:habitId/delete/:milestoneId`, () => {
     it('Should fail for non-existent habit', async (done) => {
-      const deleteResponse = await request.delete(`${baseMilestoneRoute}/151/delete/${milestoneId}`)
+      const deleteResponse = await request.delete(`${baseMilestoneRoute}/${habit404UUID}/delete/${milestoneId}`)
         .set({ Authorization: regularUserToken })
         .send();
       expect(deleteResponse.status).toBe(404);
-      expect(deleteResponse.body.message).toEqual('No habit with id 151');
+      expect(deleteResponse.body.message).toEqual(`No habit with id ${habit404UUID}`);
       done();
     });
 
