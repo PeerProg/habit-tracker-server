@@ -94,17 +94,4 @@ export default {
     }
     next();
   },
-
-  normalizeUsernameField(req, res, next) {
-     if (req.route.path === '/login') {
-      const { identifier } = req.body;
-      req.body.identifier = toLowerCase(identifier);
-      return next();
-    } else {
-      const { username, email } = req.body;
-      req.body.username = toLowerCase(username);
-      req.body.email = toLowerCase(email);
-      return next();
-    }
-  }
 };
