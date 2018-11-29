@@ -393,7 +393,7 @@ describe('THE USER TEST SUITE', () => {
 
     it('Should successfully update username when valid token is supplied', (done) => {
       const requestObject = { username: 'bodunde' };
-      request.put(`${singleRequestRoute}/2`)
+      request.put(`${singleRequestRoute}/${adminID}`)
         .set({ Authorization: adminToken })
         .send(requestObject)
         .then(response => {
