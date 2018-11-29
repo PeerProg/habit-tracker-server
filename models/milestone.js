@@ -1,14 +1,11 @@
-import uuid from 'uuid/v4';
-
 const MilestoneModel = (sequelize, DataTypes) => {
   const Milestone = sequelize.define('Milestone', {
     id: {
       type: DataTypes.UUID,
-      primarykey: true,
+      primaryKey: true,
       unique: true,
       allowNull: false,
-      defaultValue: uuid(),
-
+      defaultValue: DataTypes.UUIDV4,
     },
     title: {
       type: DataTypes.STRING(1234),
