@@ -29,11 +29,8 @@ export default {
     const { identifier, password } = req.body;
     const user = await Users.findOne({
       where: {
-        [Op.or]: [
-          { username: identifier },
-          { email: identifier },
-        ],
-      },
+        [Op.or]: [{ username: identifier }, { email: identifier }]
+      }
     });
 
     if (!user) {

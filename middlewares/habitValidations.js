@@ -34,7 +34,10 @@ export default {
   },
 
   async ensureNoSimilarlyNamedHabit(req, res, next) {
-    const { decoded: { id: userId }, body: { name } } = req;
+    const {
+      decoded: { id: userId },
+      body: { name }
+    } = req;
     const message = 'You already have an habit with that name';
 
     if ('name' in req.body) {
@@ -76,7 +79,7 @@ export default {
     return next();
   },
 
-  ensureValidUserIdParam(req, res, next) {
+  ensureValidUserIdParams(req, res, next) {
     if (!uuidTester(req.params.userId)) {
       const error = new Error('the userId supplied is not a valid uuid');
       error.status = 400;
@@ -96,7 +99,9 @@ export default {
   },
 
   async userHabitExists(req, res, next) {
-    const { params: { habitId, userId } } = req;
+    const {
+      params: { habitId, userId }
+    } = req;
     const queryParam = {
       [Op.and]: [
         {
