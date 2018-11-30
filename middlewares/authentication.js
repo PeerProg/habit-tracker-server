@@ -29,22 +29,19 @@ export default {
     const { identifier, password } = req.body;
     const user = await Users.findOne({
       where: {
-        [Op.or]: [
-          { username: identifier },
-          { email: identifier },
-        ],
-      },
+        [Op.or]: [{ username: identifier }, { email: identifier }]
+      }
     });
 
     if (!user) {
       const error = new Error('Incorrect Login Information');
       error.status = 401;
-      return next(error);
+      next(error);
     }
     if (!user.validPassword(password)) {
       const error = new Error('Invalid credentials');
       error.status = 401;
-      return next(error);
+      next(error);
     }
     if (!user.isActive) {
       return res.redirect(`/activate/${user.id}`);
