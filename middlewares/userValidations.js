@@ -44,13 +44,13 @@ export default {
 
   async checkIfIdentifierIsInUse(req, res, next) {
     const { username, email } = req.body;
-    const usernameExists = await Users.findOne({ where: { username } });
-    const emailExists = await Users.findOne({ where: { email } });
-    if (usernameExists) {
+    const userByUsername = await Users.findOne({ where: { username } });
+    const userByEmail = await Users.findOne({ where: { email } });
+    if (userByUsername && req.params.id !== userByUsername.id) {
       const error = new Error('Username already in use');
       error.status = 409;
       next(error);
-    } else if (emailExists) {
+    } else if (userByEmail && req.params.id !== userByEmail.id) {
       const error = new Error('Email already in use');
       error.status = 409;
       next(error);
