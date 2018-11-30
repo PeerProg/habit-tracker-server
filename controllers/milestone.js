@@ -13,14 +13,14 @@ export default {
       }
     });
 
-    const responseArray = milestones.map(milestone => ({
+    const data = milestones.map(milestone => ({
       title: milestone.title,
       completed: milestone.completed,
       createdAt: milestone.createdAt,
       updatedAt: milestone.updatedAt
     }));
 
-    return res.json(responseArray);
+    return res.json({ data, status: 200 });
   },
 
   async addMilestone(req, res) {
@@ -28,7 +28,7 @@ export default {
     const title = toSentenceCase(req.body.title);
     const newMilestone = await Milestone.create({ title, habitId });
 
-    const responseObject = {
+    const data = {
       id: newMilestone.id,
       title: newMilestone.title,
       completed: newMilestone.completed,
@@ -36,7 +36,7 @@ export default {
       updatedAt: newMilestone.updatedAt,
     };
 
-    return res.json(responseObject);
+    return res.json({ data, status: 200 });
   },
 
   async getMilestone(req, res) {
@@ -52,7 +52,7 @@ export default {
       }
     });
 
-    const responseObject = {
+    const data = {
       id: milestone.id,
       title: milestone.title,
       completed: milestone.completed,
@@ -60,7 +60,7 @@ export default {
       updatedAt: milestone.updatedAt,
     };
 
-    return res.json(responseObject);
+    return res.json({ data, status: 200 });
   },
 
   async updateMilestone(req, res) {
@@ -81,7 +81,7 @@ export default {
       completed: req.body.completed || milestone.completed
     });
 
-    const responseObject = {
+    const data = {
       id: updatedMilestone.id,
       title: updatedMilestone.title,
       completed: updatedMilestone.completed,
@@ -89,7 +89,7 @@ export default {
       updatedAt: updatedMilestone.updatedAt,
     };
 
-    return res.json(responseObject);
+    return res.json({ data, status: 200 });
   },
 
   async deleteMilestone(req, res) {
@@ -106,6 +106,6 @@ export default {
     });
     await milestone.destroy();
 
-    return res.json({ message: 'Milestone deleted' });
+    return res.json({ message: 'Milestone deleted', status: 200 });
   }
 };

@@ -35,7 +35,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habitId}/add`)
         .set({ Authorization: regularUserToken })
         .send({ title: 'Observe Daily siesta' });
-      milestoneId = milestoneResponse.body.id;
+      milestoneId = milestoneResponse.body.data.id;
     });
 
     it('Should not create a milestone if habit does not exist', async (done) => {
@@ -51,7 +51,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habitId}/add`)
         .set({ Authorization: regularUserToken })
         .send({});
-      expect(milestoneResponse.body).toHaveProperty('error', 'title is required');
+      expect(milestoneResponse.body.error).toHaveProperty('message', 'title is required');
       done();
     });
 
@@ -59,7 +59,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habitId}/add`)
         .set({ Authorization: regularUserToken })
         .send({ title: '' });
-      expect(milestoneResponse.body).toHaveProperty('error', 'title cannot be empty');
+      expect(milestoneResponse.body.error).toHaveProperty('message', 'title cannot be empty');
       done();
     });
 
@@ -67,9 +67,9 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habitId}/add`)
         .set({ Authorization: regularUserToken })
         .send({ title: 'workout in the Gym' });
-      milestoneId = milestoneResponse.body.id;
+      milestoneId = milestoneResponse.body.data.id;
       expect(milestoneResponse.status).toBe(200);
-      expect(milestoneResponse.body).toHaveProperty('title', 'Workout in the gym');
+      expect(milestoneResponse.body.data).toHaveProperty('title', 'Workout in the gym');
       done();
     });
 
@@ -77,7 +77,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.post(`${baseMilestoneRoute}/${habitId}/add`)
         .set({ Authorization: regularUserToken })
         .send({ title: 'workout in the Gym' });
-      expect(milestoneResponse.body.message).toMatch('milestone with the same title');
+      expect(milestoneResponse.body.error.message).toMatch('milestone with the same title');
       done();
     });
   });
@@ -87,9 +87,9 @@ describe('THE MILESTONE TEST SUITE', () => {
       const responseObject = await request.get(`${baseMilestoneRoute}/${habitId}/milestones`)
         .set({ Authorization: regularUserToken })
         .send();
-      expect(Array.isArray(responseObject.body)).toBe(true);
-      expect(responseObject.body.length).toBe(2);
-      expect(responseObject.body[1].title).toEqual('Workout in the gym');
+      expect(Array.isArray(responseObject.body.data)).toBe(true);
+      expect(responseObject.body.data.length).toBe(2);
+      expect(responseObject.body.data[1].title).toEqual('Workout in the gym');
       done();
     });
   });
@@ -99,7 +99,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.get(`${baseMilestoneRoute}/${habitId}/get/${milestoneId}`)
         .set({ Authorization: regularUserToken })
         .send();
-      expect(milestoneResponse.body.title).toEqual('Workout in the gym');
+      expect(milestoneResponse.body.data.title).toEqual('Workout in the gym');
       done();
     });
 
@@ -107,7 +107,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const milestoneResponse = await request.get(`${baseMilestoneRoute}/${habitId}/get/${milestone404UUID}`)
         .set({ Authorization: regularUserToken })
         .send();
-      expect(milestoneResponse.body.message).toEqual(`No milestone with id ${milestone404UUID}`);
+      expect(milestoneResponse.body.error.message).toEqual(`No milestone with id ${milestone404UUID}`);
       done();
     });
   });
@@ -120,7 +120,7 @@ describe('THE MILESTONE TEST SUITE', () => {
       const updateResponse = await request.put(`${baseMilestoneRoute}/${habitId}/edit/${milestoneId}`)
         .set({ Authorization: regularUserToken })
         .send({ title: 'Write Blogposts' });
-      expect(updateResponse.body.message).toMatch('milestone with the same title');
+      expect(updateResponse.body.error.message).toMatch('milestone with the same title');
       done();
     });
 
@@ -129,7 +129,7 @@ describe('THE MILESTONE TEST SUITE', () => {
         .set({ Authorization: regularUserToken })
         .send({ title: 'Start a fitness PLAN' });
       expect(updateResponse.status).toBe(200);
-      expect(updateResponse.body.title).toEqual('Start a fitness plan');
+      expect(updateResponse.body.data.title).toEqual('Start a fitness plan');
       done();
     });
 
@@ -138,7 +138,7 @@ describe('THE MILESTONE TEST SUITE', () => {
         .set({ Authorization: regularUserToken })
         .send({});
       expect(updateResponse.status).toBe(200);
-      expect(updateResponse.body.title).toEqual('Start a fitness plan');
+      expect(updateResponse.body.data.title).toEqual('Start a fitness plan');
       done();
     });
   });

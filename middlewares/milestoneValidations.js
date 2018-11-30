@@ -7,7 +7,9 @@ const { Milestone } = models;
 export default {
   titleIsInBody(req, res, next) {
     if (!Object.keys(req.body).includes('title')) {
-      return res.send({ error: 'title is required' });
+      const error = new Error('title is required');
+      error.status = 400;
+      next(error);
     }
     return next();
   },
@@ -15,7 +17,9 @@ export default {
   titleIsEmpty(req, res, next) {
     const titleIsPresent = Object.keys(req.body).includes('title');
     if (titleIsPresent && isEmpty(req.body.title)) {
-      return res.send({ error: 'title cannot be empty' });
+      const error = new Error('title cannot be empty');
+      error.status = 400;
+      next(error);
     }
     return next();
   },
@@ -34,7 +38,9 @@ export default {
       }
     });
     if (!title || !milestone) return next();
-    return res.send({ message: 'Habit already has a milestone with the same title' });
+    const error = new Error('Habit already has a milestone with the same title');
+    error.status = 409;
+    next(error);
   },
 
   async checkIfMilestoneIdExists(req, res, next) {
@@ -50,6 +56,8 @@ export default {
       }
     });
     if (milestone) return next();
-    return res.send({ message: `No milestone with id ${milestoneId}` });
+    const error = new Error(`No milestone with id ${milestoneId}`);
+    error.status = 404;
+    next(error);
   }
 };
