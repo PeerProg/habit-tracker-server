@@ -1,10 +1,10 @@
 import express from 'express';
 import userController from '../controllers';
-import { validations, authorization, authentication } from '../middlewares';
+import { userValidations, authorization, authentication } from '../middlewares';
 
 const router = express.Router();
 
-const { authenticateUser } = authentication;
+const { authenticateUser, verifyLoginDetails } = authentication;
 const { authorizeAdmin, authorizeAccountOwner, userIsActive } = authorization;
 
 const {
@@ -13,9 +13,9 @@ const {
   checkIfUserExists,
   checkIfIdentifierIsInUse,
   validatePassword,
-  ensureParamIsInteger,
-  validateEmail
-} = validations;
+  validateEmail,
+  ensureUserParamIsValid
+} = userValidations;
 
 const {
   getAllUsers,
@@ -40,7 +40,7 @@ router.route('/register')
   );
 
 router.route('/login')
-  .post(login);
+  .post(verifyLoginDetails, login);
 
 router.route('/logout')
   .delete(logout);
@@ -50,7 +50,7 @@ router.route('/all')
 
 router.route('/deactivate/:id')
   .put(
-    ensureParamIsInteger,
+    ensureUserParamIsValid,
     authenticateUser,
     checkIfUserExists,
     authorizeAccountOwner,
@@ -59,10 +59,10 @@ router.route('/deactivate/:id')
 
 // Ideally, this route will only be available if a deactivated user tries to login.
 router.route('/activate/:id')
-  .put(ensureParamIsInteger, checkIfUserExists, activateUserAccount);
+  .put(ensureUserParamIsValid, checkIfUserExists, activateUserAccount);
 
 router.route('/:id')
-  .all(ensureParamIsInteger, checkIfUserExists)
+  .all(ensureUserParamIsValid, checkIfUserExists)
   .put(
     userIsActive,
     authenticateUser,

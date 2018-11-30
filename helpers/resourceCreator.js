@@ -1,12 +1,13 @@
 import faker from 'faker';
+import uuid from 'uuid/v4';
 import { toSentenceCase } from './helperFunctions';
 
 export default {
   createSuperAdmin() {
-    const firstName = faker.name.firstName().toLowerCase();
-    const lastName = faker.name.lastName().toLowerCase();
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
+    const username = joinedNames.substring(2).toLowerCase();
     return {
       username,
       email: faker.internet.email().toLowerCase(),
@@ -15,10 +16,10 @@ export default {
     };
   },
   createAdminUser() {
-    const firstName = faker.name.firstName().toLowerCase();
-    const lastName = faker.name.lastName().toLowerCase();
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
+    const username = joinedNames.substring(2).toLowerCase();
     return {
       username,
       email: faker.internet.email().toLowerCase(),
@@ -27,10 +28,10 @@ export default {
     };
   },
   createRegularUser() {
-    const firstName = faker.name.firstName().toLowerCase();
-    const lastName = faker.name.lastName().toLowerCase();
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
+    const username = joinedNames.substring(2).toLowerCase();
     return {
       username,
       email: faker.internet.email().toLowerCase(),
@@ -39,10 +40,10 @@ export default {
   },
 
   userWithInvalidEmail() {
-    const firstName = faker.name.firstName().toLowerCase();
-    const lastName = faker.name.lastName().toLowerCase();
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
+    const username = joinedNames.substring(2).toLowerCase();
     return {
       username,
       email: faker.lorem.word(),
@@ -51,10 +52,10 @@ export default {
   },
 
   userWithInvalidPassword() {
-    const firstName = faker.name.firstName().toLowerCase();
-    const lastName = faker.name.lastName().toLowerCase();
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
+    const username = joinedNames.substring(2).toLowerCase();
     return {
       username,
       email: faker.internet.email().toLowerCase(),
@@ -70,10 +71,10 @@ export default {
   },
 
   withNoEmail() {
-    const firstName = faker.name.firstName().toLowerCase();
-    const lastName = faker.name.lastName().toLowerCase();
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
+    const username = joinedNames.substring(2).toLowerCase();
     return {
       username,
       password: 'No3ma1lprov1ded'
@@ -90,29 +91,28 @@ export default {
 
   createProperHabit() {
     const name = toSentenceCase('Travel more');
-    const milestones = [
-      'save money monthly',
-      'target PTO for mid-month',
-      'Research places, read travel blogs'
-    ].map(item => toSentenceCase(item));
-
-    return {
-      name,
-      milestones
-    };
+    return { name };
   },
 
   createNewHabit() {
     const name = toSentenceCase('Build an app a day');
-    const milestones = [
-      'Wake up early',
-      'Do not overthink things',
-      'Think of modest complexity'
-    ].map(item => toSentenceCase(item));
+    return { name };
+  },
 
-    return {
-      name,
-      milestones
-    };
+  createHabit() {
+    const name = toSentenceCase('Run 365 miles every week');
+    return { name };
+  },
+
+  user404UUID() {
+    return uuid();
+  },
+
+  habit404UUID() {
+    return uuid();
+  },
+
+  milestone404UUID() {
+    return uuid();
   }
 };

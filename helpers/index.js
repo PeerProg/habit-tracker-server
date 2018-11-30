@@ -1,2 +1,2 @@
 export { default as resourceCreator } from './resourceCreator';
-export { isEmpty, toSentenceCase } from './helperFunctions';
+export { isEmpty, toSentenceCase, uuidTester } from './helperFunctions';

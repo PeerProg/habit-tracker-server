@@ -1,5 +1,5 @@
 import models from '../models';
-import { isEmpty } from '../helpers';
+import { isEmpty, uuidTester } from '../helpers';
 
 const { Users } = models;
 
@@ -16,10 +16,12 @@ export default {
     });
 
     if (requiredPayloadParams.length) {
-      return res.status(403).json({ error: requiredPayloadParams });
+      const error = new Error(JSON.stringify(requiredPayloadParams));
+      error.status = 400;
+      next(error);
     }
 
-    return next();
+    next();
   },
 
   checkEmptyUserFields(req, res, next) {
@@ -32,10 +34,12 @@ export default {
     });
 
     if (emptyPayloadParams.length) {
-      return res.status(403).json({ error: emptyPayloadParams });
+      const error = new Error(JSON.stringify(emptyPayloadParams));
+      error.status = 400;
+      next(error);
     }
 
-    return next();
+    next();
   },
 
   async checkIfIdentifierIsInUse(req, res, next) {
@@ -43,11 +47,15 @@ export default {
     const usernameExists = await Users.findOne({ where: { username } });
     const emailExists = await Users.findOne({ where: { email } });
     if (usernameExists) {
-      return res.status(409).json({ message: 'Username already in use' });
+      const error = new Error('Username already in use');
+      error.status = 409;
+      next(error);
     } else if (emailExists) {
-      return res.status(409).json({ message: 'Email already in use' });
+      const error = new Error('Email already in use');
+      error.status = 409;
+      next(error);
     }
-    return next();
+    next();
   },
 
   validatePassword(req, res, next) {
@@ -61,10 +69,12 @@ export default {
     `;
 
     if (!validPasswordRegex.test(req.body.password)) {
-      return res.status(400).send({ message });
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
     }
 
-    return next();
+    next();
   },
 
   validateEmail(req, res, next) {
@@ -74,24 +84,28 @@ export default {
     const message = 'The email address provided is invalid';
 
     if (!validEmailRegex.test(req.body.email)) {
-      return res.status(400).send({ message });
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
     }
 
-    return next();
+    next();
   },
 
   async checkIfUserExists(req, res, next) {
     const user = await Users.findByPk(req.params.id);
     if (!user) {
-      return res.status(404).json({ message: `No user with id ${req.params.id}` });
+      const error = new Error(`No user with id ${req.params.id}`);
+      error.status = 404;
+      next(error);
     }
     next();
   },
 
-  ensureParamIsInteger(req, res, next) {
-    if (isNaN(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid param. ID should be a number' });
-    }
-    next();
-  },
+  ensureUserParamIsValid(req, res, next) {
+    if (uuidTester(req.params.id)) return next();
+    const error = new Error('Invalid uuid user id param');
+    error.status = 400;
+    next(error);
+  }
 };

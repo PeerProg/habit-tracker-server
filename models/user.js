@@ -2,6 +2,13 @@ import bcrypt from 'bcrypt';
 
 const UserModel = (sequelize, DataTypes) => {
   const User = sequelize.define('Users', {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      unique: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+    },
     email: {
       type: DataTypes.STRING,
       unique: true,
@@ -38,14 +45,6 @@ const UserModel = (sequelize, DataTypes) => {
       },
     },
   });
-
-  // Class methods
-  User.associate = (models) => {
-    User.hasMany(models.Habits, {
-      onDelete: 'CASCADE',
-      foreignKey: 'userId',
-    });
-  };
 
   // Instance methods
   User.prototype.hashPassword = function hashPassword() {

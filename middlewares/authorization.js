@@ -6,14 +6,18 @@ export default {
   authorizeAdmin(req, res, next) {
     const isAdminOrSuper = req.decoded.isAdmin || req.decoded.isSuperAdmin;
     if (!isAdminOrSuper) {
-      return res.status(403).json({ message: 'Unauthorized' });
+      const error = new Error('Unauthorized');
+      error.status = 403;
+      next(error);
     }
     next();
   },
 
   authorizeAccountOwner(req, res, next) {
-    if (req.decoded.id !== Number(req.params.id)) {
-      return res.status(401).send({ message: 'Operation not permitted on another user\'s account' });
+    if ((req.decoded.id).toString() !== (req.params.id).toString()) {
+      const error = new Error('Operation not permitted on another user\'s account');
+      error.status = 403;
+      next(error);
     }
     next();
   },
@@ -22,26 +26,32 @@ export default {
     const userFromPK = await Users.findByPk(req.params.id);
 
     if (!userFromPK.isActive) {
-      return res.status(403).send({ message: 'Currently inactive. Activate to perform operation' });
+      const error = new Error('Currently inactive. Activate to perform operation');
+      error.status = 403;
+      next(error);
     }
 
     return next();
   },
 
   async authorizeHabitOwnerOrAdmin(req, res, next) {
-    const { params: { id }, decoded: { id: userId, isAdmin, isSuperAdmin } } = req;
+    const { params: { userId }, decoded: { id, isAdmin, isSuperAdmin } } = req;
 
-    const isHabitsOwner = Number(id) === userId;
+    const isHabitsOwner = userId.toString() === id.toString();
     const isAuthorized = isAdmin || isSuperAdmin;
     if (isHabitsOwner || isAuthorized) return next();
-    return res.status(401).json({ message: 'Not authorized' });
+    const error = new Error('Not authorized');
+    error.status = 403;
+    next(error);
   },
 
   async authorizeHabitOwner(req, res, next) {
-    const { params: { id }, decoded: { id: userId } } = req;
+    const { params: { userId }, decoded: { id } } = req;
 
-    const isHabitsOwner = Number(id) === userId;
+    const isHabitsOwner = userId.toString() === id.toString();
     if (isHabitsOwner) return next();
-    return res.status(401).json({ message: 'Not authorized' });
+    const error = new Error('Not authorized');
+    error.status = 403;
+    next(error);
   }
 };

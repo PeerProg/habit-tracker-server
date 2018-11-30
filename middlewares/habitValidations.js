@@ -1,81 +1,118 @@
 import { Op } from 'sequelize';
 import models from '../models';
-import { isEmpty, toSentenceCase } from '../helpers';
+import { isEmpty, toSentenceCase, uuidTester } from '../helpers';
 
 const { Habits } = models;
 
-const expectedFields = ['name', 'milestones'];
-const expectedParams = ['id', 'habitID'];
-const isPositiveInteger = (val) => Number.isInteger(Number(val)) && Number(val) > 0;
+const expectedParams = ['userId', 'habitId'];
 
 export default {
-  async ensureNameAndMilestonesSupplied(req, res, next) {
-    const requiredFieldsArray = [];
+  ensureNameIsProvided(req, res, next) {
+    const message = 'name is required but was not supplied';
+    const nameIsInNotBody = !Object.keys(req.body).includes('name');
 
-    expectedFields.forEach(field => {
-      if (!Object.keys(req.body).includes(field)) {
-        requiredFieldsArray.push(`${field} is required but was not supplied`);
-      }
-    });
-
-    if (requiredFieldsArray.length) {
-      return res.status(403).json({ errors: requiredFieldsArray });
+    if (nameIsInNotBody) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
     }
     return next();
   },
 
-  async ensureNonNullFields(req, res, next) {
-    const nullFieldsArray = [];
+  ensureNameIsNotEmpty(req, res, next) {
+    const { name } = req.body;
+    const message = 'name should not be empty';
 
-    expectedFields.forEach(field => {
-      if (Object.keys(req.body).includes(field)) {
-        const fieldValue = req.body[field];
-        if (isEmpty(fieldValue)) {
-          nullFieldsArray.push(`${field} should not be empty`);
-        }
-      }
-    });
+    const nameIsInBody = Object.keys(req.body).includes('name');
 
-    if (nullFieldsArray.length) {
-      return res.status(403).json({ errors: nullFieldsArray });
+    if (nameIsInBody && isEmpty(name)) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
     }
     return next();
   },
 
   async ensureNoSimilarlyNamedHabit(req, res, next) {
-    const { decoded: { id: userId } } = req;
-    if (Object.keys(req.body).includes('name')) {
+    const { decoded: { id: userId }, body: { name } } = req;
+    const message = 'You already have an habit with that name';
+
+    if ('name' in req.body) {
       const habit = await Habits.findOne({
         where: {
           [Op.and]: [
             {
               userId,
-              name: toSentenceCase(req.body.name)
+              name: toSentenceCase(name)
             }
           ]
         }
       });
 
-      if (habit && habit.get('name') === toSentenceCase(req.body.name)) {
-        return res.status(409).json({ message: 'You already have an habit with that name' });
+      if (habit && habit.get('name') === toSentenceCase(name)) {
+        const error = new Error(message);
+        error.status = 409;
+        next(error);
       }
       return next();
     }
     return next();
   },
 
-  async ensurePositiveIntegerParams(req, res, next) {
-    const nonNumberErrorArray = [];
+  ensureValidParams(req, res, next) {
+    const invalidParamsArray = [];
 
     expectedParams.forEach(param => {
-      if (!isPositiveInteger(req.params[param])) {
-        nonNumberErrorArray.push(`${param} must be a positive integer`);
+      if (!uuidTester(req.params[param])) {
+        invalidParamsArray.push(`${param} is not a valid uuid`);
       }
     });
 
-    if (nonNumberErrorArray.length) {
-      return res.status(403).json({ errors: nonNumberErrorArray });
+    if (invalidParamsArray.length) {
+      const error = new Error(JSON.stringify(invalidParamsArray));
+      error.status = 400;
+      next(error);
     }
     return next();
+  },
+
+  ensureValidUserIdParam(req, res, next) {
+    if (!uuidTester(req.params.userId)) {
+      const error = new Error('the userId supplied is not a valid uuid');
+      error.status = 400;
+      next(error);
+    }
+    next();
+  },
+
+  async habitExists(req, res, next) {
+    const habit = await Habits.findOne({ where: { id: req.params.habitId } });
+    if (!habit) {
+      const error = new Error(`No habit with id ${req.params.habitId}`);
+      error.status = 404;
+      next(error);
+    }
+    return next();
+  },
+
+  async userHabitExists(req, res, next) {
+    const { params: { habitId, userId } } = req;
+    const queryParam = {
+      [Op.and]: [
+        {
+          userId,
+          id: habitId
+        }
+      ]
+    };
+
+    const singleUserHabit = await Habits.findOne({ where: queryParam });
+
+    if (!singleUserHabit) {
+      const error = new Error(`No habit with id ${habitId}`);
+      error.status = 404;
+      next(error);
+    }
+    next();
   }
 };

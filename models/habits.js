@@ -1,15 +1,18 @@
 const HabitsModel = (sequelize, DataTypes) => {
   const Habits = sequelize.define('Habits', {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      unique: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    milestones: {
-      type: DataTypes.ARRAY(DataTypes.TEXT),
-      allowNull: false,
-    },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
     },
   });
 
@@ -17,6 +20,11 @@ const HabitsModel = (sequelize, DataTypes) => {
   Habits.associate = (models) => {
     Habits.belongsTo(models.Users, {
       foreignKey: 'userId',
+      onDelete: 'CASCADE',
+    });
+
+    Habits.hasMany(models.Milestone, {
+      foreignKey: 'habitId',
       onDelete: 'CASCADE',
     });
   };

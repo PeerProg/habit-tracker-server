@@ -1,18 +1,19 @@
 import express from 'express';
 import { habitController } from '../controllers';
-import { authentication, habitValidations, authorization, validations } from '../middlewares';
+import { authentication, habitValidations, authorization } from '../middlewares';
 
 const router = express.Router();
 
 const { authenticateUser } = authentication;
 const { authorizeHabitOwnerOrAdmin, authorizeHabitOwner } = authorization;
 const {
-  ensureNameAndMilestonesSupplied,
-  ensureNonNullFields,
+  ensureNameIsProvided,
+  ensureNameIsNotEmpty,
   ensureNoSimilarlyNamedHabit,
-  ensurePositiveIntegerParams
+  ensureValidParams,
+  ensureValidUserIdParam,
+  userHabitExists
 } = habitValidations;
-const { ensureParamIsInteger } = validations;
 const {
   createNewHabit,
   getUserHabits,
@@ -24,20 +25,19 @@ const {
 router.route('/create')
   .post(
     authenticateUser,
-    ensureNameAndMilestonesSupplied,
-    ensureNonNullFields,
+    ensureNameIsProvided,
+    ensureNameIsNotEmpty,
     ensureNoSimilarlyNamedHabit,
     createNewHabit
   );
 
-router.route('/user/:id/all-habits')
-  .all(ensureParamIsInteger, authenticateUser)
-  .get(authorizeHabitOwnerOrAdmin, getUserHabits);
+router.route('/user/:userId/all-habits')
+  .get(ensureValidUserIdParam, authenticateUser, authorizeHabitOwnerOrAdmin, getUserHabits);
 
-router.route('/user/:id/:habitID')
-  .all(authenticateUser, ensurePositiveIntegerParams, authorizeHabitOwner)
+router.route('/user/:userId/:habitId')
+  .all(ensureValidParams, authenticateUser, userHabitExists, authorizeHabitOwner)
   .get(getOneUserHabit)
-  .put(ensureNonNullFields, ensureNoSimilarlyNamedHabit, editOneUserHabit)
+  .put(ensureNameIsNotEmpty, ensureNoSimilarlyNamedHabit, editOneUserHabit)
   .delete(deleteOneUserHabit);
 
 export default router;

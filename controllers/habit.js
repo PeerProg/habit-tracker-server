@@ -6,125 +6,97 @@ const { Habits } = models;
 
 export default {
   async createNewHabit(req, res) {
-    const { body: { name, milestones }, decoded: { id: userId } } = req;
+    const { body: { name }, decoded: { id: userId } } = req;
     const normalizedName = toSentenceCase(name);
-    const normalizedMilestones = milestones.map(milestone => toSentenceCase(milestone));
 
-    const newHabit = await Habits.create({
-      name: normalizedName,
-      milestones: normalizedMilestones,
-      userId
-    });
-    return res.status(201).send(newHabit);
+    const data = await Habits.create({ name: normalizedName, userId });
+    return res.status(201).send({ data, status: 201 });
   },
 
   async getUserHabits(req, res) {
-    const { params: { id: userId } } = req;
-    const userHabits = await Habits.findAll({
-      where: {
-        userId,
-      }
-    });
-    const hasHabitsCreated = await userHabits.length;
-    if (!hasHabitsCreated) {
-      return res.status(404).send({ message: 'No habits created yet' });
-    }
+    const { params: { userId } } = req;
+    const userHabits = await Habits.findAll({ where: { userId } });
 
-    const responseArray = (userHabits).map(habit => ({
+    const data = (userHabits).map(habit => ({
       name: habit.name,
-      milestones: habit.milestones,
       createdAt: habit.createdAt,
       updatedAt: habit.updatedAt,
-      habitID: habit.id
+      habitId: habit.id
     }));
 
-    return res.send(responseArray);
+    return res.send({ data, status: 200 });
   },
 
   async getOneUserHabit(req, res) {
-    const { params: { habitID }, decoded: { id: userId } } = req;
-    const singleUserHabit = await Habits.findOne({
-      where: {
-        [Op.and]: [
-          {
-            userId,
-            id: habitID
-          }
-        ]
-      }
-    });
+    const { params: { habitId }, decoded: { id: userId } } = req;
 
-    if (!singleUserHabit) {
-      return res.status(404).send({ message: `No habit with id ${habitID}` });
-    }
+    const queryParam = {
+      [Op.and]: [
+        {
+          userId,
+          id: habitId
+        }
+      ]
+    };
 
-    const responseObject = {
+    const singleUserHabit = await Habits.findOne({ where: queryParam });
+
+    const data = {
       name: singleUserHabit.name,
-      milestones: singleUserHabit.milestones,
       createdAt: singleUserHabit.createdAt,
       updatedAt: singleUserHabit.updatedAt
     };
 
-    return res.send(responseObject);
+    return res.send({ data, status: 200 });
   },
 
   async deleteOneUserHabit(req, res) {
-    const { params: { habitID }, decoded: { id: userId } } = req;
+    const { params: { habitId }, decoded: { id: userId } } = req;
 
     const queryParam = {
       [Op.and]: [
         {
           userId,
-          id: habitID
+          id: habitId
         }
       ]
     };
-
-    const singleUserHabit = await Habits.findOne({ where: queryParam });
-
-    if (!singleUserHabit) {
-      return res.status(404).send({ message: `No habit with id ${habitID}` });
-    }
 
     await Habits.destroy({ where: queryParam });
 
-    return res.send({ message: 'Habit deleted' });
+    return res.send({ message: 'Habit deleted', status: 200 });
   },
 
   async editOneUserHabit(req, res) {
-    // Ensure to always prepopulate with data from DB so it is available in req.body
-    // When updating, we are always replacing because of the minimalist structure of the models
-    const { params: { habitID }, decoded: { id: userId } } = req;
-
+    const { params: { habitId }, decoded: { id: userId } } = req;
     const queryParam = {
       [Op.and]: [
         {
           userId,
-          id: habitID
+          id: habitId
         }
       ]
     };
 
     const singleUserHabit = await Habits.findOne({ where: queryParam });
 
-    if (!singleUserHabit) {
-      return res.status(404).send({ message: `No habit with id ${habitID}` });
+    const nameUnchanged = !Object.keys(req.body).includes('name') ||
+      (toSentenceCase(req.body.name) === singleUserHabit.name);
+
+    if (nameUnchanged) {
+      return res.status(304).send({ status: 304 });
     }
 
-    const incomingMilestones = req.body.milestones;
-    const newMilestones = incomingMilestones.map(mstone => toSentenceCase(mstone));
-    const replacementMilestones = [...new Set(newMilestones)];
-
     const editedHabit = await singleUserHabit.update({
-      name: (req.body.name && toSentenceCase(req.body.name)) || singleUserHabit.name,
-      milestones: replacementMilestones
+      name: (req.body.name && toSentenceCase(req.body.name))
     });
 
-    return res.send({
+    const data = {
       name: editedHabit.name,
-      milestones: editedHabit.milestones,
       createdAt: editedHabit.createdAt,
       updatedAt: editedHabit.updatedAt
-    });
+    };
+
+    return res.send({ data, status: 200 });
   },
 };

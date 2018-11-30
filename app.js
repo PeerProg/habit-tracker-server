@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-import { homeRouter, userRouter, habitRouter } from './routes';
+import { homeRouter, userRouter, habitRouter, milestoneRouter } from './routes';
 import { routesErrorHandler, allPurposeErrorHandler } from './middlewares';
 
 dotenv.config();
@@ -20,11 +20,10 @@ const baseRoute = '/api/v1';
 app.use(`${baseRoute}/`, homeRouter);
 app.use(`${baseRoute}/user`, userRouter);
 app.use(`${baseRoute}/habit`, habitRouter);
+app.use(`${baseRoute}/milestone`, milestoneRouter);
 
 // Unknown routes error handler.
 app.use(routesErrorHandler);
-
-// miscellanous error handler
 app.use(allPurposeErrorHandler);
 
 export default app;
