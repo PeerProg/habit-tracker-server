@@ -36,12 +36,12 @@ export default {
     if (!user) {
       const error = new Error('Incorrect Login Information');
       error.status = 401;
-      next(error);
+      return next(error);
     }
     if (!user.validPassword(password)) {
       const error = new Error('Invalid credentials');
       error.status = 401;
-      next(error);
+      return next(error);
     }
     if (!user.isActive) {
       return res.redirect(`/activate/${user.id}`);
