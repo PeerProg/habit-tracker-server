@@ -253,7 +253,6 @@ describe('THE USER TEST SUITE', () => {
         .post(loginRoute)
         .send(requestObject)
         .then(response => {
-          // expect(response.status).toEqual(302);
           expect(response.headers.location).toEqual(`/activate/${thirdUserId}`);
           done();
         });
