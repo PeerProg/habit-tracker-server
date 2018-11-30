@@ -40,7 +40,9 @@ export default {
     const isHabitsOwner = userId.toString() === id.toString();
     const isAuthorized = isAdmin || isSuperAdmin;
     if (isHabitsOwner || isAuthorized) return next();
-    return res.status(401).json({ message: 'Not authorized' });
+    const error = new Error('Not authorized');
+    error.status = 403;
+    next(error);
   },
 
   async authorizeHabitOwner(req, res, next) {
@@ -48,6 +50,8 @@ export default {
 
     const isHabitsOwner = userId.toString() === id.toString();
     if (isHabitsOwner) return next();
-    return res.status(401).json({ message: 'Not authorized' });
+    const error = new Error('Not authorized');
+    error.status = 403;
+    next(error);
   }
 };

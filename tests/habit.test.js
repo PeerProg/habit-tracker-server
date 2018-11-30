@@ -48,18 +48,17 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
         .send({});
-      expect(response.status).toBe(403);
-      expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toEqual('name is required but was not supplied');
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('name is required but was not supplied');
       done();
     });
 
-    it('Should fail creation when any required field is empty', async (done) => {
+    it('Should fail creation when name is empty', async (done) => {
       const response = await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
         .send({ name: '' });
-      expect(response.status).toBe(403);
-      expect(response.body.error).toEqual('name should not be empty');
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('name should not be empty');
       done();
     });
 
@@ -68,8 +67,7 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken })
         .send(habitBodyObjectOne);
       expect(response.status).toBe(409);
-      expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toEqual('You already have an habit with that name');
+      expect(response.body.error.message).toEqual('You already have an habit with that name');
       done();
     });
 
@@ -78,25 +76,18 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: superAdminToken })
         .send(habitBodyObjectOne);
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('name', toSentenceCase(habitBodyObjectOne.name));
+      expect(response.body.data).toHaveProperty('name', toSentenceCase(habitBodyObjectOne.name));
       done();
     });
   });
 
   describe('GET ALL USER HABITS: /api/v1/habit/user/:userId/all-habits', () => {
-    it('Should return a message when user has no habits yet', async (done) => {
-      const response = await request.get(`${baseHabitRoute}/user/${adminId}/all-habits`)
-        .set({ Authorization: adminToken });
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('message', 'No habits created yet');
-      done();
-    });
-
     it('Should not get habits when userId param is invalid', async (done) => {
       const response = await request.get(`${baseHabitRoute}/user/-3/all-habits`)
         .set({ Authorization: regularUserOneToken });
+      const errorMessage = response.body.error.message;
       expect(response.status).toBe(400);
-      expect(response.body.error).toEqual('the userId supplied is not a valid uuid');
+      expect(errorMessage).toEqual('the userId supplied is not a valid uuid');
       done();
     });
 
@@ -107,8 +98,8 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.get(`${baseHabitRoute}/user/${regularUserId}/all-habits`)
         .set({ Authorization: regularUserOneToken });
       expect(response.status).toBe(200);
-      expect(response.body.length).toBe(2);
-      expect(response.body[0].name).toEqual(habitBodyObjectOne.name);
+      expect(response.body.data.length).toBe(2);
+      expect(response.body.data[0].name).toEqual(habitBodyObjectOne.name);
       done();
     });
 
@@ -119,8 +110,8 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.get(`${baseHabitRoute}/user/${regularUserId}/all-habits`)
         .set({ Authorization: adminToken });
       expect(response.status).toBe(200);
-      expect(response.body.length).toBe(2);
-      expect(response.body[1].name).toEqual(habitBodyObjectTwo.name);
+      expect(response.body.data.length).toBe(2);
+      expect(response.body.data[1].name).toEqual(habitBodyObjectTwo.name);
       done();
     });
 
@@ -130,8 +121,8 @@ describe('THE HABITS TEST SUITE', () => {
         .send(habitBodyObjectOne);
       const response = await request.get(`${baseHabitRoute}/user/${superAdminId}/all-habits`)
         .set({ Authorization: regularUserOneToken });
-      expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Not authorized');
+      expect(response.status).toBe(403);
+      expect(response.body.error).toHaveProperty('message', 'Not authorized');
       done();
     });
   });
@@ -141,14 +132,14 @@ describe('THE HABITS TEST SUITE', () => {
       const adminHabitResponse = await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: adminToken })
         .send(habitBodyObjectTwo);
-      adminHabitId = adminHabitResponse.body.id;
+      adminHabitId = adminHabitResponse.body.data.id;
     });
 
     it('Should not permit GET for a non-existent habit', async (done) => {
       const response = await request.get(`${baseHabitRoute}/user/${regularUserId}/${habit404UUID}`)
         .set({ Authorization: regularUserOneToken });
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('message', `No habit with id ${habit404UUID}`);
+      expect(response.body.error).toHaveProperty('message', `No habit with id ${habit404UUID}`);
       done();
     });
 
@@ -156,15 +147,15 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.get(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: adminToken });
       expect(response.status).toBe(200);
-      expect(response.body.name).toEqual(habitBodyObjectTwo.name);
+      expect(response.body.data.name).toEqual(habitBodyObjectTwo.name);
       done();
     });
 
-    it('Should restrict access to getting a single ID for a user', async (done) => {
+    it('Should restrict access to getting a single habit for a user', async (done) => {
       const response = await request.get(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: superAdminToken });
-      expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Not authorized');
+      expect(response.status).toBe(403);
+      expect(response.body.error).toHaveProperty('message', 'Not authorized');
       done();
     });
   });
@@ -174,15 +165,15 @@ describe('THE HABITS TEST SUITE', () => {
       const adminHabitResponse = await request.post(`${baseHabitRoute}/create`)
         .set({ Authorization: adminToken })
         .send(habitBodyObjectThree);
-      adminHabitId = adminHabitResponse.body.id;
+      adminHabitId = adminHabitResponse.body.data.id;
     });
 
     it('Should prevent unfettered access to editing a user\'s habits', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: superAdminToken })
         .send({ name: 'Perform chores' });
-      expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Not authorized');
+      expect(response.status).toBe(403);
+      expect(response.body.error).toHaveProperty('message', 'Not authorized');
       done();
     });
 
@@ -191,7 +182,7 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: adminToken })
         .send({ name: 'Perform chores' });
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('message', `No habit with id ${habit404UUID}`);
+      expect(response.body.error).toHaveProperty('message', `No habit with id ${habit404UUID}`);
       done();
     });
 
@@ -200,7 +191,7 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: adminToken })
         .send({ name: habitBodyObjectThree.name });
       expect(response.status).toBe(409);
-      expect(response.body).toHaveProperty('message', 'You already have an habit with that name');
+      expect(response.body.error).toHaveProperty('message', 'You already have an habit with that name');
       done();
     });
 
@@ -208,10 +199,10 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.put(`${baseHabitRoute}/user/-3/-4`)
         .set({ Authorization: adminToken })
         .send({ name: 'Marathon training' });
-      expect(response.status).toBe(403);
-      expect(response.body.errors).toBeTruthy();
-      expect(response.body.errors[0]).toEqual('userId is not a valid uuid');
-      expect(response.body.errors[1]).toEqual('habitId is not a valid uuid');
+      const errorArray = JSON.parse(response.body.error.message);
+      expect(response.status).toBe(400);
+      expect(errorArray[0]).toEqual('userId is not a valid uuid');
+      expect(errorArray[1]).toEqual('habitId is not a valid uuid');
       done();
     });
 
@@ -228,7 +219,7 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: adminToken })
         .send({ name: 'Stoop to conquer' });
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('name', 'Stoop to conquer');
+      expect(response.body.data).toHaveProperty('name', 'Stoop to conquer');
       done();
     });
   });
@@ -238,7 +229,7 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request.delete(`${baseHabitRoute}/user/${regularUserId}/${habit404UUID}`)
         .set({ Authorization: regularUserOneToken });
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('message', `No habit with id ${habit404UUID}`);
+      expect(response.body.error).toHaveProperty('message', `No habit with id ${habit404UUID}`);
       done();
     });
 

@@ -11,7 +11,8 @@ const {
   ensureNameIsNotEmpty,
   ensureNoSimilarlyNamedHabit,
   ensureValidParams,
-  ensureValidUserIdParam
+  ensureValidUserIdParam,
+  userHabitExists
 } = habitValidations;
 const {
   createNewHabit,
@@ -34,7 +35,7 @@ router.route('/user/:userId/all-habits')
   .get(ensureValidUserIdParam, authenticateUser, authorizeHabitOwnerOrAdmin, getUserHabits);
 
 router.route('/user/:userId/:habitId')
-  .all(ensureValidParams, authenticateUser, authorizeHabitOwner)
+  .all(ensureValidParams, authenticateUser, userHabitExists, authorizeHabitOwner)
   .get(getOneUserHabit)
   .put(ensureNameIsNotEmpty, ensureNoSimilarlyNamedHabit, editOneUserHabit)
   .delete(deleteOneUserHabit);

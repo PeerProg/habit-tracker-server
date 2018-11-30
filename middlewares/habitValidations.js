@@ -8,20 +8,28 @@ const expectedParams = ['userId', 'habitId'];
 
 export default {
   ensureNameIsProvided(req, res, next) {
-    const error = 'name is required but was not supplied';
+    const message = 'name is required but was not supplied';
     const nameIsInNotBody = !Object.keys(req.body).includes('name');
 
-    if (nameIsInNotBody) return res.status(403).json({ error });
+    if (nameIsInNotBody) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
     return next();
   },
 
   ensureNameIsNotEmpty(req, res, next) {
     const { name } = req.body;
-    const error = 'name should not be empty';
+    const message = 'name should not be empty';
 
     const nameIsInBody = Object.keys(req.body).includes('name');
 
-    if (nameIsInBody && isEmpty(name)) return res.status(403).json({ error });
+    if (nameIsInBody && isEmpty(name)) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
     return next();
   },
 
@@ -42,7 +50,9 @@ export default {
       });
 
       if (habit && habit.get('name') === toSentenceCase(name)) {
-        return res.status(409).json({ message });
+        const error = new Error(message);
+        error.status = 409;
+        next(error);
       }
       return next();
     }
@@ -59,21 +69,50 @@ export default {
     });
 
     if (invalidParamsArray.length) {
-      return res.status(403).json({ errors: invalidParamsArray });
+      const error = new Error(JSON.stringify(invalidParamsArray));
+      error.status = 400;
+      next(error);
     }
     return next();
   },
 
   ensureValidUserIdParam(req, res, next) {
     if (!uuidTester(req.params.userId)) {
-      return res.status(400).json({ error: 'the userId supplied is not a valid uuid' });
+      const error = new Error('the userId supplied is not a valid uuid');
+      error.status = 400;
+      next(error);
     }
     next();
   },
 
   async habitExists(req, res, next) {
     const habit = await Habits.findOne({ where: { id: req.params.habitId } });
-    if (!habit) return res.status(404).send({ message: `No habit with id ${req.params.habitId}` });
+    if (!habit) {
+      const error = new Error(`No habit with id ${req.params.habitId}`);
+      error.status = 404;
+      next(error);
+    }
     return next();
+  },
+
+  async userHabitExists(req, res, next) {
+    const { params: { habitId, userId } } = req;
+    const queryParam = {
+      [Op.and]: [
+        {
+          userId,
+          id: habitId
+        }
+      ]
+    };
+
+    const singleUserHabit = await Habits.findOne({ where: queryParam });
+
+    if (!singleUserHabit) {
+      const error = new Error(`No habit with id ${habitId}`);
+      error.status = 404;
+      next(error);
+    }
+    next();
   }
 };

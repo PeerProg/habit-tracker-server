@@ -25,7 +25,7 @@ describe('THE MILESTONE TEST SUITE', () => {
     const habitCreationResp = await request.post(`${baseHabitRoute}/create`)
       .set({ Authorization: regularUserToken })
       .send(newHabitObject);
-    habitId = habitCreationResp.body.id;
+    habitId = habitCreationResp.body.data.id;
   });
 
   afterAll(() => models.sequelize.sync({ force: true }));
@@ -43,7 +43,7 @@ describe('THE MILESTONE TEST SUITE', () => {
         .set({ Authorization: regularUserToken })
         .send({});
       expect(milestoneResponse.status).toBe(404);
-      expect(milestoneResponse.body).toHaveProperty('message', `No habit with id ${habit404UUID}`);
+      expect(milestoneResponse.body.error).toHaveProperty('message', `No habit with id ${habit404UUID}`);
       done();
     });
 
@@ -149,7 +149,7 @@ describe('THE MILESTONE TEST SUITE', () => {
         .set({ Authorization: regularUserToken })
         .send();
       expect(deleteResponse.status).toBe(404);
-      expect(deleteResponse.body.message).toEqual(`No habit with id ${habit404UUID}`);
+      expect(deleteResponse.body.error.message).toEqual(`No habit with id ${habit404UUID}`);
       done();
     });
 
