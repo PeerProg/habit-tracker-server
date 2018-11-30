@@ -1,6 +1,10 @@
 import express from 'express';
 import { milestoneController } from '../controllers';
-import { habitValidations, authentication, milestoneValidations } from '../middlewares';
+import {
+  habitValidations,
+  authentication,
+  milestoneValidations
+} from '../middlewares';
 
 const router = express.Router();
 
@@ -35,7 +39,7 @@ router.get(
   getMilestone
 );
 
-router.put(
+router.patch(
   '/:habitId/edit/:milestoneId',
   authenticateUser,
   habitExists,
@@ -62,6 +66,5 @@ router.delete(
   checkIfMilestoneIdExists,
   deleteMilestone
 );
-
 
 export default router;

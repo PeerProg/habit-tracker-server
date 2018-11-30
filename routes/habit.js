@@ -55,7 +55,7 @@ router
     authorizeHabitOwner
   )
   .get(getOneUserHabit)
-  .put(ensureNameIsNotEmpty, ensureNoSimilarlyNamedHabit, editOneUserHabit)
+  .patch(ensureNameIsNotEmpty, ensureNoSimilarlyNamedHabit, editOneUserHabit)
   .delete(deleteOneUserHabit);
 
 export default router;

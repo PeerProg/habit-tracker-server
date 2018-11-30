@@ -26,10 +26,11 @@ const {
   deactivateUserAccount,
   activateUserAccount,
   login,
-  logout,
+  logout
 } = userController;
 
-router.route('/register')
+router
+  .route('/register')
   .post(
     checkRequiredUserFields,
     checkEmptyUserFields,
@@ -39,31 +40,31 @@ router.route('/register')
     createUser
   );
 
-router.route('/login')
-  .post(verifyLoginDetails, login);
+router.route('/login').post(verifyLoginDetails, login);
 
-router.route('/logout')
-  .delete(logout);
+router.route('/logout').delete(logout);
 
-router.route('/all')
-  .get(authenticateUser, getAllUsers);
+router.route('/all').get(authenticateUser, getAllUsers);
 
-router.route('/deactivate/:id')
-  .put(
+router
+  .route('/deactivate/:id')
+  .patch(
     ensureUserParamIsValid,
     authenticateUser,
     checkIfUserExists,
     authorizeAccountOwner,
-    deactivateUserAccount,
+    deactivateUserAccount
   );
 
 // Ideally, this route will only be available if a deactivated user tries to login.
-router.route('/activate/:id')
-  .put(ensureUserParamIsValid, checkIfUserExists, activateUserAccount);
+router
+  .route('/activate/:id')
+  .patch(ensureUserParamIsValid, checkIfUserExists, activateUserAccount);
 
-router.route('/:id')
+router
+  .route('/:id')
   .all(ensureUserParamIsValid, checkIfUserExists)
-  .put(
+  .patch(
     userIsActive,
     authenticateUser,
     authorizeAccountOwner,
