@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { homeRouter, userRouter, habitRouter, milestoneRouter } from './routes';
-import { routesErrorHandler } from './middlewares';
+import { routesErrorHandler, allPurposeErrorHandler } from './middlewares';
 
 dotenv.config();
 
@@ -24,5 +24,6 @@ app.use(`${baseRoute}/milestone`, milestoneRouter);
 
 // Unknown routes error handler.
 app.use(routesErrorHandler);
+app.use(allPurposeErrorHandler);
 
 export default app;
