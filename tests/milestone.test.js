@@ -21,7 +21,7 @@ describe('THE MILESTONE TEST SUITE', () => {
 
   beforeAll(async () => {
     const result = await request.post(`${baseUserRoute}/register`).send(regularUserObject);
-    regularUserToken = result.body.token;
+    regularUserToken = result.body.data.token;
     const habitCreationResp = await request.post(`${baseHabitRoute}/create`)
       .set({ Authorization: regularUserToken })
       .send(newHabitObject);
@@ -136,7 +136,7 @@ describe('THE MILESTONE TEST SUITE', () => {
     it('Should be successful even if nothing changes', async (done) => {
       const updateResponse = await request.put(`${baseMilestoneRoute}/${habitId}/edit/${milestoneId}`)
         .set({ Authorization: regularUserToken })
-        .send({ });
+        .send({});
       expect(updateResponse.status).toBe(200);
       expect(updateResponse.body.title).toEqual('Start a fitness plan');
       done();

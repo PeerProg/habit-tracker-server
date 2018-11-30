@@ -6,14 +6,18 @@ export default {
   authorizeAdmin(req, res, next) {
     const isAdminOrSuper = req.decoded.isAdmin || req.decoded.isSuperAdmin;
     if (!isAdminOrSuper) {
-      return res.status(403).json({ message: 'Unauthorized' });
+      const error = new Error('Unauthorized');
+      error.status = 403;
+      next(error);
     }
     next();
   },
 
   authorizeAccountOwner(req, res, next) {
     if ((req.decoded.id).toString() !== (req.params.id).toString()) {
-      return res.status(401).send({ message: 'Operation not permitted on another user\'s account' });
+      const error = new Error('Operation not permitted on another user\'s account');
+      error.status = 403;
+      next(error);
     }
     next();
   },
@@ -22,7 +26,9 @@ export default {
     const userFromPK = await Users.findByPk(req.params.id);
 
     if (!userFromPK.isActive) {
-      return res.status(403).send({ message: 'Currently inactive. Activate to perform operation' });
+      const error = new Error('Currently inactive. Activate to perform operation');
+      error.status = 403;
+      next(error);
     }
 
     return next();

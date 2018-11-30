@@ -4,7 +4,7 @@ import { userValidations, authorization, authentication } from '../middlewares';
 
 const router = express.Router();
 
-const { authenticateUser } = authentication;
+const { authenticateUser, verifyLoginDetails } = authentication;
 const { authorizeAdmin, authorizeAccountOwner, userIsActive } = authorization;
 
 const {
@@ -40,7 +40,7 @@ router.route('/register')
   );
 
 router.route('/login')
-  .post(login);
+  .post(verifyLoginDetails, login);
 
 router.route('/logout')
   .delete(logout);

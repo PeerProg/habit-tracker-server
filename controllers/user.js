@@ -39,12 +39,15 @@ export default {
       isSuperAdmin: user.isSuperAdmin
     };
     const responseObject = { ...normalizedUser, token };
-    return res.status(201).send(responseObject);
+    return res.status(201).send({
+      data: { ...responseObject },
+      status: 201
+    });
   },
 
   async getOneUser(req, res) {
     const user = await Users.findByPk(req.params.id);
-    const normalizedUser = {
+    const data = {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
@@ -53,11 +56,13 @@ export default {
       isSuperAdmin: user.isSuperAdmin,
       isAdmin: user.isAdmin
     };
-    return res.send(normalizedUser);
+
+    const responseObject = { data, status: 200 };
+    return res.send(responseObject);
   },
 
   async getAllUsers(req, res) {
-    const users = await Users.findAll()
+    const data = await Users.findAll()
       .map((user) => {
         return {
           username: user.username,
@@ -65,7 +70,7 @@ export default {
           isActive: user.isActive
         };
       });
-    return res.send(users);
+    return res.send({ data, status: 200 });
   },
 
   async updateUserDetails(req, res) {
@@ -79,7 +84,7 @@ export default {
       email: email || user.email,
     });
 
-    const normalizedUser = {
+    const data = {
       id: updatedUser.id,
       username: updatedUser.username,
       email: updatedUser.email,
@@ -89,7 +94,7 @@ export default {
     };
     const message = 'Update successful';
 
-    const responseObject = { ...normalizedUser, message };
+    const responseObject = { data, message, status: 200 };
     return res.send(responseObject);
   },
 
@@ -99,11 +104,11 @@ export default {
       return res.status(403).json({ message: 'Admin cannot be deleted' });
     }
     await Users.destroy({ where: { id: req.params.id } });
-    return res.status(200).json({ message: 'User Removed' });
+    return res.json({ message: 'User Removed' });
   },
 
   async login(req, res) {
-    const { identifier, password } = req.body;
+    const { identifier } = req.body;
     const user = await Users.findOne({
       where: {
         [Op.or]: [
@@ -112,27 +117,7 @@ export default {
         ],
       },
     });
-    if (!user) {
-      return res.status(403).json({ message: 'Incorrect Login Information' });
-    }
-    if (!user.validPassword(password)) {
-      return res.status(403).json({ message: 'Invalid credentials' });
-    }
-    if (!user.isActive) {
-      return res.redirect(`/activate/${user.id}`);
-    }
 
-    const normalizedUser = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      isAdmin: user.isAdmin,
-      isSuperAdmin: user.isSuperAdmin
-    };
-
-    const message = 'Login Successful! Token expires in one week.';
     const token = jwtSignUser({
       username: user.username,
       id: user.id,
@@ -141,7 +126,20 @@ export default {
       isSuperAdmin: user.isSuperAdmin
     });
 
-    const responseObject = { ...normalizedUser, token, message };
+    const data = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isAdmin: user.isAdmin,
+      isSuperAdmin: user.isSuperAdmin,
+      token
+    };
+
+    const message = 'Login Successful! Token expires in one week.';
+
+    const responseObject = { data, message, status: 200 };
     return res.send(responseObject);
   },
 
@@ -157,7 +155,7 @@ export default {
         isAdmin: deactivatedUser.isAdmin,
         isSuperAdmin: deactivatedUser.isSuperAdmin
       });
-      res.json({ message: 'Account deactivated', isActive: deactivatedUser.isActive });
+      res.json({ message: 'Account deactivated' });
       return next();
     }
     return res.send({ message: 'Account still active. Try again.' });

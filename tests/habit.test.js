@@ -27,14 +27,14 @@ describe('THE HABITS TEST SUITE', () => {
 
   beforeAll(async (done) => {
     const response = await request.post(signupRoute).send(superAdmin);
-    superAdminToken = response.body.token;
-    superAdminId = response.body.id;
+    superAdminToken = response.body.data.token;
+    superAdminId = response.body.data.id;
     const result = await request.post(signupRoute).send(adminUser);
-    adminToken = result.body.token;
-    adminId = result.body.id;
+    adminToken = result.body.data.token;
+    adminId = result.body.data.id;
     const resp = await request.post(signupRoute).send(regularUserOne);
-    regularUserOneToken = resp.body.token;
-    regularUserId = resp.body.id;
+    regularUserOneToken = resp.body.data.token;
+    regularUserId = resp.body.data.id;
     await request.post(`${baseHabitRoute}/create`)
       .set({ Authorization: regularUserOneToken })
       .send(habitBodyObjectOne);
@@ -218,7 +218,7 @@ describe('THE HABITS TEST SUITE', () => {
     it('Should allow habit update even if name is not supplied', async (done) => {
       const response = await request.put(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: adminToken })
-        .send({ });
+        .send({});
       expect(response.status).toBe(304);
       done();
     });
