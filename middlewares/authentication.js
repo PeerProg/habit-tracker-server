@@ -26,7 +26,9 @@ export default {
   },
 
   async verifyLoginDetails(req, res, next) {
-    const { identifier, password } = req.body;
+    let { identifier, password } = req.body;
+    identifier = identifier && identifier.trim().toLowerCase();
+    password = password && password.trim();
     const user = await Users.findOne({
       where: {
         [Op.or]: [{ username: identifier }, { email: identifier }]
