@@ -62,14 +62,13 @@ export default {
   },
 
   async getAllUsers(req, res) {
-    const data = await Users.findAll()
-      .map((user) => {
-        return {
-          username: user.username,
-          email: user.email,
-          isActive: user.isActive
-        };
-      });
+    const data = await Users.findAll().map(user => {
+      return {
+        username: user.username,
+        email: user.email,
+        isActive: user.isActive
+      };
+    });
     return res.send({ data, status: 200 });
   },
 
@@ -81,7 +80,7 @@ export default {
     const user = await Users.findByPk(req.params.id);
     const updatedUser = await user.update({
       username: username || user.username,
-      email: email || user.email,
+      email: email || user.email
     });
 
     const data = {
@@ -108,14 +107,12 @@ export default {
   },
 
   async login(req, res) {
-    const { identifier } = req.body;
+    let { identifier } = req.body;
+    identifier = identifier && identifier.trim().toLowerCase();
     const user = await Users.findOne({
       where: {
-        [Op.or]: [
-          { username: identifier },
-          { email: identifier },
-        ],
-      },
+        [Op.or]: [{ username: identifier }, { email: identifier }]
+      }
     });
 
     const token = jwtSignUser({
@@ -144,7 +141,10 @@ export default {
   },
 
   async deactivateUserAccount(req, res, next) {
-    const { params: { id }, body: { isActive } } = req;
+    const {
+      params: { id },
+      body: { isActive }
+    } = req;
     const user = await Users.findByPk(id);
     const deactivatedUser = await user.update({ isActive });
     if (!deactivatedUser.isActive) {
@@ -163,7 +163,9 @@ export default {
 
   async activateUserAccount(req, res) {
     // TODO: Find a way to ensure the owner of the account is the one reactivating
-    const { body: { isActive } } = req;
+    const {
+      body: { isActive }
+    } = req;
     const user = await Users.findByPk(req.params.id);
     const reactivatedUser = await user.update({ isActive });
     if (reactivatedUser.isActive) {
@@ -181,5 +183,5 @@ export default {
 
   logout(req, res) {
     return res.redirect('/');
-  },
+  }
 };
