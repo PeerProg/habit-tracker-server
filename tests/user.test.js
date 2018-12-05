@@ -12,6 +12,9 @@ const firstRegularUser = resourceCreator.createRegularUser();
 const secondRegularUser = resourceCreator.createRandomUser();
 const thirdRegularUser = resourceCreator.createNormalUser();
 const invalidEmailUser = resourceCreator.userWithInvalidEmail();
+const invalidUsernameUser = resourceCreator.userWithInvalidUsername();
+const onlyNumsUsernameUser = resourceCreator.userWithOnlyNumsForUsername();
+const oneCharUsername = resourceCreator.userWithOneCharUsername();
 const invalidPasswordUser = resourceCreator.userWithInvalidPassword();
 const noUsernameUser = resourceCreator.withNoUsername();
 const noEmailUser = resourceCreator.withNoEmail();
@@ -130,6 +133,39 @@ describe('THE USER TEST SUITE', () => {
             'message',
             'The email address provided is invalid'
           );
+          done();
+        });
+    });
+
+    it('Should fail creation when username does not match rules', done => {
+      request
+        .post(signupRoute)
+        .send(invalidUsernameUser)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error.message).toMatch('Username is invalid');
+          done();
+        });
+    });
+
+    it('Should fail creation when username is numbers only', done => {
+      request
+        .post(signupRoute)
+        .send(onlyNumsUsernameUser)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error.message).toMatch('A two-character username must have only letters');
+          done();
+        });
+    });
+
+    it('Should fail creation when username is one character only', done => {
+      request
+        .post(signupRoute)
+        .send(oneCharUsername)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error.message).toMatch('Username must be at least two characters');
           done();
         });
     });

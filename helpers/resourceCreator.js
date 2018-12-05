@@ -49,6 +49,30 @@ export default {
     };
   },
 
+  userWithInvalidUsername() {
+    return {
+      username: '123saturday',
+      email: faker.internet.email(),
+      password: 'Re7unthis'
+    };
+  },
+
+  userWithOnlyNumsForUsername() {
+    return {
+      username: '43',
+      email: faker.internet.email(),
+      password: 'Re7unthis'
+    };
+  },
+
+  userWithOneCharUsername() {
+    return {
+      username: 'm',
+      email: faker.internet.email(),
+      password: 'Re7unthis'
+    };
+  },
+
   userWithInvalidPassword() {
     return {
       username: 'invalid123',
