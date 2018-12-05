@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import models from '../models';
 import { isEmpty, uuidTester, usernameTester, emailTester } from '../helpers';
 
@@ -43,9 +44,15 @@ export default {
   },
 
   async checkIfIdentifierIsInUse(req, res, next) {
-    const { username, email } = req.body;
-    const userByUsername = await Users.findOne({ where: { username } });
-    const userByEmail = await Users.findOne({ where: { email } });
+    let { username, email } = req.body;
+    username = username && username.trim();
+    email = email && email.trim();
+    const userByUsername = await Users.findOne({
+      where: { username: { [Op.iRegexp]: `^${username}$` } }
+    });
+    const userByEmail = await Users.findOne({
+      where: { email: { [Op.iRegexp]: `^${email}$` } }
+    });
     if (userByUsername && req.params.id !== userByUsername.id) {
       const error = new Error('Username already in use');
       error.status = 409;
@@ -83,10 +90,10 @@ export default {
 
     const message = 'The email address provided is invalid';
 
-    if (!emailTester.test(email)) {
+    if (!emailTester(email)) {
       const error = new Error(message);
       error.status = 400;
-      next(error);
+      return next(error);
     }
 
     next();
