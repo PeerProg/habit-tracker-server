@@ -19,10 +19,10 @@ export default {
     if (requiredPayloadParams.length) {
       const error = new Error(JSON.stringify(requiredPayloadParams));
       error.status = 400;
-      next(error);
+      return next(error);
     }
 
-    next();
+    return next();
   },
 
   checkEmptyUserFields(req, res, next) {
@@ -37,10 +37,10 @@ export default {
     if (emptyPayloadParams.length) {
       const error = new Error(JSON.stringify(emptyPayloadParams));
       error.status = 400;
-      next(error);
+      return next(error);
     }
 
-    next();
+    return next();
   },
 
   async checkIfIdentifierIsInUse(req, res, next) {
@@ -56,13 +56,13 @@ export default {
     if (userByUsername && req.params.id !== userByUsername.id) {
       const error = new Error('Username already in use');
       error.status = 409;
-      next(error);
+      return next(error);
     } else if (userByEmail && req.params.id !== userByEmail.id) {
       const error = new Error('Email already in use');
       error.status = 409;
-      next(error);
+      return next(error);
     }
-    next();
+    return next();
   },
 
   validatePassword(req, res, next) {
@@ -78,37 +78,41 @@ export default {
     if (!validPasswordRegex.test(req.body.password)) {
       const error = new Error(message);
       error.status = 400;
-      next(error);
+      return next(error);
     }
 
-    next();
+    return next();
   },
 
   validateEmail(req, res, next) {
     let { email } = req.body;
-    email = email.trim();
+    email = email && email.trim();
 
     const message = 'The email address provided is invalid';
 
-    if (!emailTester(email)) {
+    if (typeof email === 'string' && !emailTester(email)) {
       const error = new Error(message);
       error.status = 400;
       return next(error);
     }
 
-    next();
+    return next();
   },
 
   validateUsername(req, res, next) {
     let { username } = req.body;
-    username = username.trim();
+    username = username && username.trim();
     let message;
-    if (username.length < 2) {
+    if (typeof username === 'string' && username.length < 2) {
       message = 'Username must be at least two characters';
       const error = new Error(message);
       error.status = 400;
       return next(error);
-    } else if (username.length === 2 && !/^[A-Z]{2}$/i.test(username)) {
+    } else if (
+      typeof username === 'string' &&
+      username.length === 2 &&
+      !/^[A-Z]{2}$/i.test(username)
+    ) {
       message = 'A two-character username must have only letters';
       const error = new Error(message);
       error.status = 400;
@@ -120,7 +124,7 @@ export default {
       error.status = 400;
       return next(error);
     }
-    next();
+    return next();
   },
 
   async checkIfUserExists(req, res, next) {
@@ -128,15 +132,15 @@ export default {
     if (!user) {
       const error = new Error(`No user with id ${req.params.id}`);
       error.status = 404;
-      next(error);
+      return next(error);
     }
-    next();
+    return next();
   },
 
   ensureUserParamIsValid(req, res, next) {
     if (uuidTester(req.params.id)) return next();
     const error = new Error('Invalid uuid user id param');
     error.status = 400;
-    next(error);
+    return next(error);
   }
 };

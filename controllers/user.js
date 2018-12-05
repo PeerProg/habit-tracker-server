@@ -108,10 +108,13 @@ export default {
 
   async login(req, res) {
     let { identifier } = req.body;
-    identifier = identifier && identifier.trim().toLowerCase();
+    identifier = identifier && identifier.trim();
     const user = await Users.findOne({
       where: {
-        [Op.or]: [{ username: identifier }, { email: identifier }]
+        [Op.or]: [
+          { username: { [Op.iRegexp]: `^${identifier}$` } },
+          { email: { [Op.iRegexp]: `^${identifier}$` } }
+        ]
       }
     });
 
