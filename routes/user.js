@@ -14,6 +14,7 @@ const {
   checkIfIdentifierIsInUse,
   validatePassword,
   validateEmail,
+  validateUsername,
   ensureUserParamIsValid
 } = userValidations;
 
@@ -34,6 +35,7 @@ router
   .post(
     checkRequiredUserFields,
     checkEmptyUserFields,
+    validateUsername,
     validateEmail,
     checkIfIdentifierIsInUse,
     validatePassword,
@@ -68,6 +70,8 @@ router
     userIsActive,
     authenticateUser,
     authorizeAccountOwner,
+    validateUsername,
+    validateEmail,
     checkIfIdentifierIsInUse,
     updateUserDetails
   )
