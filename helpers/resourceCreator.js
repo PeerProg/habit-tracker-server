@@ -4,60 +4,54 @@ import { toSentenceCase } from './helperFunctions';
 
 export default {
   createSuperAdmin() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
     return {
-      username,
+      username: 'superAduser54',
       email: faker.internet.email(),
       password: 'superadmin',
       isSuperAdmin: true
     };
   },
   createAdminUser() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
     return {
-      username,
+      username: 'adminGuy12',
       email: faker.internet.email(),
       password: 'adminpassword',
       isAdmin: true
     };
   },
   createRegularUser() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
     return {
-      username,
+      username: 'regularName',
       email: faker.internet.email(),
       password: 'regularpassword'
     };
   },
+  createRandomUser() {
+    return {
+      username: 'randomName',
+      email: faker.internet.email(),
+      password: 'randompassword'
+    };
+  },
+  createNormalUser() {
+    return {
+      username: 'normalName',
+      email: faker.internet.email(),
+      password: 'normalpassword'
+    };
+  },
 
   userWithInvalidEmail() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
     return {
-      username,
+      username: 'invalidEmailUser',
       email: faker.lorem.word(),
       password: 'Re7unthis'
     };
   },
 
   userWithInvalidPassword() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
     return {
-      username,
+      username: 'invalid123',
       email: faker.internet.email(),
       password: faker.address.latitude()
     };
@@ -71,12 +65,8 @@ export default {
   },
 
   withNoEmail() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2);
     return {
-      username,
+      username: 'noEmailuser_5',
       password: 'No3ma1lprov1ded'
     };
   },
