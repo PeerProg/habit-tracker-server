@@ -7,10 +7,10 @@ export default {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+    const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email().toLowerCase(),
+      email: faker.internet.email(),
       password: 'superadmin',
       isSuperAdmin: true
     };
@@ -19,10 +19,10 @@ export default {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+    const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email().toLowerCase(),
+      email: faker.internet.email(),
       password: 'adminpassword',
       isAdmin: true
     };
@@ -31,10 +31,10 @@ export default {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+    const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email().toLowerCase(),
+      email: faker.internet.email(),
       password: 'regularpassword'
     };
   },
@@ -43,7 +43,7 @@ export default {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+    const username = joinedNames.substring(2);
     return {
       username,
       email: faker.lorem.word(),
@@ -55,17 +55,17 @@ export default {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+    const username = joinedNames.substring(2);
     return {
       username,
-      email: faker.internet.email().toLowerCase(),
-      password: faker.address.latitude(),
+      email: faker.internet.email(),
+      password: faker.address.latitude()
     };
   },
 
   withNoUsername() {
     return {
-      email: faker.internet.email().toLowerCase(),
+      email: faker.internet.email(),
       password: 'validPa55word'
     };
   },
@@ -74,7 +74,7 @@ export default {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+    const username = joinedNames.substring(2);
     return {
       username,
       password: 'No3ma1lprov1ded'
