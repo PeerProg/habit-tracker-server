@@ -16,8 +16,8 @@ function jwtSignUser(payload) {
 export default {
   async createUser(req, res) {
     let { username, email } = req.body;
-    username = username && username.trim().toLowerCase();
-    email = email && email.trim().toLowerCase();
+    username = username && username.trim();
+    email = email && email.trim();
     const requestBody = { ...req.body, username, email };
     const user = await Users.create(requestBody);
     const token = jwtSignUser({
@@ -74,8 +74,8 @@ export default {
 
   async updateUserDetails(req, res) {
     let { username, email } = req.body;
-    username = username && username.trim().toLowerCase();
-    email = email && email.trim().toLowerCase();
+    username = username && username.trim();
+    email = email && email.trim();
 
     const user = await Users.findByPk(req.params.id);
     const updatedUser = await user.update({
