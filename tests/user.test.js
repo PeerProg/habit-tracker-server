@@ -9,9 +9,12 @@ const user404UUID = resourceCreator.user404UUID();
 const superAdmin = resourceCreator.createSuperAdmin();
 const adminUser = resourceCreator.createAdminUser();
 const firstRegularUser = resourceCreator.createRegularUser();
-const secondRegularUser = resourceCreator.createRegularUser();
-const thirdRegularUser = resourceCreator.createRegularUser();
+const secondRegularUser = resourceCreator.createRandomUser();
+const thirdRegularUser = resourceCreator.createNormalUser();
 const invalidEmailUser = resourceCreator.userWithInvalidEmail();
+const invalidUsernameUser = resourceCreator.userWithInvalidUsername();
+const onlyNumsUsernameUser = resourceCreator.userWithOnlyNumsForUsername();
+const oneCharUsername = resourceCreator.userWithOneCharUsername();
 const invalidPasswordUser = resourceCreator.userWithInvalidPassword();
 const noUsernameUser = resourceCreator.withNoUsername();
 const noEmailUser = resourceCreator.withNoEmail();
@@ -130,6 +133,39 @@ describe('THE USER TEST SUITE', () => {
             'message',
             'The email address provided is invalid'
           );
+          done();
+        });
+    });
+
+    it('Should fail creation when username does not match rules', done => {
+      request
+        .post(signupRoute)
+        .send(invalidUsernameUser)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error.message).toMatch('Username is invalid');
+          done();
+        });
+    });
+
+    it('Should fail creation when username is numbers only', done => {
+      request
+        .post(signupRoute)
+        .send(onlyNumsUsernameUser)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error.message).toMatch('A two-character username must have only letters');
+          done();
+        });
+    });
+
+    it('Should fail creation when username is one character only', done => {
+      request
+        .post(signupRoute)
+        .send(oneCharUsername)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error.message).toMatch('Username must be at least two characters');
           done();
         });
     });
@@ -264,6 +300,22 @@ describe('THE USER TEST SUITE', () => {
     it('Should permit log in for a user with valid details', done => {
       const requestObject = {
         identifier: firstRegularUser.username,
+        password: firstRegularUser.password
+      };
+
+      request
+        .post(loginRoute)
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toBe(200);
+          expect(response.body.message).toEqual('Login Successful! Token expires in one week.');
+          done();
+        });
+    });
+
+    it('Should permit log in even if the identifier case is not the same that in the DB', done => {
+      const requestObject = {
+        identifier: firstRegularUser.username.toUpperCase(),
         password: firstRegularUser.password
       };
 

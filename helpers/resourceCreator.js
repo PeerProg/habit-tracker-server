@@ -4,79 +4,93 @@ import { toSentenceCase } from './helperFunctions';
 
 export default {
   createSuperAdmin() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
     return {
-      username,
-      email: faker.internet.email().toLowerCase(),
+      username: 'superAduser54',
+      email: faker.internet.email(),
       password: 'superadmin',
       isSuperAdmin: true
     };
   },
   createAdminUser() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
     return {
-      username,
-      email: faker.internet.email().toLowerCase(),
+      username: 'adminGuy12',
+      email: faker.internet.email(),
       password: 'adminpassword',
       isAdmin: true
     };
   },
   createRegularUser() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
     return {
-      username,
-      email: faker.internet.email().toLowerCase(),
+      username: 'regularName',
+      email: faker.internet.email(),
       password: 'regularpassword'
+    };
+  },
+  createRandomUser() {
+    return {
+      username: 'randomName',
+      email: faker.internet.email(),
+      password: 'randompassword'
+    };
+  },
+  createNormalUser() {
+    return {
+      username: 'normalName',
+      email: faker.internet.email(),
+      password: 'normalpassword'
     };
   },
 
   userWithInvalidEmail() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
     return {
-      username,
+      username: 'invalidEmailUser',
       email: faker.lorem.word(),
       password: 'Re7unthis'
     };
   },
 
-  userWithInvalidPassword() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
+  userWithInvalidUsername() {
     return {
-      username,
-      email: faker.internet.email().toLowerCase(),
-      password: faker.address.latitude(),
+      username: '123saturday',
+      email: faker.internet.email(),
+      password: 'Re7unthis'
+    };
+  },
+
+  userWithOnlyNumsForUsername() {
+    return {
+      username: '43',
+      email: faker.internet.email(),
+      password: 'Re7unthis'
+    };
+  },
+
+  userWithOneCharUsername() {
+    return {
+      username: 'm',
+      email: faker.internet.email(),
+      password: 'Re7unthis'
+    };
+  },
+
+  userWithInvalidPassword() {
+    return {
+      username: 'invalid123',
+      email: faker.internet.email(),
+      password: faker.address.latitude()
     };
   },
 
   withNoUsername() {
     return {
-      email: faker.internet.email().toLowerCase(),
+      email: faker.internet.email(),
       password: 'validPa55word'
     };
   },
 
   withNoEmail() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const joinedNames = `${firstName}${lastName}`;
-    const username = joinedNames.substring(2).toLowerCase();
     return {
-      username,
+      username: 'noEmailuser_5',
       password: 'No3ma1lprov1ded'
     };
   },

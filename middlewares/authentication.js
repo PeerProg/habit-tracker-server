@@ -27,11 +27,14 @@ export default {
 
   async verifyLoginDetails(req, res, next) {
     let { identifier, password } = req.body;
-    identifier = identifier && identifier.trim().toLowerCase();
+    identifier = identifier && identifier.trim();
     password = password && password.trim();
     const user = await Users.findOne({
       where: {
-        [Op.or]: [{ username: identifier }, { email: identifier }]
+        [Op.or]: [
+          { username: { [Op.iRegexp]: `^${identifier}$` } },
+          { email: { [Op.iRegexp]: `^${identifier}$` } }
+        ]
       }
     });
 
@@ -40,6 +43,7 @@ export default {
       error.status = 401;
       return next(error);
     }
+
     if (!user.validPassword(password)) {
       const error = new Error('Invalid credentials');
       error.status = 401;
