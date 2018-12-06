@@ -313,6 +313,22 @@ describe('THE USER TEST SUITE', () => {
         });
     });
 
+    it('Should permit log in even if the identifier case is not the same that in the DB', done => {
+      const requestObject = {
+        identifier: firstRegularUser.username.toUpperCase(),
+        password: firstRegularUser.password
+      };
+
+      request
+        .post(loginRoute)
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toBe(200);
+          expect(response.body.message).toEqual('Login Successful! Token expires in one week.');
+          done();
+        });
+    });
+
     it('Should redirect a deactivated user to the activate route', done => {
       const requestObject = {
         identifier: thirdRegularUser.username,
