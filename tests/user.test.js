@@ -19,6 +19,8 @@ const invalidPasswordUser = resourceCreator.userWithInvalidPassword();
 const noUsernameUser = resourceCreator.withNoUsername();
 const noEmailUser = resourceCreator.withNoEmail();
 const emptyFieldsUser = resourceCreator.emptyFieldsUser();
+const invalidImageURL = resourceCreator.userWithInvalidImageURL();
+const emptyImageURL = resourceCreator.userWithNoImageURL();
 
 const signupRoute = '/api/v1/user/register';
 const loginRoute = '/api/v1/user/login';
@@ -78,6 +80,10 @@ describe('THE USER TEST SUITE', () => {
             'email',
             firstRegularUser.email
           );
+          expect(response.body.data).toHaveProperty(
+            'imageURL',
+            firstRegularUser.imageURL
+          );
           expect(response.body.data).toHaveProperty('isActive', true);
           done();
         });
@@ -87,7 +93,8 @@ describe('THE USER TEST SUITE', () => {
       const requestObject = {
         username: firstRegularUser.username,
         email: 'unused@yahoo.co.uk',
-        password: 'unusedpassword'
+        password: 'unusedpassword',
+        imageURL: 'imageURL/goes/here.png'
       };
 
       request
@@ -107,7 +114,8 @@ describe('THE USER TEST SUITE', () => {
       const requestObject = {
         username: 'flamingo',
         email: firstRegularUser.email,
-        password: 'unusedpassword'
+        password: 'unusedpassword',
+        imageURL: 'imageURL/goes/here.png'
       };
 
       request
@@ -229,6 +237,31 @@ describe('THE USER TEST SUITE', () => {
           expect(errorArray[0]).toEqual('username is required');
           expect(errorArray[1]).toEqual('email is required');
           expect(errorArray[2]).toEqual('password is required');
+          done();
+        });
+    });
+
+    it('Should create user when imageURL payload is empty', done => {
+      request
+        .post(signupRoute)
+        .send(emptyImageURL)
+        .then(response => {
+          expect(response.status).toEqual(201);
+          expect(response.body.data).toHaveProperty('imageURL', null);
+          done();
+        });
+    });
+
+    it('Should fail creation when imageURL payload is invalid', done => {
+      request
+        .post(signupRoute)
+        .send(invalidImageURL)
+        .then(response => {
+          expect(response.status).toEqual(400);
+          expect(response.body.error).toHaveProperty(
+            'message',
+            'Invalid imageURL'
+          );
           done();
         });
     });
@@ -512,6 +545,23 @@ describe('THE USER TEST SUITE', () => {
           expect(response.body.data).toHaveProperty(
             'username',
             requestObject.username
+          );
+          expect(response.body).toHaveProperty('message', 'Update successful');
+          done();
+        });
+    });
+
+    it('Should successfully update imageURL when valid token is supplied', done => {
+      const requestObject = { imageURL: 'imageURL/goes/test.png' };
+      request
+        .patch(`${singleRequestRoute}/${adminID}`)
+        .set({ Authorization: adminToken })
+        .send(requestObject)
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data).toHaveProperty(
+            'imageURL',
+            requestObject.imageURL
           );
           expect(response.body).toHaveProperty('message', 'Update successful');
           done();
