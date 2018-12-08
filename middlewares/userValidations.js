@@ -142,5 +142,23 @@ export default {
     const error = new Error('Invalid uuid user id param');
     error.status = 400;
     return next(error);
+  },
+
+  validateImageURL(req, res, next) {
+    let { imageURL } = req.body;
+    let message;
+    imageURL = imageURL && imageURL.trim();
+    if (
+      typeof imageURL === 'string' &&
+      !imageURL.includes('.jpeg') &&
+      !imageURL.includes('.jpg') &&
+      !imageURL.includes('.png')
+    ) {
+      message = 'Invalid imageURL';
+      const error = new Error(message);
+      error.status = 400;
+      return next(error);
+    }
+    return next();
   }
 };
