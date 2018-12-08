@@ -15,10 +15,16 @@ function jwtSignUser(payload) {
 
 export default {
   async createUser(req, res) {
-    let { username, email } = req.body;
+    let { username, email, imageURL } = req.body;
     username = username && username.trim();
     email = email && email.trim();
-    const requestBody = { ...req.body, username, email };
+    imageURL = imageURL && imageURL.trim();
+    const requestBody = {
+      ...req.body,
+      username,
+      email,
+      imageURL
+    };
     const user = await Users.create(requestBody);
     const token = jwtSignUser({
       username: user.username,
@@ -36,7 +42,8 @@ export default {
       updatedAt: user.updatedAt,
       isActive: user.isActive,
       isAdmin: user.isAdmin,
-      isSuperAdmin: user.isSuperAdmin
+      isSuperAdmin: user.isSuperAdmin,
+      imageURL: user.imageURL
     };
     const responseObject = { ...normalizedUser, token };
     return res.status(201).send({
@@ -73,20 +80,23 @@ export default {
   },
 
   async updateUserDetails(req, res) {
-    let { username, email } = req.body;
+    let { username, email, imageURL } = req.body;
     username = username && username.trim();
     email = email && email.trim();
+    imageURL = imageURL && imageURL.trim();
 
     const user = await Users.findByPk(req.params.id);
     const updatedUser = await user.update({
       username: username || user.username,
-      email: email || user.email
+      email: email || user.email,
+      imageURL: imageURL || user.imageURL
     });
 
     const data = {
       id: updatedUser.id,
       username: updatedUser.username,
       email: updatedUser.email,
+      imageURL: user.imageURL,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
       isActive: updatedUser.isActive
