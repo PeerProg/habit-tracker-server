@@ -15,7 +15,8 @@ const {
   validatePassword,
   validateEmail,
   validateUsername,
-  ensureUserParamIsValid
+  ensureUserParamIsValid,
+  validateImageURL
 } = userValidations;
 
 const {
@@ -39,6 +40,7 @@ router
     validateEmail,
     checkIfIdentifierIsInUse,
     validatePassword,
+    validateImageURL,
     createUser
   );
 
@@ -72,6 +74,7 @@ router
     authorizeAccountOwner,
     validateUsername,
     validateEmail,
+    validateImageURL,
     checkIfIdentifierIsInUse,
     updateUserDetails
   )
