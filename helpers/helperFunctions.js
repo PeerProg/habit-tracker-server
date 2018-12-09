@@ -38,3 +38,10 @@ export const emailTester = inputEmail => {
 
   return validEmailRegex.test(inputEmail);
 };
+
+export const imageURLTester = inputEmail => {
+  // eslint-disable-next-line no-control-regex
+  const validImageURLRegex = /^http(s?):\/\/.+\.(gif|png|jpg|jpeg)$/i;
+
+  return validImageURLRegex.test(inputEmail);
+};

@@ -4,5 +4,6 @@ export {
   toSentenceCase,
   uuidTester,
   usernameTester,
-  emailTester
+  emailTester,
+  imageURLTester
 } from './helperFunctions';
