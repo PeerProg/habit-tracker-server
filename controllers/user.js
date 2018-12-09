@@ -140,6 +140,7 @@ export default {
       id: user.id,
       username: user.username,
       email: user.email,
+      imageURL: user.imageURL,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       isAdmin: user.isAdmin,
