@@ -1,6 +1,12 @@
 import { Op } from 'sequelize';
 import models from '../models';
-import { isEmpty, uuidTester, usernameTester, emailTester } from '../helpers';
+import {
+  isEmpty,
+  uuidTester,
+  usernameTester,
+  emailTester,
+  imageURLTester
+} from '../helpers';
 
 const { Users } = models;
 
@@ -148,12 +154,7 @@ export default {
     let { imageURL } = req.body;
     let message;
     imageURL = imageURL && imageURL.trim();
-    if (
-      typeof imageURL === 'string' &&
-      !imageURL.includes('.jpeg') &&
-      !imageURL.includes('.jpg') &&
-      !imageURL.includes('.png')
-    ) {
+    if (typeof imageURL === 'string' && !imageURLTester(imageURL)) {
       message = 'Invalid imageURL';
       const error = new Error(message);
       error.status = 400;

@@ -552,7 +552,7 @@ describe('THE USER TEST SUITE', () => {
     });
 
     it('Should successfully update imageURL when valid token is supplied', done => {
-      const requestObject = { imageURL: 'imageURL/goes/test.png' };
+      const requestObject = { imageURL: 'https://imageURL/goes/test.jpg' };
       request
         .patch(`${singleRequestRoute}/${adminID}`)
         .set({ Authorization: adminToken })
