@@ -8,7 +8,8 @@ export default {
       username: 'superAduser54',
       email: faker.internet.email(),
       password: 'superadmin',
-      isSuperAdmin: true
+      isSuperAdmin: true,
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
   createAdminUser() {
@@ -16,28 +17,32 @@ export default {
       username: 'adminGuy12',
       email: faker.internet.email(),
       password: 'adminpassword',
-      isAdmin: true
+      isAdmin: true,
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
   createRegularUser() {
     return {
       username: 'regularName',
       email: faker.internet.email(),
-      password: 'regularpassword'
+      password: 'regularpassword',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
   createRandomUser() {
     return {
       username: 'randomName',
       email: faker.internet.email(),
-      password: 'randompassword'
+      password: 'randompassword',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
   createNormalUser() {
     return {
       username: 'normalName',
       email: faker.internet.email(),
-      password: 'normalpassword'
+      password: 'normalpassword',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
@@ -45,7 +50,8 @@ export default {
     return {
       username: 'invalidEmailUser',
       email: faker.lorem.word(),
-      password: 'Re7unthis'
+      password: 'Re7unthis',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
@@ -53,7 +59,8 @@ export default {
     return {
       username: '123saturday',
       email: faker.internet.email(),
-      password: 'Re7unthis'
+      password: 'Re7unthis',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
@@ -61,7 +68,8 @@ export default {
     return {
       username: '43',
       email: faker.internet.email(),
-      password: 'Re7unthis'
+      password: 'Re7unthis',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
@@ -69,7 +77,8 @@ export default {
     return {
       username: 'm',
       email: faker.internet.email(),
-      password: 'Re7unthis'
+      password: 'Re7unthis',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
@@ -77,21 +86,41 @@ export default {
     return {
       username: 'invalid123',
       email: faker.internet.email(),
-      password: faker.address.latitude()
+      password: faker.address.latitude(),
+      imageURL: 'http://imageURL/goes/here.png'
+    };
+  },
+
+  userWithInvalidImageURL() {
+    return {
+      username: 'invalidImageURL',
+      email: faker.internet.email(),
+      password: 'normalpassword',
+      imageURL: 'http://imageURL/goes/here'
+    };
+  },
+
+  userWithNoImageURL() {
+    return {
+      username: 'noImageURL',
+      email: faker.internet.email(),
+      password: 'normalpassword'
     };
   },
 
   withNoUsername() {
     return {
       email: faker.internet.email(),
-      password: 'validPa55word'
+      password: 'validPa55word',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
   withNoEmail() {
     return {
       username: 'noEmailuser_5',
-      password: 'No3ma1lprov1ded'
+      password: 'No3ma1lprov1ded',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 
@@ -99,7 +128,8 @@ export default {
     return {
       username: '',
       email: '',
-      password: 'amalfitano'
+      password: 'amalfitano',
+      imageURL: 'http://imageURL/goes/here.png'
     };
   },
 

@@ -12,31 +12,31 @@ module.exports = {
       username: {
         type: Sequelize.STRING,
         unique: true,
-        allowNull: false,
+        allowNull: false
       },
       email: {
         type: Sequelize.STRING,
         unique: true,
-        allowNull: false,
+        allowNull: false
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
-        allowNull: false,
+        allowNull: false
       },
       isAdmin: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
-        allowNull: false,
+        allowNull: false
       },
       isSuperAdmin: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
