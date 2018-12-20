@@ -7,7 +7,7 @@ const { Users } = models;
 const secretOrPrivateKey = process.env.SECRET;
 
 function jwtSignUser(payload) {
-  const ONE_WEEK = 60 * 60 * 24 * 7;
+  const ONE_WEEK = 60;
   return jwt.sign(payload, secretOrPrivateKey, {
     expiresIn: ONE_WEEK
   });
@@ -96,7 +96,7 @@ export default {
       id: updatedUser.id,
       username: updatedUser.username,
       email: updatedUser.email,
-      imageURL: user.imageURL,
+      imageURL: updatedUser.imageURL,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
       isActive: updatedUser.isActive
@@ -148,7 +148,7 @@ export default {
       token
     };
 
-    const message = 'Login Successful! Token expires in one week.';
+    const message = 'Login Successful! Token expires in one minute.';
 
     const responseObject = { data, message, status: 200 };
     return res.send(responseObject);
@@ -193,6 +193,16 @@ export default {
       return res.send({ message: 'Account reactivated' });
     }
     return res.send({ message: 'Account still inactive. Try again.' });
+  },
+
+  async validateToken(req, res) {
+    const user = await Users.findByPk(req.params.id);
+    const data = {
+      username: user.username
+    };
+
+    const responseObject = { data, status: 200 };
+    return res.send(responseObject);
   },
 
   logout(req, res) {
