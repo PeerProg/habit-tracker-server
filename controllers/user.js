@@ -7,7 +7,7 @@ const { Users } = models;
 const secretOrPrivateKey = process.env.SECRET;
 
 function jwtSignUser(payload) {
-  const ONE_WEEK = 60;
+  const ONE_WEEK = 60 * 60 * 24 * 7;
   return jwt.sign(payload, secretOrPrivateKey, {
     expiresIn: ONE_WEEK
   });
@@ -148,7 +148,7 @@ export default {
       token
     };
 
-    const message = 'Login Successful! Token expires in one minute.';
+    const message = 'Login Successful! Token expires in one week.';
 
     const responseObject = { data, message, status: 200 };
     return res.send(responseObject);

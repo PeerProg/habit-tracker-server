@@ -342,7 +342,7 @@ describe('THE USER TEST SUITE', () => {
         .send(requestObject)
         .then(response => {
           expect(response.status).toBe(200);
-          expect(response.body.message).toEqual('Login Successful! Token expires in one minute.');
+          expect(response.body.message).toEqual('Login Successful! Token expires in one week.');
           done();
         });
     });
@@ -358,7 +358,7 @@ describe('THE USER TEST SUITE', () => {
         .send(requestObject)
         .then(response => {
           expect(response.status).toBe(200);
-          expect(response.body.message).toEqual('Login Successful! Token expires in one minute.');
+          expect(response.body.message).toEqual('Login Successful! Token expires in one week.');
           done();
         });
     });
