@@ -28,14 +28,15 @@ const singleRequestRoute = '/api/v1/user';
 const allUsersRoute = '/api/v1/user/all';
 const deactivateSubRoute = '/api/v1/user/deactivate';
 const activateSubRoute = '/api/v1/user/activate';
+const validateTokenRoute = '/api/v1/user/validateToken';
 
 describe('THE USER TEST SUITE', () => {
   let superAdminToken;
   let adminToken;
-  let adminID;
   let regularToken;
   let thirdUserToken;
   let superAdminId;
+  let adminID;
   let thirdUserId;
 
   beforeAll(done => {
@@ -594,6 +595,19 @@ describe('THE USER TEST SUITE', () => {
             'message',
             'Account reactivated'
           );
+          done();
+        });
+    });
+  });
+
+  describe(`VALIDATE LOGGED IN USER'S TOKEN : ${validateTokenRoute}/:id`, () => {
+    it('Should keep user logged in if valid token is supplied', done => {
+      request
+        .get(`${validateTokenRoute}/${superAdminId}`)
+        .set({ Authorization: superAdminToken })
+        .then(response => {
+          expect(response.status).toEqual(200);
+          expect(response.body.data.username).toEqual(superAdmin.username);
           done();
         });
     });

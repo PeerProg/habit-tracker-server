@@ -27,6 +27,7 @@ const {
   createUser,
   deactivateUserAccount,
   activateUserAccount,
+  validateToken,
   login,
   logout
 } = userController;
@@ -80,5 +81,14 @@ router
   )
   .get(authenticateUser, getOneUser)
   .delete(authenticateUser, authorizeAdmin, deleteUser);
+
+router
+  .route('/validateToken/:id')
+  .get(
+    ensureUserParamIsValid,
+    checkIfUserExists,
+    authenticateUser,
+    validateToken
+  );
 
 export default router;
