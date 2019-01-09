@@ -6,19 +6,31 @@ const { Habits } = models;
 
 export default {
   async createNewHabit(req, res) {
-    const { body: { name }, decoded: { id: userId } } = req;
+    const {
+      body: { name, expiresAt, daysBeforeExpiration },
+      decoded: { id: userId }
+    } = req;
     const normalizedName = toSentenceCase(name);
+    const data = await Habits.create({
+      name: normalizedName,
+      expiresAt,
+      daysBeforeExpiration,
+      userId
+    });
 
-    const data = await Habits.create({ name: normalizedName, userId });
     return res.status(201).send({ data, status: 201 });
   },
 
   async getUserHabits(req, res) {
-    const { params: { userId } } = req;
+    const {
+      params: { userId }
+    } = req;
     const userHabits = await Habits.findAll({ where: { userId } });
 
-    const data = (userHabits).map(habit => ({
+    const data = userHabits.map(habit => ({
       name: habit.name,
+      expiresAt: habit.expiresAt,
+      daysBeforeExpiration: habit.daysBeforeExpiration,
       createdAt: habit.createdAt,
       updatedAt: habit.updatedAt,
       habitId: habit.id
@@ -28,7 +40,10 @@ export default {
   },
 
   async getOneUserHabit(req, res) {
-    const { params: { habitId }, decoded: { id: userId } } = req;
+    const {
+      params: { habitId },
+      decoded: { id: userId }
+    } = req;
 
     const queryParam = {
       [Op.and]: [
@@ -43,6 +58,8 @@ export default {
 
     const data = {
       name: singleUserHabit.name,
+      expiresAt: singleUserHabit.expiresAt,
+      daysBeforeExpiration: singleUserHabit.daysBeforeExpiration,
       createdAt: singleUserHabit.createdAt,
       updatedAt: singleUserHabit.updatedAt
     };
@@ -51,7 +68,10 @@ export default {
   },
 
   async deleteOneUserHabit(req, res) {
-    const { params: { habitId }, decoded: { id: userId } } = req;
+    const {
+      params: { habitId },
+      decoded: { id: userId }
+    } = req;
 
     const queryParam = {
       [Op.and]: [
@@ -68,7 +88,10 @@ export default {
   },
 
   async editOneUserHabit(req, res) {
-    const { params: { habitId }, decoded: { id: userId } } = req;
+    const {
+      params: { habitId },
+      decoded: { id: userId }
+    } = req;
     const queryParam = {
       [Op.and]: [
         {
@@ -80,15 +103,16 @@ export default {
 
     const singleUserHabit = await Habits.findOne({ where: queryParam });
 
-    const nameUnchanged = !Object.keys(req.body).includes('name') ||
-      (toSentenceCase(req.body.name) === singleUserHabit.name);
+    const nameUnchanged =
+      !Object.keys(req.body).includes('name') ||
+      toSentenceCase(req.body.name) === singleUserHabit.name;
 
     if (nameUnchanged) {
       return res.status(304).send({ status: 304 });
     }
 
     const editedHabit = await singleUserHabit.update({
-      name: (req.body.name && toSentenceCase(req.body.name))
+      name: req.body.name && toSentenceCase(req.body.name)
     });
 
     const data = {
@@ -98,5 +122,5 @@ export default {
     };
 
     return res.send({ data, status: 200 });
-  },
+  }
 };
