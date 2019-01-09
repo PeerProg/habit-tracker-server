@@ -51,7 +51,40 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken })
         .send({});
       expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('params are required but not supplied');
+      done();
+    });
+
+    it('Should fail creation when the name data is not provided', async done => {
+      const response = await request
+        .post(`${baseHabitRoute}/create`)
+        .set({ Authorization: regularUserOneToken })
+        .send({
+          expiresAt: '1/21/2019',
+          daysBeforeExpiration: '4'
+        });
+      expect(response.status).toBe(400);
       expect(response.body.error.message).toEqual('name is required but was not supplied');
+      done();
+    });
+
+    it('Should fail creation when the expiresAt data is not provided', async done => {
+      const response = await request
+        .post(`${baseHabitRoute}/create`)
+        .set({ Authorization: regularUserOneToken })
+        .send({ name: 'Ayotunde', daysBeforeExpiration: '4' });
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('expiresAt is required but was not supplied');
+      done();
+    });
+
+    it('Should fail creation when the daysBeforeExpiration data is not provided', async done => {
+      const response = await request
+        .post(`${baseHabitRoute}/create`)
+        .set({ Authorization: regularUserOneToken })
+        .send({ name: 'Ayotunde', expiresAt: '1/21/2019' });
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('daysBeforeExpiration is required but was not supplied');
       done();
     });
 
@@ -59,9 +92,41 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request
         .post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
-        .send({ name: '' });
+        .send({
+          name: '',
+          expiresAt: '1/21/2019',
+          daysBeforeExpiration: '4'
+        });
       expect(response.status).toBe(400);
       expect(response.body.error.message).toEqual('name should not be empty');
+      done();
+    });
+
+    it('Should fail creation when expireDate is empty', async done => {
+      const response = await request
+        .post(`${baseHabitRoute}/create`)
+        .set({ Authorization: regularUserOneToken })
+        .send({
+          name: 'Ayotunde',
+          expiresAt: '',
+          daysBeforeExpiration: '4'
+        });
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('expiresAt should not be empty');
+      done();
+    });
+
+    it('Should fail creation when daysBeforeExpiration is empty', async done => {
+      const response = await request
+        .post(`${baseHabitRoute}/create`)
+        .set({ Authorization: regularUserOneToken })
+        .send({
+          name: 'Tunde',
+          expiresAt: '1/21/2019',
+          daysBeforeExpiration: ''
+        });
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toEqual('daysBeforeExpiration should not be empty');
       done();
     });
 
@@ -83,6 +148,8 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.status).toBe(201);
       expect(response.body.data).toHaveProperty(
         'name',
+        'expiresAt',
+        'daysBeforeExpiration',
         toSentenceCase(habitBodyObjectOne.name)
       );
       done();
@@ -111,6 +178,9 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.length).toBe(2);
       expect(response.body.data[0].name).toEqual(habitBodyObjectOne.name);
+      expect(response.body.data[0].expiresAt).toEqual(habitBodyObjectOne.expiresAt);
+      // eslint-disable-next-line max-len
+      expect(response.body.data[0].daysBeforeExpiration).toEqual(habitBodyObjectOne.daysBeforeExpiration);
       done();
     });
 
@@ -125,6 +195,9 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.length).toBe(2);
       expect(response.body.data[1].name).toEqual(habitBodyObjectTwo.name);
+      expect(response.body.data[1].expiresAt).toEqual(habitBodyObjectTwo.expiresAt);
+      // eslint-disable-next-line max-len
+      expect(response.body.data[1].daysBeforeExpiration).toEqual(habitBodyObjectTwo.daysBeforeExpiration);
       done();
     });
 
