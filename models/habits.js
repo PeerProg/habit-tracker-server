@@ -5,27 +5,35 @@ const HabitsModel = (sequelize, DataTypes) => {
       primaryKey: true,
       unique: true,
       allowNull: false,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: DataTypes.UUIDV4
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
     userId: {
-      type: DataTypes.UUID,
+      type: DataTypes.UUID
     },
+    expiresAt: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    daysBeforeExpiration: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   });
 
   // Class methods
-  Habits.associate = (models) => {
+  Habits.associate = models => {
     Habits.belongsTo(models.Users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
 
     Habits.hasMany(models.Milestone, {
       foreignKey: 'habitId',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
   };
 
