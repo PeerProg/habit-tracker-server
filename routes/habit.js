@@ -11,8 +11,13 @@ const router = express.Router();
 const { authenticateUser } = authentication;
 const { authorizeHabitOwnerOrAdmin, authorizeHabitOwner } = authorization;
 const {
+  ensureParamsAreNotEmpty,
   ensureNameIsProvided,
   ensureNameIsNotEmpty,
+  ensureNumberDaysAreProvided,
+  ensureNumberDaysNotEmpty,
+  ensureExpiryDateProvided,
+  ensureExpiryDateNotEmpty,
   ensureValidUserIdParams,
   ensureNoSimilarlyNamedHabit,
   ensureValidParams,
@@ -31,8 +36,13 @@ router
   .route('/create')
   .post(
     authenticateUser,
+    ensureParamsAreNotEmpty,
     ensureNameIsProvided,
     ensureNameIsNotEmpty,
+    ensureNumberDaysAreProvided,
+    ensureNumberDaysNotEmpty,
+    ensureExpiryDateProvided,
+    ensureExpiryDateNotEmpty,
     ensureNoSimilarlyNamedHabit,
     createNewHabit
   );
