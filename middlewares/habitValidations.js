@@ -7,6 +7,18 @@ const { Habits } = models;
 const expectedParams = ['userId', 'habitId'];
 
 export default {
+  ensureParamsAreNotEmpty(req, res, next) {
+    const message = 'params are required but not supplied';
+    const emptyParamBody = Object.keys(req.body).length === 0;
+
+    if (emptyParamBody) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  },
+
   ensureNameIsProvided(req, res, next) {
     const message = 'name is required but was not supplied';
     const nameIsInNotBody = !Object.keys(req.body).includes('name');
@@ -26,6 +38,58 @@ export default {
     const nameIsInBody = Object.keys(req.body).includes('name');
 
     if (nameIsInBody && isEmpty(name)) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  },
+
+  ensureNumberDaysAreProvided(req, res, next) {
+    const message = 'daysBeforeExpiration is required but was not supplied';
+    const daysIsInNotBody = !Object.keys(req.body).includes('daysBeforeExpiration');
+
+    if (daysIsInNotBody) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  },
+
+  ensureNumberDaysNotEmpty(req, res, next) {
+    const { daysBeforeExpiration } = req.body;
+    const message = 'daysBeforeExpiration should not be empty';
+
+    const daysIsInNotBody = Object.keys(req.body).includes('daysBeforeExpiration');
+
+    if (daysIsInNotBody && isEmpty(daysBeforeExpiration)) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  },
+
+  ensureExpiryDateProvided(req, res, next) {
+    const message = 'expiresAt is required but was not supplied';
+    const expiresAtIsInNotBody = !Object.keys(req.body).includes('expiresAt');
+
+    if (expiresAtIsInNotBody) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  },
+
+  ensureExpiryDateNotEmpty(req, res, next) {
+    const { expiresAt } = req.body;
+    const message = 'expiresAt should not be empty';
+
+    const expiresAtIsInNotBody = Object.keys(req.body).includes('expiresAt');
+
+    if (expiresAtIsInNotBody && isEmpty(expiresAt)) {
       const error = new Error(message);
       error.status = 400;
       next(error);
