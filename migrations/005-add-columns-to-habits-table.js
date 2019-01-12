@@ -3,7 +3,7 @@ const tableName = 'Habits';
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return Promise.all([
-      queryInterface.addColumn(tableName, 'startAt', {
+      queryInterface.addColumn(tableName, 'startsAt', {
         type: Sequelize.STRING,
         allowNull: false
       }),
@@ -21,7 +21,7 @@ module.exports = {
   /* eslint-disable no-unused-vars */
   down: (queryInterface, Sequelize) => {
     return Promise.all([
-      queryInterface.removeColumn(tableName, 'startAt'),
+      queryInterface.removeColumn(tableName, 'startsAt'),
       queryInterface.removeColumn(tableName, 'expiresAt'),
       queryInterface.removeColumn(tableName, 'habitActive')
     ]);
