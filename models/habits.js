@@ -14,16 +14,17 @@ const HabitsModel = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.UUID
     },
-    startDate: {
+    startAt: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     expiresAt: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    daysBeforeExpiration: {
-      type: DataTypes.STRING,
+    habitActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
       allowNull: false
     }
   });
