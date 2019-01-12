@@ -46,10 +46,10 @@ export default {
   },
 
   ensureStartDateProvided(req, res, next) {
-    const message = 'startAt is required but was not supplied';
-    const startAtIsNotInBody = !Object.keys(req.body).includes('startAt');
+    const message = 'startsAt is required but was not supplied';
+    const startsAtIsNotInBody = !Object.keys(req.body).includes('startsAt');
 
-    if (startAtIsNotInBody) {
+    if (startsAtIsNotInBody) {
       const error = new Error(message);
       error.status = 400;
       next(error);
@@ -58,12 +58,12 @@ export default {
   },
 
   ensureStartDateNotEmpty(req, res, next) {
-    const { startAt } = req.body;
-    const message = 'startAt should not be empty';
+    const { startsAt } = req.body;
+    const message = 'startsAt should not be empty';
 
-    const startAtIsInBody = Object.keys(req.body).includes('startAt');
+    const startsAtIsInBody = Object.keys(req.body).includes('startsAt');
 
-    if (startAtIsInBody && isEmpty(startAt)) {
+    if (startsAtIsInBody && isEmpty(startsAt)) {
       const error = new Error(message);
       error.status = 400;
       next(error);

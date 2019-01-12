@@ -7,13 +7,13 @@ const { Habits } = models;
 export default {
   async createNewHabit(req, res) {
     const {
-      body: { name, startAt, expiresAt },
+      body: { name, startsAt, expiresAt },
       decoded: { id: userId }
     } = req;
     const normalizedName = toSentenceCase(name);
     const data = await Habits.create({
       name: normalizedName,
-      startAt,
+      startsAt,
       expiresAt,
       userId
     });
@@ -29,7 +29,7 @@ export default {
 
     const data = userHabits.map(habit => ({
       name: habit.name,
-      startAt: habit.startAt,
+      startsAt: habit.startsAt,
       expiresAt: habit.expiresAt,
       habitActive: habit.habitActive,
       createdAt: habit.createdAt,
@@ -59,7 +59,7 @@ export default {
 
     const data = {
       name: singleUserHabit.name,
-      startAt: singleUserHabit.startAt,
+      startsAt: singleUserHabit.startsAt,
       expiresAt: singleUserHabit.expiresAt,
       habitActive: singleUserHabit.habitActive,
       createdAt: singleUserHabit.createdAt,
@@ -119,7 +119,7 @@ export default {
 
     const data = {
       name: editedHabit.name,
-      startAt: editedHabit.startAt,
+      startsAt: editedHabit.startsAt,
       expiresAt: editedHabit.expiresAt,
       createdAt: editedHabit.createdAt,
       updatedAt: editedHabit.updatedAt

@@ -60,7 +60,7 @@ describe('THE HABITS TEST SUITE', () => {
         .post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
         .send({
-          startAt: 'January 12th 2019, 12:00:59 pm',
+          startsAt: 'January 12th 2019, 12:00:59 pm',
           expiresAt: '1/21/2019'
         });
       expect(response.status).toBe(400);
@@ -74,14 +74,14 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken })
         .send({
           name: 'Ayotunde',
-          startAt: 'January 12th 2019, 12:00:59 pm'
+          startsAt: 'January 12th 2019, 12:00:59 pm'
         });
       expect(response.status).toBe(400);
       expect(response.body.error.message).toEqual('expiresAt is required but was not supplied');
       done();
     });
 
-    it('Should fail creation when the startAt data is not provided', async done => {
+    it('Should fail creation when the startsAt data is not provided', async done => {
       const response = await request
         .post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
@@ -90,7 +90,7 @@ describe('THE HABITS TEST SUITE', () => {
           expiresAt: '1/21/2019'
         });
       expect(response.status).toBe(400);
-      expect(response.body.error.message).toEqual('startAt is required but was not supplied');
+      expect(response.body.error.message).toEqual('startsAt is required but was not supplied');
       done();
     });
 
@@ -100,7 +100,7 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken })
         .send({
           name: '',
-          startAt: 'January 12th 2019, 12:00:59 pm',
+          startsAt: 'January 12th 2019, 12:00:59 pm',
           expiresAt: '1/21/2019'
         });
       expect(response.status).toBe(400);
@@ -114,7 +114,7 @@ describe('THE HABITS TEST SUITE', () => {
         .set({ Authorization: regularUserOneToken })
         .send({
           name: 'Ayotunde',
-          startAt: 'January 12th 2019, 12:00:59 pm',
+          startsAt: 'January 12th 2019, 12:00:59 pm',
           expiresAt: ''
         });
       expect(response.status).toBe(400);
@@ -122,17 +122,17 @@ describe('THE HABITS TEST SUITE', () => {
       done();
     });
 
-    it('Should fail creation when startAt is empty', async done => {
+    it('Should fail creation when startsAt is empty', async done => {
       const response = await request
         .post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
         .send({
           name: 'Tunde',
           expiresAt: '1/21/2019',
-          startAt: ''
+          startsAt: ''
         });
       expect(response.status).toBe(400);
-      expect(response.body.error.message).toEqual('startAt should not be empty');
+      expect(response.body.error.message).toEqual('startsAt should not be empty');
       done();
     });
 
@@ -155,7 +155,7 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.body.data).toHaveProperty(
         'name',
         'expiresAt',
-        'startAt',
+        'startsAt',
         toSentenceCase(habitBodyObjectOne.name)
       );
       done();
@@ -184,7 +184,7 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.length).toBe(2);
       expect(response.body.data[0].name).toEqual(habitBodyObjectOne.name);
-      expect(response.body.data[0].startAt).toEqual(habitBodyObjectOne.startAt);
+      expect(response.body.data[0].startsAt).toEqual(habitBodyObjectOne.startsAt);
       expect(response.body.data[0].expiresAt).toEqual(habitBodyObjectOne.expiresAt);
       done();
     });
@@ -200,7 +200,7 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.length).toBe(2);
       expect(response.body.data[1].name).toEqual(habitBodyObjectTwo.name);
-      expect(response.body.data[0].startAt).toEqual(habitBodyObjectOne.startAt);
+      expect(response.body.data[0].startsAt).toEqual(habitBodyObjectOne.startsAt);
       expect(response.body.data[0].expiresAt).toEqual(habitBodyObjectOne.expiresAt);
       done();
       done();

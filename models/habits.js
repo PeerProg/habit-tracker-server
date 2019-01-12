@@ -14,7 +14,7 @@ const HabitsModel = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.UUID
     },
-    startAt: {
+    startsAt: {
       type: DataTypes.STRING,
       allowNull: false
     },
