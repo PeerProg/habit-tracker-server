@@ -21,9 +21,9 @@ export default {
 
   ensureNameIsProvided(req, res, next) {
     const message = 'name is required but was not supplied';
-    const nameIsInNotBody = !Object.keys(req.body).includes('name');
+    const nameIsNotInBody = !Object.keys(req.body).includes('name');
 
-    if (nameIsInNotBody) {
+    if (nameIsNotInBody) {
       const error = new Error(message);
       error.status = 400;
       next(error);
@@ -45,11 +45,11 @@ export default {
     return next();
   },
 
-  ensureNumberDaysAreProvided(req, res, next) {
-    const message = 'daysBeforeExpiration is required but was not supplied';
-    const daysIsInNotBody = !Object.keys(req.body).includes('daysBeforeExpiration');
+  ensureStartDateProvided(req, res, next) {
+    const message = 'startAt is required but was not supplied';
+    const startAtIsNotInBody = !Object.keys(req.body).includes('startAt');
 
-    if (daysIsInNotBody) {
+    if (startAtIsNotInBody) {
       const error = new Error(message);
       error.status = 400;
       next(error);
@@ -57,13 +57,13 @@ export default {
     return next();
   },
 
-  ensureNumberDaysNotEmpty(req, res, next) {
-    const { daysBeforeExpiration } = req.body;
-    const message = 'daysBeforeExpiration should not be empty';
+  ensureStartDateNotEmpty(req, res, next) {
+    const { startAt } = req.body;
+    const message = 'startAt should not be empty';
 
-    const daysIsInNotBody = Object.keys(req.body).includes('daysBeforeExpiration');
+    const startAtIsInBody = Object.keys(req.body).includes('startAt');
 
-    if (daysIsInNotBody && isEmpty(daysBeforeExpiration)) {
+    if (startAtIsInBody && isEmpty(startAt)) {
       const error = new Error(message);
       error.status = 400;
       next(error);
@@ -73,9 +73,9 @@ export default {
 
   ensureExpiryDateProvided(req, res, next) {
     const message = 'expiresAt is required but was not supplied';
-    const expiresAtIsInNotBody = !Object.keys(req.body).includes('expiresAt');
+    const expiresAtIsNotInBody = !Object.keys(req.body).includes('expiresAt');
 
-    if (expiresAtIsInNotBody) {
+    if (expiresAtIsNotInBody) {
       const error = new Error(message);
       error.status = 400;
       next(error);
@@ -87,9 +87,23 @@ export default {
     const { expiresAt } = req.body;
     const message = 'expiresAt should not be empty';
 
-    const expiresAtIsInNotBody = Object.keys(req.body).includes('expiresAt');
+    const expiresAtIsInBody = Object.keys(req.body).includes('expiresAt');
 
-    if (expiresAtIsInNotBody && isEmpty(expiresAt)) {
+    if (expiresAtIsInBody && isEmpty(expiresAt)) {
+      const error = new Error(message);
+      error.status = 400;
+      next(error);
+    }
+    return next();
+  },
+
+  ensureHabitActiveParamsIsBoolean(req, res, next) {
+    const { habitActive } = req.body;
+    const message = 'habitActive should be a boolean';
+
+    const habitActiveIsInBody = Object.keys(req.body).includes('habitActive');
+
+    if (habitActiveIsInBody && !typeof habitActive === 'boolean') {
       const error = new Error(message);
       error.status = 400;
       next(error);
