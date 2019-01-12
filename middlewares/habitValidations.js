@@ -97,20 +97,6 @@ export default {
     return next();
   },
 
-  ensureHabitActiveParamsIsBoolean(req, res, next) {
-    const { habitActive } = req.body;
-    const message = 'habitActive should be a boolean';
-
-    const habitActiveIsInBody = Object.keys(req.body).includes('habitActive');
-
-    if (habitActiveIsInBody && !typeof habitActive === 'boolean') {
-      const error = new Error(message);
-      error.status = 400;
-      next(error);
-    }
-    return next();
-  },
-
   async ensureNoSimilarlyNamedHabit(req, res, next) {
     const {
       decoded: { id: userId },
