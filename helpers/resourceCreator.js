@@ -135,17 +135,35 @@ export default {
 
   createProperHabit() {
     const name = toSentenceCase('Travel more');
-    return { name };
+    const startsAt = 'January 12th 2019, 12:00:59 pm';
+    const expiresAt = 'Sunday at 11:03 AM';
+    return {
+      name,
+      expiresAt,
+      startsAt
+    };
   },
 
   createNewHabit() {
     const name = toSentenceCase('Build an app a day');
-    return { name };
+    const startsAt = 'January 12th 2019, 12:00:59 pm';
+    const expiresAt = 'Sunday at 11:03 AM';
+    return {
+      name,
+      expiresAt,
+      startsAt
+    };
   },
 
   createHabit() {
     const name = toSentenceCase('Run 365 miles every week');
-    return { name };
+    const startsAt = 'January 12th 2019, 12:00:59 pm';
+    const expiresAt = 'Sunday at 11:03 AM';
+    return {
+      name,
+      expiresAt,
+      startsAt
+    };
   },
 
   user404UUID() {
