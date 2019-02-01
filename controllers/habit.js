@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import models from '../models';
 import { toSentenceCase } from '../helpers';
 
-const { Habits } = models;
+const { Habits, Milestone } = models;
 
 export default {
   async createNewHabit(req, res) {
@@ -25,7 +25,14 @@ export default {
     const {
       params: { userId }
     } = req;
-    const userHabits = await Habits.findAll({ where: { userId } });
+    const userHabits = await Habits.findAll({
+      where: { userId },
+      include: [{
+        model: Milestone,
+        required: false,
+        attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
+      }]
+    });
 
     const data = userHabits.map(habit => ({
       name: habit.name,
@@ -34,7 +41,8 @@ export default {
       habitActive: habit.habitActive,
       createdAt: habit.createdAt,
       updatedAt: habit.updatedAt,
-      habitId: habit.id
+      habitId: habit.id,
+      milestones: habit.Milestones
     }));
 
     return res.send({ data, status: 200 });
@@ -55,7 +63,14 @@ export default {
       ]
     };
 
-    const singleUserHabit = await Habits.findOne({ where: queryParam });
+    const singleUserHabit = await Habits.findOne({
+      where: queryParam,
+      include: [{
+        model: Milestone,
+        required: false,
+        attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
+      }]
+    });
 
     const data = {
       name: singleUserHabit.name,
@@ -63,7 +78,8 @@ export default {
       expiresAt: singleUserHabit.expiresAt,
       habitActive: singleUserHabit.habitActive,
       createdAt: singleUserHabit.createdAt,
-      updatedAt: singleUserHabit.updatedAt
+      updatedAt: singleUserHabit.updatedAt,
+      milestones: singleUserHabit.Milestones
     };
 
     return res.send({ data, status: 200 });
@@ -103,7 +119,14 @@ export default {
       ]
     };
 
-    const singleUserHabit = await Habits.findOne({ where: queryParam });
+    const singleUserHabit = await Habits.findOne({
+      where: queryParam,
+      include: [{
+        model: Milestone,
+        required: false,
+        attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
+      }]
+    });
 
     const nameUnchanged =
       !Object.keys(req.body).includes('name') ||
@@ -122,7 +145,8 @@ export default {
       startsAt: editedHabit.startsAt,
       expiresAt: editedHabit.expiresAt,
       createdAt: editedHabit.createdAt,
-      updatedAt: editedHabit.updatedAt
+      updatedAt: editedHabit.updatedAt,
+      milestones: editedHabit.Milestones
     };
 
     return res.send({ data, status: 200 });
