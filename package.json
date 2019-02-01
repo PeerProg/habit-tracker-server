@@ -9,7 +9,7 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "dev": "babel-watch --watch ./ server.js",
+    "dev": "babel-watch --watch ./ server.js || true",
     "set-node-env": "set NODE_ENV=test",
     "test:dev": "npm run set-node-env && jest --verbose --i --coverage --forceExit",
     "test:development": "NODE_ENV=test && jest --verbose --i --coverage --forceExit",
