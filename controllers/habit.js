@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import Sequelize, { Op } from 'sequelize';
 import models from '../models';
 import { toSentenceCase } from '../helpers';
 
@@ -31,7 +31,8 @@ export default {
         model: Milestone,
         required: false,
         attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
-      }]
+      }],
+      order: Sequelize.col('createdAt')
     });
 
     const data = userHabits.map(habit => ({
@@ -69,7 +70,8 @@ export default {
         model: Milestone,
         required: false,
         attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
-      }]
+      }],
+      order: Sequelize.col('createdAt')
     });
 
     const data = {
@@ -125,7 +127,8 @@ export default {
         model: Milestone,
         required: false,
         attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
-      }]
+      }],
+      order: Sequelize.col('createdAt')
     });
 
     const nameUnchanged =

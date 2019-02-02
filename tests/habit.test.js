@@ -108,7 +108,7 @@ describe('THE HABITS TEST SUITE', () => {
       done();
     });
 
-    it('Should fail creation when expireAt is empty', async done => {
+    it('Should fail creation when expiresAt is empty', async done => {
       const response = await request
         .post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
@@ -173,7 +173,7 @@ describe('THE HABITS TEST SUITE', () => {
       done();
     });
 
-    it('Should allow a user get a list of his/her habits', async done => {
+    it('Should allow a user get a list of their habits', async done => {
       await request
         .post(`${baseHabitRoute}/create`)
         .set({ Authorization: regularUserOneToken })
@@ -202,7 +202,6 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.body.data[1].name).toEqual(habitBodyObjectTwo.name);
       expect(response.body.data[0].startsAt).toEqual(habitBodyObjectOne.startsAt);
       expect(response.body.data[0].expiresAt).toEqual(habitBodyObjectOne.expiresAt);
-      done();
       done();
     });
 
