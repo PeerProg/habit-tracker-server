@@ -195,16 +195,6 @@ export default {
     return res.send({ message: 'Account still inactive. Try again.' });
   },
 
-  async validateToken(req, res) {
-    const user = await Users.findByPk(req.params.id);
-    const data = {
-      username: user.username
-    };
-
-    const responseObject = { data, status: 200 };
-    return res.send(responseObject);
-  },
-
   logout(req, res) {
     return res.redirect('/');
   }
