@@ -16,11 +16,6 @@ export default {
     }
     jwt.verify(token, secretOrPrivateKey, (error, decoded) => {
       if (error) {
-        if (error.message === 'jwt expired') {
-          const err = new Error('Expired token');
-          err.status = 401;
-          return next(err);
-        }
         const err = new Error('Invalid token');
         err.status = 401;
         next(err);
