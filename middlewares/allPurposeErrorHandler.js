@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 export default (error, req, res, next) => {
-  res.status(error.status);
-  res.json({
+  return res.status(error.status).send({
     error: {
       message: error.message
     }

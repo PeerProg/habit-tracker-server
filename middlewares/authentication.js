@@ -18,11 +18,10 @@ export default {
       if (error) {
         const err = new Error('Invalid token');
         err.status = 401;
-        next(err);
+        return next(err);
       }
-
       req.decoded = decoded;
-      next();
+      return next();
     });
   },
 
@@ -54,6 +53,6 @@ export default {
       return res.redirect(`/activate/${user.id}`);
     }
 
-    next();
+    return next();
   }
 };
