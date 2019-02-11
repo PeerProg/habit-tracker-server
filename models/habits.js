@@ -40,6 +40,11 @@ const HabitsModel = (sequelize, DataTypes) => {
       foreignKey: 'habitId',
       onDelete: 'CASCADE'
     });
+
+    Habits.hasMany(models.Notifications, {
+      foreignKey: 'habitId',
+      onDelete: 'CASCADE'
+    });
   };
 
   return Habits;
