@@ -1,8 +1,9 @@
 import Sequelize, { Op } from 'sequelize';
 import models from '../models';
 import { toSentenceCase } from '../helpers';
+import { onCreateHabitNotification } from '../utilities';
 
-const { Habits, Milestone } = models;
+const { Habits, Milestone, Notifications } = models;
 
 export default {
   async createNewHabit(req, res) {
@@ -11,14 +12,19 @@ export default {
       decoded: { id: userId }
     } = req;
     const normalizedName = toSentenceCase(name);
+    const createNotification = onCreateHabitNotification(name);
+
     const data = await Habits.create({
       name: normalizedName,
       startsAt,
       expiresAt,
       userId
     });
-
-    return res.status(201).send({ data, status: 201 });
+    const notificationData = await Notifications.create({
+      title: createNotification.Title,
+      description: createNotification.Description
+    });
+    return res.status(201).send({ data, notificationData, status: 201 });
   },
 
   async getUserHabits(req, res) {
@@ -27,11 +33,13 @@ export default {
     } = req;
     const userHabits = await Habits.findAll({
       where: { userId },
-      include: [{
-        model: Milestone,
-        required: false,
-        attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
-      }],
+      include: [
+        {
+          model: Milestone,
+          required: false,
+          attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
+        }
+      ],
       order: Sequelize.col('createdAt')
     });
 
@@ -66,11 +74,13 @@ export default {
 
     const singleUserHabit = await Habits.findOne({
       where: queryParam,
-      include: [{
-        model: Milestone,
-        required: false,
-        attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
-      }],
+      include: [
+        {
+          model: Milestone,
+          required: false,
+          attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
+        }
+      ],
       order: Sequelize.col('createdAt')
     });
 
@@ -123,11 +133,13 @@ export default {
 
     const singleUserHabit = await Habits.findOne({
       where: queryParam,
-      include: [{
-        model: Milestone,
-        required: false,
-        attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
-      }],
+      include: [
+        {
+          model: Milestone,
+          required: false,
+          attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
+        }
+      ],
       order: Sequelize.col('createdAt')
     });
 
