@@ -137,10 +137,14 @@ export default {
     const name = toSentenceCase('Travel more');
     const startsAt = 'January 12th 2019, 12:00:59 pm';
     const expiresAt = 'Sunday at 11:03 AM';
+    const notificationTitle = 'Habit Creation';
+    const notificationDescription = 'Travel more has been created';
     return {
       name,
       expiresAt,
-      startsAt
+      startsAt,
+      notificationTitle,
+      notificationDescription
     };
   },
 
@@ -148,10 +152,14 @@ export default {
     const name = toSentenceCase('Build an app a day');
     const startsAt = 'January 12th 2019, 12:00:59 pm';
     const expiresAt = 'Sunday at 11:03 AM';
+    const notificationTitle = 'Habit Creation';
+    const notificationDescription = 'Build an app a day has been created';
     return {
       name,
       expiresAt,
-      startsAt
+      startsAt,
+      notificationTitle,
+      notificationDescription
     };
   },
 
@@ -159,10 +167,14 @@ export default {
     const name = toSentenceCase('Run 365 miles every week');
     const startsAt = 'January 12th 2019, 12:00:59 pm';
     const expiresAt = 'Sunday at 11:03 AM';
+    const notificationTitle = 'Habit Creation';
+    const notificationDescription = 'Run 365 miles every week has been created';
     return {
       name,
       expiresAt,
-      startsAt
+      startsAt,
+      notificationTitle,
+      notificationDescription
     };
   },
 
