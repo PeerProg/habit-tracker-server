@@ -138,13 +138,13 @@ export default {
     const startsAt = 'January 12th 2019, 12:00:59 pm';
     const expiresAt = 'Sunday at 11:03 AM';
     const notificationTitle = 'Habit Creation';
-    const notificationDescription = 'Travel more has been created';
+    const notificationMessage = 'Travel more has been created';
     return {
       name,
       expiresAt,
       startsAt,
       notificationTitle,
-      notificationDescription
+      notificationMessage
     };
   },
 
@@ -153,13 +153,13 @@ export default {
     const startsAt = 'January 12th 2019, 12:00:59 pm';
     const expiresAt = 'Sunday at 11:03 AM';
     const notificationTitle = 'Habit Creation';
-    const notificationDescription = 'Build an app a day has been created';
+    const notificationMessage = 'Build an app a day has been created';
     return {
       name,
       expiresAt,
       startsAt,
       notificationTitle,
-      notificationDescription
+      notificationMessage
     };
   },
 
@@ -168,13 +168,13 @@ export default {
     const startsAt = 'January 12th 2019, 12:00:59 pm';
     const expiresAt = 'Sunday at 11:03 AM';
     const notificationTitle = 'Habit Creation';
-    const notificationDescription = 'Run 365 miles every week has been created';
+    const notificationMessage = 'Run 365 miles every week has been created';
     return {
       name,
       expiresAt,
       startsAt,
       notificationTitle,
-      notificationDescription
+      notificationMessage
     };
   },
 

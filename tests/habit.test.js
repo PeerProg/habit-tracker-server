@@ -160,9 +160,9 @@ describe('THE HABITS TEST SUITE', () => {
       );
       expect(response.body.notificationData).toHaveProperty(
         'title',
-        'description',
+        'message',
         habitBodyObjectOne.notificationTitle,
-        habitBodyObjectOne.notificationDescription
+        habitBodyObjectOne.notificationMessage
       );
       done();
     });

@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
         unique: false
       },
-      description: {
+      message: {
         type: Sequelize.STRING(1234),
         allowNull: false,
         unique: false
