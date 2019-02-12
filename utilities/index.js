@@ -1,6 +1,1 @@
-export {
-  onCreateHabitNotification,
-  onHabitExpirationNotification,
-  onCreateMilestoneNotification,
-  onMilestoneExpirationNotification
-} from './notificationFunctions';
+export { default } from './notifierFunctions';

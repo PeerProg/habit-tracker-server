@@ -1,9 +1,10 @@
 import Sequelize, { Op } from 'sequelize';
 import models from '../models';
 import { toSentenceCase } from '../helpers';
-import { onCreateHabitNotification } from '../utilities';
+import Notifier from '../utilities';
 
-const { Habits, Milestone, Notifications } = models;
+const { Habits, Milestones, Notifications } = models;
+const { notifyHabitCreation } = Notifier;
 
 export default {
   async createNewHabit(req, res) {
@@ -12,7 +13,7 @@ export default {
       decoded: { id: userId }
     } = req;
     const normalizedName = toSentenceCase(name);
-    const createNotification = onCreateHabitNotification(name);
+    const createNotification = notifyHabitCreation(name);
 
     const data = await Habits.create({
       name: normalizedName,
@@ -22,7 +23,7 @@ export default {
     });
     const notificationData = await Notifications.create({
       title: createNotification.Title,
-      description: createNotification.Description
+      message: createNotification.Message
     });
     return res.status(201).send({ data, notificationData, status: 201 });
   },
@@ -35,7 +36,7 @@ export default {
       where: { userId },
       include: [
         {
-          model: Milestone,
+          model: Milestones,
           required: false,
           attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
         }
@@ -76,7 +77,7 @@ export default {
       where: queryParam,
       include: [
         {
-          model: Milestone,
+          model: Milestones,
           required: false,
           attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
         }
@@ -135,7 +136,7 @@ export default {
       where: queryParam,
       include: [
         {
-          model: Milestone,
+          model: Milestones,
           required: false,
           attributes: ['id', 'title', 'completed', 'createdAt', 'updatedAt']
         }

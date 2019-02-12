@@ -1,16 +1,18 @@
-import {
-  onCreateHabitNotification,
-  onHabitExpirationNotification,
-  onCreateMilestoneNotification,
-  onMilestoneExpirationNotification
-} from '../utilities';
+import Notifier from '../utilities';
+
+const {
+  notifyHabitCreation,
+  notifyHabitExpiration,
+  notifyMilestoneCreation,
+  notifyMilestoneExpiration
+} = Notifier;
 
 describe('NOTIFICATION FUNCTION TEST SUITE', () => {
   describe('onCreate of a Habit Notification', () => {
     it('it will check the returned values on habit creation', () => {
-      expect(onCreateHabitNotification('Coding')).toHaveProperty(
+      expect(notifyHabitCreation('Coding')).toHaveProperty(
         'Title',
-        'Description',
+        'Message',
         'Habit Creation',
         'Coding has been created'
       );
@@ -19,9 +21,9 @@ describe('NOTIFICATION FUNCTION TEST SUITE', () => {
 
   describe('onExpiration of a Habit Notification', () => {
     it('it will check the returned values on habit expiration', () => {
-      expect(onHabitExpirationNotification('Coding', 21)).toHaveProperty(
+      expect(notifyHabitExpiration('Coding', 21)).toHaveProperty(
         'Title',
-        'Description',
+        'Message',
         'Habit Expiration',
         'Coding will expire in 21'
       );
@@ -30,9 +32,9 @@ describe('NOTIFICATION FUNCTION TEST SUITE', () => {
 
   describe('onCreate of a Milestone Notification', () => {
     it('it will check the returned values on milestone creation', () => {
-      expect(onCreateMilestoneNotification('Write test often', 'Coding')).toHaveProperty(
+      expect(notifyMilestoneCreation('Write test often', 'Coding')).toHaveProperty(
         'Title',
-        'Description',
+        'Message',
         'Milestone Creation',
         'Write test often has been created under the Coding'
       );
@@ -41,9 +43,9 @@ describe('NOTIFICATION FUNCTION TEST SUITE', () => {
 
   describe('onExpiration of a Milestone Notification', () => {
     it('it will check the returned values on milestone expiration', () => {
-      expect(onMilestoneExpirationNotification('Write test often', 4)).toHaveProperty(
+      expect(notifyMilestoneExpiration('Write test often', 4)).toHaveProperty(
         'Title',
-        'Description',
+        'Message',
         'Milestone Expiration',
         'Write test often will expire in 4'
       );
