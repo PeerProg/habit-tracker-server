@@ -158,6 +158,12 @@ describe('THE HABITS TEST SUITE', () => {
         'startsAt',
         toSentenceCase(habitBodyObjectOne.name)
       );
+      expect(response.body.notificationData).toHaveProperty(
+        'title',
+        'message',
+        habitBodyObjectOne.notificationTitle,
+        habitBodyObjectOne.notificationMessage
+      );
       done();
     });
   });

@@ -43,6 +43,14 @@ const UserModel = (sequelize, DataTypes) => {
     }
   );
 
+  // Class Method
+  User.associate = models => {
+    User.hasMany(models.Notifications, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+  };
+
   // Instance methods
   User.prototype.hashPassword = function hashPassword() {
     this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(9));

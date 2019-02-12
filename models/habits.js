@@ -36,7 +36,7 @@ const HabitsModel = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
 
-    Habits.hasMany(models.Milestone, {
+    Habits.hasMany(models.Milestones, {
       foreignKey: 'habitId',
       onDelete: 'CASCADE'
     });
