@@ -2,12 +2,12 @@ import { Op } from 'sequelize';
 import models from '../models';
 import { toSentenceCase } from '../helpers';
 
-const { Habits, Milestone } = models;
+const { Habits, Milestones } = models;
 
 export default {
   async getHabitMilestones(req, res) {
     await Habits.findOne({ where: { id: req.params.habitId } });
-    const milestones = await Milestone.findAll({
+    const milestones = await Milestones.findAll({
       where: {
         habitId: req.params.habitId
       }
@@ -26,14 +26,14 @@ export default {
   async addMilestone(req, res) {
     const { habitId } = req.params;
     const title = toSentenceCase(req.body.title);
-    const newMilestone = await Milestone.create({ title, habitId });
+    const newMilestone = await Milestones.create({ title, habitId });
 
     const data = {
       id: newMilestone.id,
       title: newMilestone.title,
       completed: newMilestone.completed,
       createdAt: newMilestone.createdAt,
-      updatedAt: newMilestone.updatedAt,
+      updatedAt: newMilestone.updatedAt
     };
 
     return res.json({ data, status: 200 });
@@ -41,7 +41,7 @@ export default {
 
   async getMilestone(req, res) {
     const { habitId, milestoneId } = req.params;
-    const milestone = await Milestone.findOne({
+    const milestone = await Milestones.findOne({
       where: {
         [Op.and]: [
           {
@@ -57,7 +57,7 @@ export default {
       title: milestone.title,
       completed: milestone.completed,
       createdAt: milestone.createdAt,
-      updatedAt: milestone.updatedAt,
+      updatedAt: milestone.updatedAt
     };
 
     return res.json({ data, status: 200 });
@@ -65,7 +65,7 @@ export default {
 
   async updateMilestone(req, res) {
     const { habitId, milestoneId } = req.params;
-    const milestone = await Milestone.findOne({
+    const milestone = await Milestones.findOne({
       where: {
         [Op.and]: [
           {
@@ -86,7 +86,7 @@ export default {
       title: updatedMilestone.title,
       completed: updatedMilestone.completed,
       createdAt: updatedMilestone.createdAt,
-      updatedAt: updatedMilestone.updatedAt,
+      updatedAt: updatedMilestone.updatedAt
     };
 
     return res.json({ data, status: 200 });
@@ -94,7 +94,7 @@ export default {
 
   async deleteMilestone(req, res) {
     const { habitId, milestoneId } = req.params;
-    const milestone = await Milestone.findOne({
+    const milestone = await Milestones.findOne({
       where: {
         [Op.and]: [
           {

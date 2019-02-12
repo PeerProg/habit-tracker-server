@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import models from '../models';
 import { isEmpty, toSentenceCase } from '../helpers';
 
-const { Milestone } = models;
+const { Milestones } = models;
 
 export default {
   titleIsInBody(req, res, next) {
@@ -27,7 +27,7 @@ export default {
   async checkIfMilestoneTitleExists(req, res, next) {
     const { habitId } = req.params;
     const title = req.body.title && toSentenceCase(req.body.title);
-    const milestone = await Milestone.findOne({
+    const milestone = await Milestones.findOne({
       where: {
         [Op.and]: [
           {
@@ -45,7 +45,7 @@ export default {
 
   async checkIfMilestoneIdExists(req, res, next) {
     const { milestoneId, habitId } = req.params;
-    const milestone = await Milestone.findOne({
+    const milestone = await Milestones.findOne({
       where: {
         [Op.and]: [
           {
