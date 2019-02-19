@@ -161,7 +161,7 @@ export default {
       req.body.habitActive && toBooleanValue(req.body.habitActive);
 
     if (req.body.habitActive && habitActiveBooleanValue === null) {
-      const error = new Error('the habitActive value supplied is not a boolean');
+      const error = new Error('Active status should be "true" or "false"');
       error.status = 400;
       next(error);
     }

@@ -335,13 +335,13 @@ describe('THE HABITS TEST SUITE', () => {
       const response = await request
         .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: adminToken })
-        .send({ name: 'Stoop to conquer', habitActive: true });
+        .send({ name: 'Stoop to conquer', habitActive: false });
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveProperty(
         'name',
         'Stoop to conquer',
         'habitActive',
-        true
+        false
       );
       done();
     });
@@ -354,7 +354,7 @@ describe('THE HABITS TEST SUITE', () => {
       expect(response.status).toBe(400);
       expect(response.body.error).toHaveProperty(
         'message',
-        'the habitActive value supplied is not a boolean'
+        'Active status should be "true" or "false"'
       );
       done();
     });
