@@ -358,6 +358,36 @@ describe('THE HABITS TEST SUITE', () => {
       );
       done();
     });
+
+    it('Should check if habit status is set in request and value is boolean', async done => {
+      const response = await request
+        .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
+        .set({ Authorization: adminToken })
+        .send({ name: 'Test your code', habitActive: 'true' });
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveProperty(
+        'name',
+        'Test your code',
+        'habitActive',
+        true
+      );
+      done();
+    });
+
+    it('Should allow habit update when name is not supplied but habitActive value is Supplied', async done => {
+      const response = await request
+        .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
+        .set({ Authorization: adminToken })
+        .send({ habitActive: 'false' });
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveProperty(
+        'name',
+        'Stoop to conquer',
+        'habitActive',
+        false
+      );
+      done();
+    });
   });
 
   describe(`DELETE USER HABITS: ${baseHabitRoute}/user/:userId/:habitId`, () => {
