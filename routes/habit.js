@@ -21,6 +21,7 @@ const {
   ensureValidUserIdParams,
   ensureNoSimilarlyNamedHabit,
   ensureValidParams,
+  ensureValidValueOfHabitActive,
   userHabitExists
 } = habitValidations;
 
@@ -65,7 +66,12 @@ router
     authorizeHabitOwner
   )
   .get(getOneUserHabit)
-  .patch(ensureNameIsNotEmpty, ensureNoSimilarlyNamedHabit, editOneUserHabit)
+  .patch(
+    ensureNameIsNotEmpty,
+    ensureNoSimilarlyNamedHabit,
+    ensureValidValueOfHabitActive,
+    editOneUserHabit
+  )
   .delete(deleteOneUserHabit);
 
 export default router;
