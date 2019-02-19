@@ -45,3 +45,12 @@ export const imageURLTester = inputEmail => {
 
   return validImageURLRegex.test(inputEmail);
 };
+
+export const toBooleanValue = inputValue => {
+  if (inputValue === 'true' || inputValue === 'false') {
+    return JSON.parse(inputValue);
+  } else if (typeof inputValue === 'boolean') {
+    return inputValue;
+  }
+  return null;
+};

@@ -5,5 +5,6 @@ export {
   uuidTester,
   usernameTester,
   emailTester,
-  imageURLTester
+  imageURLTester,
+  toBooleanValue
 } from './helperFunctions';
