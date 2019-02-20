@@ -1,6 +1,6 @@
 import Sequelize, { Op } from 'sequelize';
 import models from '../models';
-import { toSentenceCase } from '../helpers';
+import { toSentenceCase, toBooleanValue } from '../helpers';
 import Notifier from '../utilities';
 
 const { Habits, Milestones, Notifications } = models;
@@ -143,23 +143,32 @@ export default {
       ],
       order: Sequelize.col('createdAt')
     });
-
     const nameUnchanged =
       !Object.keys(req.body).includes('name') ||
       toSentenceCase(req.body.name) === singleUserHabit.name;
 
-    if (nameUnchanged) {
+    const habitStatusUnchanged =
+      !Object.keys(req.body).includes('habitActive') ||
+      toBooleanValue(req.body.habitActive) === singleUserHabit.habitActive;
+
+    if (nameUnchanged && habitStatusUnchanged) {
       return res.status(304).send({ status: 304 });
     }
 
+    const editedHabitStatus =
+      req.body.habitActive && toBooleanValue(req.body.habitActive);
+    const editedHabitName = req.body.name && toSentenceCase(req.body.name);
+
     const editedHabit = await singleUserHabit.update({
-      name: req.body.name && toSentenceCase(req.body.name)
+      name: editedHabitName || singleUserHabit.name,
+      habitActive: editedHabitStatus
     });
 
     const data = {
       name: editedHabit.name,
       startsAt: editedHabit.startsAt,
       expiresAt: editedHabit.expiresAt,
+      habitActive: editedHabit.habitActive,
       createdAt: editedHabit.createdAt,
       updatedAt: editedHabit.updatedAt,
       milestones: editedHabit.Milestones

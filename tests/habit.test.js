@@ -322,7 +322,7 @@ describe('THE HABITS TEST SUITE', () => {
       done();
     });
 
-    it('Should allow habit update even if name is not supplied', async done => {
+    it('Should allow habit update even if name and habitActive is not supplied', async done => {
       const response = await request
         .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: adminToken })
@@ -331,13 +331,61 @@ describe('THE HABITS TEST SUITE', () => {
       done();
     });
 
-    it('Should allow habit name update when name does not already exist', async done => {
+    it('Should allow habit name update when name does not already exist and habitActive is boolean', async done => {
       const response = await request
         .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
         .set({ Authorization: adminToken })
-        .send({ name: 'Stoop to conquer' });
+        .send({ name: 'Stoop to conquer', habitActive: false });
       expect(response.status).toBe(200);
-      expect(response.body.data).toHaveProperty('name', 'Stoop to conquer');
+      expect(response.body.data).toHaveProperty(
+        'name',
+        'Stoop to conquer',
+        'habitActive',
+        false
+      );
+      done();
+    });
+
+    it('Should not allow habit status update when habitActive is not a boolean', async done => {
+      const response = await request
+        .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
+        .set({ Authorization: adminToken })
+        .send({ habitActive: 'Not a boolean' });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toHaveProperty(
+        'message',
+        'Active status should be "true" or "false"'
+      );
+      done();
+    });
+
+    it('Should check if habit status is set in request and value is boolean', async done => {
+      const response = await request
+        .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
+        .set({ Authorization: adminToken })
+        .send({ name: 'Test your code', habitActive: 'true' });
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveProperty(
+        'name',
+        'Test your code',
+        'habitActive',
+        true
+      );
+      done();
+    });
+
+    it('Should allow habit update when name is not supplied but habitActive value is Supplied', async done => {
+      const response = await request
+        .patch(`${baseHabitRoute}/user/${adminId}/${adminHabitId}`)
+        .set({ Authorization: adminToken })
+        .send({ habitActive: 'false' });
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveProperty(
+        'name',
+        'Stoop to conquer',
+        'habitActive',
+        false
+      );
       done();
     });
   });

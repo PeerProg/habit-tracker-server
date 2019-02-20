@@ -1,6 +1,11 @@
 import { Op } from 'sequelize';
 import models from '../models';
-import { isEmpty, toSentenceCase, uuidTester } from '../helpers';
+import {
+  isEmpty,
+  toSentenceCase,
+  uuidTester,
+  toBooleanValue
+} from '../helpers';
 
 const { Habits } = models;
 
@@ -151,7 +156,17 @@ export default {
     }
     next();
   },
+  ensureValidValueOfHabitActive(req, res, next) {
+    const habitActiveBooleanValue =
+      req.body.habitActive && toBooleanValue(req.body.habitActive);
 
+    if (req.body.habitActive && habitActiveBooleanValue === null) {
+      const error = new Error('Active status should be "true" or "false"');
+      error.status = 400;
+      next(error);
+    }
+    next();
+  },
   async habitExists(req, res, next) {
     const habit = await Habits.findOne({ where: { id: req.params.habitId } });
     if (!habit) {

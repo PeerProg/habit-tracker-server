@@ -1,4 +1,4 @@
-import { isEmpty } from '../helpers';
+import { isEmpty, toBooleanValue } from '../helpers';
 
 const testString = '   ';
 const sampleEmptyArray = [];
@@ -28,6 +28,13 @@ describe('HELPER FUNCTIONS TEST SUITE', () => {
 
     it('Verifies the emptiness or otherwise of an object with nested properties', () => {
       expect(isEmpty(sampleNestedObject)).toBe(true);
+    });
+  });
+
+  describe('toBooleanValue', () => {
+    it('should return a boolean', () => {
+      expect(toBooleanValue('true')).toBe(true);
+      expect(toBooleanValue('false')).toBe(false);
     });
   });
 });
